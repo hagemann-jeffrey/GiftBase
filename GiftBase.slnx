@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="GiftBase.Core/GiftBase.Core.csproj" />
+  <Project Path="GiftBase.Data/GiftBase.Data.csproj" />
   <Project Path="GiftBase/GiftBase.csproj" />
 </Solution>
