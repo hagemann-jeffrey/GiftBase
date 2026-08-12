@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C#: GiftBase",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/GiftBase/GiftBase.csproj",
+            // Das hier ist die wichtige Zeile:
+            "hotReloadEnabled": true
+        }
+    ]
+}
