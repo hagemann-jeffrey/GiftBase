@@ -1,0 +1,30 @@
+﻿@page "/register"
+
+<PageTitle>Register</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Register</MudText>
+
+<EditForm Model="RegisterInput" OnValidSubmit="@RegisterSubmit" FormName="RegisterForm">
+    <DataAnnotationsValidator />
+
+    <MudCard Elevation="3">
+        <MudCardContent>
+
+            <MudTextField Label="E-Mail" @bind-Value="RegisterInput.Email" For="@(() => RegisterInput.Email)" />
+
+            <MudTextField Label="Passwort" InputType="InputType.Password" @bind-Value="RegisterInput.Password"
+                          For="@(() => RegisterInput.Password)" />
+
+            <MudTextField Label="Passwort bestätigen" InputType="InputType.Password"
+                          @bind-Value="RegisterInput.ConfirmPassword" For="@(() => RegisterInput.ConfirmPassword)" />
+
+        </MudCardContent>
+        <MudCardActions>
+
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">
+                Registrieren
+            </MudButton>
+
+        </MudCardActions>
+    </MudCard>
+</EditForm>
