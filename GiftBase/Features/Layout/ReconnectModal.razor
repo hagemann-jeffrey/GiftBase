@@ -1,4 +1,4 @@
-<script type="module" src="@Assets["Components/Layout/ReconnectModal.razor.js"]"></script>
+<script type="module" src="@Assets["Features/Layout/ReconnectModal.razor.js"]"></script>
 
 <dialog id="components-reconnect-modal" data-nosnippet>
     <div class="components-reconnect-backdrop">
@@ -12,7 +12,8 @@
                 Your current session is still open. We'll keep trying to restore it.
             </p>
 
-            <div class="components-rejoin-loader components-reconnect-first-attempt-visible components-reconnect-repeated-attempt-visible" aria-hidden="true">
+            <div class="components-rejoin-loader components-reconnect-first-attempt-visible components-reconnect-repeated-attempt-visible"
+                 aria-hidden="true">
                 <div></div>
                 <div></div>
                 <div></div>
@@ -39,7 +40,8 @@
                 <button id="components-reconnect-button" class="components-reconnect-failed-visible" type="button">
                     Retry
                 </button>
-                <button id="components-resume-button" class="components-pause-visible components-resume-failed-visible" type="button">
+                <button id="components-resume-button" class="components-pause-visible components-resume-failed-visible"
+                        type="button">
                     Resume
                 </button>
             </div>
