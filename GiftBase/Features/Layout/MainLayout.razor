@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
@@ -6,16 +7,39 @@
 <MudSnackbarProvider />
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
-                       OnClick="@((e) => DrawerToggle())" />
+        @* <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
+                       OnClick="@((e) => DrawerToggle())" /> *@
         <MudText Typo="Typo.h5" Class="ml-3">GiftBase</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+
+        <AuthorizeView>
+            <Authorized>
+                <MudText Typo="Typo.subtitle2" Class="mr-3">@context.User.Identity?.Name</MudText>
+                <form method="post" action="/logout">
+                    <AntiforgeryToken />
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Color="Color.Primary">
+                        Abmelden
+                    </MudButton>
+                </form>
+            </Authorized>
+            <NotAuthorized>
+                <MudButton Href="/login" Variant="Variant.Outlined" Color="Color.Primary" Class="mr-3">
+                    Einloggen
+                </MudButton>
+                <MudButton Href="/register" Variant="Variant.Filled" Color="Color.Primary" Class="mr-3">
+                    Registrieren
+                </MudButton>
+            </NotAuthorized>
+        </AuthorizeView>
+
+        <MudSwitch @bind-Value="@_isDarkMode" Color="Color.Primary"
+                   ThumbIcon="@(_isDarkMode ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.LightMode)"
+                   ThumbIconColor="@(_isDarkMode ? Color.Dark : Color.Warning)">
+        </MudSwitch>
     </MudAppBar>
-    <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+    @* <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
-    </MudDrawer>
+    </MudDrawer> *@
     <MudMainContent Class="pt-16 pa-4">
         @Body
     </MudMainContent>
@@ -96,7 +120,7 @@
 
     public string DarkLightModeButtonIcon => _isDarkMode switch
     {
-        true => Icons.Material.Rounded.AutoMode,
+        true => Icons.Material.Rounded.LightMode,
         false => Icons.Material.Outlined.DarkMode,
     };
 }
