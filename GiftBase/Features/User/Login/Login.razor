@@ -1,0 +1,39 @@
+﻿@page "/login"
+
+<PageTitle>Einloggen</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">
+            @ErrorMessage
+        </MudAlert>
+    }
+
+    <form method="post" action="/login">
+        <AntiforgeryToken />
+        <MudCard Elevation="3">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h4">Einloggen</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+
+                <MudTextField Label="E-Mail" @bind-Value="LoginInput.Email" For="@(() => LoginInput.Email)"
+                              InputType="InputType.Email" name="Email" autocomplete="email" />
+
+                <MudTextField Label="Passwort" InputType="InputType.Password" @bind-Value="LoginInput.Password"
+                              For="@(() => LoginInput.Password)" name="Password" autocomplete="current-password" />
+
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Class="ml-1" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">
+                    <MudText>Einloggen</MudText>
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </form>
+
+</MudContainer>
