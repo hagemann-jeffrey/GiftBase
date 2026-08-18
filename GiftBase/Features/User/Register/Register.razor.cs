@@ -2,22 +2,29 @@ using GiftBase.Core.Interfaces;
 
 namespace GiftBase.Features.User.Register;
 
-public partial class Register(ILogger<Register> logger, IAuthService authService)
+public partial class Register(IAuthService authService)
 {
     private RegisterInput RegisterInput { get; set; } = new RegisterInput();
 
+    private bool Success { get; set; } = false;
+    private bool IsLoading { get; set; } = false;
+    private string? ErrorMessage { get; set; } = null;
+
     private async Task RegisterSubmit()
     {
-        logger.LogInformation("Registering user with email: {Email}", RegisterInput.Email);
+        ErrorMessage = null;
+        IsLoading = true;
 
         var success = await authService.RegisterUserAsync(RegisterInput.Email, RegisterInput.Password);
+
         if (success)
         {
-            logger.LogInformation("User registered successfully.");
+            Success = true;
         }
         else
         {
-            logger.LogError("Failed to register user.");
+            ErrorMessage = "E-Mail ist bereits registriert oder es ist ein anderer Fehler aufgetreten.";
         }
+        IsLoading = false;
     }
 }
