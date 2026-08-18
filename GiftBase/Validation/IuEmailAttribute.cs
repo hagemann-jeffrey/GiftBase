@@ -21,6 +21,8 @@ public class IuEmailAttribute : ValidationAttribute
             }
         }
 
-        return new ValidationResult("Bitte registriere dich mit deiner offiziellen Hochschul-E-Mail-Adresse.");
+        return new ValidationResult(
+            "Bitte registriere dich mit deiner offiziellen Hochschul-E-Mail-Adresse.",
+            validationContext.MemberName is not null ? [validationContext.MemberName] : Array.Empty<string>());
     }
 }
