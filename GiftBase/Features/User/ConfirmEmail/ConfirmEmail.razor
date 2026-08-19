@@ -1,4 +1,4 @@
-﻿@page "/confirmemail/{Token}"
+﻿@page "/confirmemail"
 
 <PageTitle>Confirm Email</PageTitle>
 
@@ -18,16 +18,30 @@
             else if (IsSuccess)
             {
                 <MudAlert Severity="Severity.Success">Vielen Dank! Deine E-Mail-Adresse wurde erfolgreich bestätigt. Du
-                    kannst dich jetzt einloggen.</MudAlert>
-                    <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">Zum Login
-                    </MudButton>
-                }
+                    kannst dich jetzt einloggen.
+                </MudAlert>
+                <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">Zum Login</MudButton>
+            }
             else
+            {
+                <MudText Typo="Typo.body1" Class="mb-4">
+                    Bitte klicke auf den Button, um deine Registrierung abzuschließen.
+                </MudText>
+
+                @if (!string.IsNullOrEmpty(ErrorMessage))
                 {
-                    <MudAlert Severity="Severity.Error">Der Bestätigungslink ist leider ungültig oder bereits abgelaufen oder
-                        wurde bereits verwendet.</MudAlert>
-                    }
-                </MudCardContent>
-            </MudCard>
-        </MudContainer>
+                    <MudAlert Severity="Severity.Error">@ErrorMessage</MudAlert>
+                }
+            }
+        </MudCardContent>
+        <MudCardActions Class="d-flex justify-end">
+            @if (!IsSuccess && !IsLoading)
+            {
+                <MudButton OnClick="ConfirmEmailClick" Variant="Variant.Filled" Color="Color.Primary">
+                    Bestätigen
+                </MudButton>
+            }
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
 

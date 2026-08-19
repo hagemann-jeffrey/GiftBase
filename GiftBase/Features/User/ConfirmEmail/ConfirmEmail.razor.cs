@@ -5,20 +5,30 @@ namespace GiftBase.Features.User.ConfirmEmail;
 
 public partial class ConfirmEmail(IAuthService authService)
 {
-    [Parameter]
+    [SupplyParameterFromQuery]
     public required string Token { get; set; }
 
-    private bool IsLoading = true;
+    private bool IsLoading = false;
     private bool IsSuccess = false;
+    private string? ErrorMessage = null;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async Task ConfirmEmailClick()
     {
-        if (firstRender)
+        if (string.IsNullOrWhiteSpace(Token))
         {
-            IsSuccess = await authService.ConfirmEmailAsync(Token);
-            IsLoading = false;
-
-            StateHasChanged();
+            ErrorMessage = "Bestätigungstoken ist ungültig oder fehlt.";
+            return;
         }
+
+        ErrorMessage = null;
+        IsLoading = true;
+        IsSuccess = await authService.ConfirmEmailAsync(Token);
+
+        if (!IsSuccess)
+        {
+            ErrorMessage = "Die E-Mail-Bestätigung ist fehlgeschlagen. Bitte überprüfe den Bestätigungslink oder kontaktiere den Support.";
+        }
+
+        IsLoading = false;
     }
 }

@@ -36,7 +36,7 @@ NavigationManager navigationManager) : IAuthService
         dbContext.Users.Add(user);
         await dbContext.SaveChangesAsync();
 
-        var confirmationLink = $"{navigationManager.BaseUri}confirmemail/{token}";
+        var confirmationLink = $"{navigationManager.BaseUri}confirmemail?Token={token}";
 
         var emailBody = $@"
                 <div style='font-family: Arial, sans-serif; padding: 20px;'>
