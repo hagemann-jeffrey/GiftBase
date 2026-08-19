@@ -47,8 +47,8 @@
                                   @bind-Value="RegisterInput.ConfirmPassword" For="@(() => RegisterInput.ConfirmPassword)" />
 
                 </MudCardContent>
-                <MudCardActions>
-                    <MudButton Disabled="@IsLoading" Class="ml-1" ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                <MudCardActions Class="d-flex justify-end">
+                    <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled"
                                Color="Color.Primary">
                         @if (IsLoading)
                         {
