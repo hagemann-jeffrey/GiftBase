@@ -1,0 +1,25 @@
+root = true
+
+# Allgemeine Einstellungen
+[*]
+indent_style = space
+indent_size = 4
+insert_final_newline = false
+trim_trailing_whitespace = true
+
+# Spezifische C#-Regeln (Klammern und Einrückungen)
+[*.cs]
+# Erzwingt, dass geschweifte Klammern immer in einer neuen Zeile stehen
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_catch = true
+csharp_new_line_before_else = true
+csharp_new_line_before_finally = true
+
+# Saubere Einrückung bei switch-case
+csharp_indent_case_contents = true
+csharp_indent_switch_labels = true
+
+# Razor-Dateien
+[*.razor]
+indent_style = space
+indent_size = 4
