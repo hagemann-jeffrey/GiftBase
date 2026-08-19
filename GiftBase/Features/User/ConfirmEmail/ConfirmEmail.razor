@@ -20,7 +20,6 @@
                 <MudAlert Severity="Severity.Success">Vielen Dank! Deine E-Mail-Adresse wurde erfolgreich bestätigt. Du
                     kannst dich jetzt einloggen.
                 </MudAlert>
-                <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">Zum Login</MudButton>
             }
             else
             {
@@ -40,6 +39,10 @@
                 <MudButton OnClick="ConfirmEmailClick" Variant="Variant.Filled" Color="Color.Primary">
                     Bestätigen
                 </MudButton>
+            }
+            else if (IsSuccess)
+            {
+                <MudButton Href="/login" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">Zum Login</MudButton>
             }
         </MudCardActions>
     </MudCard>
