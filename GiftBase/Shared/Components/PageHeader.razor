@@ -1,0 +1,24 @@
+<PageTitle>@Title</PageTitle>
+
+<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Wrap="Wrap.Wrap" Class="mb-8 mt-2">
+
+    <MudStack Spacing="1">
+        <MudText Typo="Typo.h3" Color="Color.Primary">@Title</MudText>
+
+        @if (!string.IsNullOrWhiteSpace(Description))
+        {
+            <MudText Typo="Typo.body1" Color="Color.Default">
+                @Description
+            </MudText>
+        }
+    </MudStack>
+
+    @if (ActionContent != null)
+    {
+        <MudStack Row="true" Spacing="4">
+            @ActionContent
+        </MudStack>
+    }
+
+</MudStack>
+
