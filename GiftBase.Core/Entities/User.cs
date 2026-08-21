@@ -19,6 +19,8 @@ public class User
     public string? VerificationToken { get; private set; }
     public DateTime? TokenExpiresAt { get; private set; }
 
+    public List<Person> Persons { get; private set; } = [];
+
     public void SetPasswordHash(string passwordHash)
     {
         PasswordHash = passwordHash;
