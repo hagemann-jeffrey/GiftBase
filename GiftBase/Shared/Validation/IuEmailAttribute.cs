@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace GiftBase.Validation;
+namespace GiftBase.Shared.Validation;
 
 public class IuEmailAttribute : ValidationAttribute
 {
