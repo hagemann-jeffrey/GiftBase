@@ -1,0 +1,24 @@
+<MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="4" Class="py-16">
+
+    <MudIcon Icon="@Icon" Color="Color.Default" Style="font-size: 5rem; opacity: 0.4;" />
+
+    <MudStack Spacing="1" AlignItems="AlignItems.Center">
+        <MudText Typo="Typo.h6" Class="fw-bold">@Title</MudText>
+
+        @if (!string.IsNullOrWhiteSpace(Description))
+        {
+            <MudText Typo="Typo.body1" Color="Color.Secondary" Align="Align.Center" Style="max-width: 400px;">
+                @Description
+            </MudText>
+        }
+    </MudStack>
+
+    @if (ActionContent != null)
+    {
+        <div class="mt-4">
+            @ActionContent
+        </div>
+    }
+
+</MudStack>
+
