@@ -7,8 +7,8 @@
 <MudSnackbarProvider />
 <MudLayout>
     <MudAppBar Elevation="1">
-        @* <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
-                       OnClick="@((e) => DrawerToggle())" /> *@
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
+                       OnClick="@((e) => DrawerToggle())" />
         <MudText Typo="Typo.h5" Class="ml-3">GiftBase</MudText>
         <MudSpacer />
 
@@ -37,10 +37,10 @@
                    ThumbIconColor="@(_isDarkMode ? Color.Dark : Color.Warning)">
         </MudSwitch>
     </MudAppBar>
-    @* <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
-    </MudDrawer> *@
-    <MudMainContent Class="pt-16 pa-4">
+    </MudDrawer>
+    <MudMainContent Class="pt-16 pa-4 mt-4">
         @Body
     </MudMainContent>
 </MudLayout>

@@ -1,13 +1,13 @@
 using MudBlazor.Services;
 using Microsoft.EntityFrameworkCore;
 using GiftBase.Data;
-using GiftBase.Features;
 using GiftBase.Core.Interfaces;
 using GiftBase.Features.User;
 using Microsoft.AspNetCore.Identity;
 using GiftBase.Core.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using GiftBase.Features.User.Login;
+using GiftBase;
 
 var builder = WebApplication.CreateBuilder(args);
 
