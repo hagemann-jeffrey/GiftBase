@@ -10,11 +10,17 @@ using GiftBase.Features.User.Login;
 using GiftBase;
 using GiftBase.Features.Persons;
 using GiftBase.Shared.Services;
+using MudBlazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add MudBlazor services
-builder.Services.AddMudServices();
+builder.Services.AddMudServices(opt =>
+{
+    opt.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
+    opt.SnackbarConfiguration.ClearAfterNavigation = false;
+    opt.SnackbarConfiguration.PreventDuplicates = false;
+});
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

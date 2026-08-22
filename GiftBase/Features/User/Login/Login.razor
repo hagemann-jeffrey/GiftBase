@@ -12,6 +12,7 @@
     }
 
     <form method="post" action="/login">
+        <input type="hidden" name="returnUrl" value="@ReturnUrl" />
         <AntiforgeryToken />
         <MudCard Elevation="3">
             <MudCardHeader>
@@ -30,7 +31,7 @@
             </MudCardContent>
             <MudCardActions Class="d-flex justify-end">
                 <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">
-                    <MudText>Einloggen</MudText>
+                    Einloggen
                 </MudButton>
             </MudCardActions>
         </MudCard>
