@@ -1,0 +1,31 @@
+@using GiftBase.Features.Persons.Components
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+@page "/persons"
+
+<PageHeader Title="Personen"
+            Description="Verwalte hier deine Freunde und Familie, um nie wieder ein Geschenk zu vergessen. Du kannst dir die Details zu jeder Person ansehen, neue Personen hinzufügen oder bestehende Personen bearbeiten.">
+</PageHeader>
+
+@if (IsLoading)
+{
+    <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" Class="mt-8 mx-auto d-flex" />
+}
+else if (Persons is null || !Persons.Any())
+{
+    <EmptyState Title="Keine Personen gefunden" Description="Es wurden noch keine Personen hinzugefügt." />
+}
+else
+{
+    <MudGrid Spacing="3">
+        @foreach (var person in Persons)
+        {
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <PersonListItem Person="person" />
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+
