@@ -1,0 +1,29 @@
+<MudCard>
+    <MudCardHeader Class="pa-3">
+        <CardHeaderAvatar>
+            <MudAvatar Size="Size.Medium" Rounded="true">
+                @GetInitials()
+            </MudAvatar>
+        </CardHeaderAvatar>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Person.FirstName @Person.LastName</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            @if (HeaderActionContent != null)
+            {
+                @HeaderActionContent
+            }
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent Class="pa-3">
+        @if (Person.DateOfBirth.HasValue)
+        {
+            <MudText Typo="Typo.body1">Geburtsdatum: @Person.DateOfBirth.Value.ToString("dd.MM.yyyy")</MudText>
+        }
+        else
+        {
+            <MudText Typo="Typo.body1">Geburtsdatum: Nicht angegeben</MudText>
+        }
+        <MudText Typo="Typo.body1">Beziehung: @Translations.GetRelationDisplayText(Person.Relation)</MudText>
+    </MudCardContent>
+</MudCard>

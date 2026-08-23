@@ -14,4 +14,5 @@ public class GiftBaseDbContext(DbContextOptions<GiftBaseDbContext> options) : Db
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<Person> Persons { get; set; }
 }

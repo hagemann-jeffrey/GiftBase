@@ -19,6 +19,7 @@ public static class LoginEndpoints
     private static async Task<IResult> HandleLoginAsync(
         HttpContext httpContext,
         [FromForm] LoginInput loginInput,
+        [FromForm] string? returnUrl,
         IAuthService authService)
     {
         if (string.IsNullOrWhiteSpace(loginInput.Email) || string.IsNullOrWhiteSpace(loginInput.Password))
@@ -51,7 +52,14 @@ public static class LoginEndpoints
                 ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30)
             });
 
-        return Results.LocalRedirect("/");
+        var targetUrl = string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl;
+
+        if (!targetUrl.StartsWith("/"))
+        {
+            targetUrl = "/" + targetUrl;
+        }
+
+        return Results.LocalRedirect(targetUrl);
     }
 
     private static async Task<IResult> HandleLogoutAsync(HttpContext httpContext)

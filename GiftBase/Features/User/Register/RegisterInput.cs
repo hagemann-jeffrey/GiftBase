@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using GiftBase.Validation;
+using GiftBase.Shared.Validation;
 
 namespace GiftBase.Features.User.Register;
 

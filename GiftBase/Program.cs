@@ -1,18 +1,26 @@
 using MudBlazor.Services;
 using Microsoft.EntityFrameworkCore;
 using GiftBase.Data;
-using GiftBase.Features;
 using GiftBase.Core.Interfaces;
 using GiftBase.Features.User;
 using Microsoft.AspNetCore.Identity;
 using GiftBase.Core.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using GiftBase.Features.User.Login;
+using GiftBase;
+using GiftBase.Features.Persons;
+using GiftBase.Shared.Services;
+using MudBlazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add MudBlazor services
-builder.Services.AddMudServices();
+builder.Services.AddMudServices(opt =>
+{
+    opt.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
+    opt.SnackbarConfiguration.ClearAfterNavigation = false;
+    opt.SnackbarConfiguration.PreventDuplicates = false;
+});
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -24,6 +32,9 @@ builder.Services.AddDbContextFactory<GiftBaseDbContext>(options =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<UserActionHelper>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
