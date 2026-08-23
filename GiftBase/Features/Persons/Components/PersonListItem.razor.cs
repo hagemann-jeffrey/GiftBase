@@ -4,8 +4,10 @@ namespace GiftBase.Features.Persons.Components;
 
 public partial class PersonListItem
 {
-    [Parameter]
+    [Parameter, EditorRequired]
     public Core.Entities.Person Person { get; set; } = null!;
+    [Parameter]
+    public RenderFragment? HeaderActionContent { get; set; }
 
     private string GetInitials()
     {
