@@ -1,0 +1,24 @@
+<EditForm Model="PersonInput" OnValidSubmit="Save" novalidate>
+    <MudDialog>
+        <DialogContent>
+            <DataAnnotationsValidator />
+            <MudTextField Immediate Required @bind-Value="PersonInput.FirstName" For="(() => PersonInput.FirstName)"
+                          Label="Vorname" Variant="Variant.Outlined" FullWidth="true" />
+            <MudTextField Immediate Required @bind-Value="PersonInput.LastName" For="(() => PersonInput.LastName)"
+                          Label="Nachname" Variant="Variant.Outlined" FullWidth="true" />
+            <MudDatePicker @bind-Date="PersonInput.DateOfBirth" Label="Geburtsdatum" DateFormat="dd.MM.yyyy" Editable="true"
+                           Mask="@(new DateMask("dd.MM.yyyy"))" Placeholder="dd.mm.yyyy" Variant="Variant.Outlined" />
+            <MudSelect Immediate Required @bind-Value="PersonInput.Relation" For="(() => PersonInput.Relation)" Label="Beziehung"
+                       Variant="Variant.Outlined" FullWidth="true">
+                @foreach (var relation in Enum.GetValues<Core.Enums.Relation>())
+                {
+                    <MudSelectItem Value="relation">@Translations.GetRelationDisplayText(relation)</MudSelectItem>
+                }
+            </MudSelect>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="Cancel" Color="Color.Secondary">Abbrechen</MudButton>
+            <MudButton Color="Color.Primary" ButtonType="ButtonType.Submit">Speichern</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>

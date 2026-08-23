@@ -6,6 +6,12 @@
 
 <PageHeader Title="Personen"
             Description="Verwalte hier deine Freunde und Familie, um nie wieder ein Geschenk zu vergessen. Du kannst dir die Details zu jeder Person ansehen, neue Personen hinzufügen oder bestehende Personen bearbeiten.">
+    <ActionContent>
+        <MudButton OnClick="AddPersonAsync" Variant="Variant.Filled" Color="Color.Primary">
+            <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-2" />
+            Person hinzufügen
+        </MudButton>
+    </ActionContent>
 </PageHeader>
 
 @if (IsLoading)
@@ -22,7 +28,14 @@ else
         @foreach (var person in Persons)
         {
             <MudItem xs="12" sm="6" md="4" lg="3">
-                <PersonListItem Person="person" />
+                <PersonListItem Person="person">
+                    <HeaderActionContent>
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"
+                                       OnClick="@(() => UpdatePersonAsync(person))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary"
+                                       OnClick="@(() => DeletePersonAsync(person))" />
+                    </HeaderActionContent>
+                </PersonListItem>
             </MudItem>
         }
     </MudGrid>
