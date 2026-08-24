@@ -4,5 +4,8 @@ public enum Relation
 {
     Family,
     Friend,
-    Colleague
+    Colleague,
+    Partner,
+    Neighbor,
+    Other
 }
