@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
 
-<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
+<MudThemeProvider @ref="_mudThemeProvider" Theme="@_theme" @bind-IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -54,8 +54,9 @@
 
 @code {
     private bool _drawerOpen = true;
-    private bool _isDarkMode = true;
+    private bool _isDarkMode = false;
     private MudTheme? _theme = null;
+    private MudThemeProvider? _mudThemeProvider = null;
 
     protected override void OnInitialized()
     {
@@ -67,6 +68,15 @@
             PaletteDark = _darkPalette,
             LayoutProperties = new LayoutProperties()
         };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _mudThemeProvider is not null)
+        {
+            _isDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
+            StateHasChanged();
+        }
     }
 
     private void DrawerToggle()
@@ -81,41 +91,51 @@
 
     private readonly PaletteLight _lightPalette = new()
     {
-        Black = "#110e2d",
-        AppbarText = "#424242",
-        AppbarBackground = "rgba(255,255,255,0.8)",
-        DrawerBackground = "#ffffff",
-        GrayLight = "#e8e8e8",
-        GrayLighter = "#f9f9f9",
+        Primary = "#7C4D6B",
+        Secondary = "#A87316",
+        Background = "#FFF9F5",
+        Surface = "#FFFFFF",
+        TextPrimary = "#382F36",
+        TextSecondary = "#6D6269",
+        Divider = "#E6DADF",
+        Error = "#B33A4A",
+        Success = "#36705A",
+        Black = "#382F36",
+        AppbarText = "#382F36",
+        AppbarBackground = "rgba(255,249,245,0.8)",
+        DrawerBackground = "#FFFFFF",
+        GrayLight = "#E6DADF",
+        GrayLighter = "#FFF9F5",
     };
 
     private readonly PaletteDark _darkPalette = new()
     {
-        Primary = "#7e6fff",
-        Surface = "#1e1e2d",
-        Background = "#1a1a27",
-        BackgroundGray = "#151521",
-        AppbarText = "#92929f",
-        AppbarBackground = "rgba(26,26,39,0.8)",
-        DrawerBackground = "#1a1a27",
-        ActionDefault = "#74718e",
-        ActionDisabled = "#9999994d",
-        ActionDisabledBackground = "#605f6d4d",
-        TextPrimary = "#b2b0bf",
-        TextSecondary = "#92929f",
-        TextDisabled = "#ffffff33",
-        DrawerIcon = "#92929f",
-        DrawerText = "#92929f",
-        GrayLight = "#2a2833",
-        GrayLighter = "#1e1e2d",
-        Info = "#4a86ff",
-        Success = "#3dcb6c",
-        Warning = "#ffb545",
-        Error = "#ff3f5f",
-        LinesDefault = "#33323e",
-        TableLines = "#33323e",
-        Divider = "#292838",
-        OverlayLight = "#1e1e2d80",
+        Primary = "#D9A6B8",
+        Secondary = "#E2B85B",
+        Background = "#211B22",
+        BackgroundGray = "#211B22",
+        Surface = "#302831",
+        AppbarText = "#C7BBC2",
+        AppbarBackground = "rgba(33,27,34,0.8)",
+        DrawerBackground = "#211B22",
+        DrawerIcon = "#C7BBC2",
+        DrawerText = "#C7BBC2",
+        TextPrimary = "#F5EEF2",
+        TextSecondary = "#C7BBC2",
+        TextDisabled = "#F5EEF233",
+        ActionDefault = "#C7BBC2",
+        ActionDisabled = "#C7BBC24d",
+        ActionDisabledBackground = "#5144514d",
+        GrayLight = "#302831",
+        GrayLighter = "#211B22",
+        Info = "#D9A6B8",
+        Warning = "#E2B85B",
+        Error = "#FF8996",
+        Success = "#72C7A2",
+        LinesDefault = "#514451",
+        TableLines = "#514451",
+        Divider = "#514451",
+        OverlayLight = "#211B2280",
     };
 
     public string DarkLightModeButtonIcon => _isDarkMode switch
