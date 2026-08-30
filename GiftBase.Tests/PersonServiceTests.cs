@@ -67,6 +67,50 @@ public class PersonServiceTests
     }
 
     [Fact]
+    public async Task GetPersonAsync_ShouldReturnPerson()
+    {
+        // Arrange
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var person = new Person("John", "Doe", DateOnly.Parse("1990-01-01"), Core.Enums.Relation.Friend, 1);
+        dbContext.Persons.Add(person);
+        await dbContext.SaveChangesAsync();
+
+        // Act
+        var foundPerson = await _personService.GetPersonAsync(person.Id, person.UserId);
+
+        // Assert
+        foundPerson.Id.ShouldBe(person.Id);
+        foundPerson.FirstName.ShouldBe("John");
+        foundPerson.LastName.ShouldBe("Doe");
+    }
+
+    [Fact]
+    public async Task GetPersonAsync_ShouldThrowNotFoundException_WhenUserIdDoesNotMatch()
+    {
+        // Arrange
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var person = new Person("John", "Doe", DateOnly.Parse("1990-01-01"), Core.Enums.Relation.Friend, 1);
+        dbContext.Persons.Add(person);
+        await dbContext.SaveChangesAsync();
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
+            await _personService.GetPersonAsync(person.Id, 999));
+
+        exception.Message.ShouldBe($"Person konnte nicht gefunden werden: {person.Id}");
+    }
+
+    [Fact]
+    public async Task GetPersonAsync_ShouldThrowNotFoundException_WhenPersonDoesNotExist()
+    {
+        // Act & Assert
+        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
+            await _personService.GetPersonAsync(999, 1));
+
+        exception.Message.ShouldBe("Person konnte nicht gefunden werden: 999");
+    }
+
+    [Fact]
     public async Task AddPersonAsync_ShouldAddPerson()
     {
         // Arrange
