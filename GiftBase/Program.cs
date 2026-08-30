@@ -8,6 +8,7 @@ using GiftBase.Core.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using GiftBase.Features.User.Login;
 using GiftBase;
+using GiftBase.Features.Gifts;
 using GiftBase.Features.Persons;
 using GiftBase.Shared;
 using GiftBase.Shared.Services;
@@ -38,6 +39,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<IGiftService, GiftService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<UserActionHelper>();
 
