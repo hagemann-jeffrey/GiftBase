@@ -35,8 +35,8 @@ namespace GiftBase.Features.Persons
                 {
                     var updatedPerson = await personService.UpdatePersonAsync(ExistingPersonId.Value, userId, new Core.Dtos.PersonUpdateDto
                     {
-                        FirstName = PersonInput.FirstName,
-                        LastName = PersonInput.LastName,
+                        FirstName = PersonInput.FirstName.NormalizeRequired(),
+                        LastName = PersonInput.LastName.NormalizeRequired(),
                         DateOfBirth = PersonInput.DateOfBirth.HasValue ? DateOnly.FromDateTime(PersonInput.DateOfBirth.Value) : null,
                         Relation = PersonInput.Relation
                     });
@@ -47,8 +47,8 @@ namespace GiftBase.Features.Persons
                 {
                     var newPerson = new PersonAddDto
                     {
-                        FirstName = PersonInput.FirstName,
-                        LastName = PersonInput.LastName,
+                        FirstName = PersonInput.FirstName.NormalizeRequired(),
+                        LastName = PersonInput.LastName.NormalizeRequired(),
                         DateOfBirth = PersonInput.DateOfBirth.HasValue ? DateOnly.FromDateTime(PersonInput.DateOfBirth.Value) : null,
                         Relation = PersonInput.Relation,
                         UserId = userId
