@@ -1,5 +1,7 @@
+using System.Globalization;
 using GiftBase.Core.Dtos;
 using GiftBase.Core.Interfaces;
+using GiftBase.Shared;
 using GiftBase.Shared.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -14,6 +16,15 @@ namespace GiftBase.Features.Persons
         public PersonInput PersonInput { get; set; } = new();
         [Parameter]
         public int? ExistingPersonId { get; set; }
+
+        private static CultureInfo GermanCulture => AppCulture.German;
+
+        private string DialogTitle => ExistingPersonId.HasValue ? "Person bearbeiten" : "Person hinzufügen";
+
+        private string DialogSubtitle => ExistingPersonId.HasValue
+            ? "Stammdaten dieser Person bearbeiten"
+            : "Neue Person für deine Geschenkideen anlegen";
+
         public void Cancel() => MudDialog.Cancel();
 
         public async Task Save()
