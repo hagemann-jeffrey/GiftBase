@@ -1,0 +1,74 @@
+@using GiftBase.Features.Gifts
+@using GiftBase.Features.Gifts.Components
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+@page "/persons/{PersonId:int}"
+
+@if (IsLoading)
+{
+    <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" Class="mt-8 mx-auto d-flex" />
+}
+else if (Person is null)
+{
+    <EmptyState Title="Person nicht gefunden" Description="Diese Person existiert nicht."
+                Icon="@Icons.Material.Filled.PersonOff">
+        <ActionContent>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/persons">Zurück zur Übersicht</MudButton>
+        </ActionContent>
+    </EmptyState>
+}
+else
+{
+    <PageHeader Title="@PersonFullName" Description="Sammle hier alle Geschenkideen für diese Person.">
+        <ActionContent>
+            <MudButton OnClick="AddGiftAsync" Variant="Variant.Filled" Color="Color.Primary">
+                <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-2" />
+                Geschenkidee hinzufügen
+            </MudButton>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="UpdatePersonAsync"
+                           aria-label="Person bearbeiten" />
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" OnClick="DeletePersonAsync"
+                           aria-label="Person löschen" />
+        </ActionContent>
+    </PageHeader>
+
+    <MudCard Class="mb-8">
+        <MudCardContent Class="pa-3">
+            @if (Person.DateOfBirth.HasValue)
+            {
+                <MudText Typo="Typo.body1">Geburtsdatum: @Person.DateOfBirth.Value.ToString("dd.MM.yyyy")</MudText>
+            }
+            else
+            {
+                <MudText Typo="Typo.body1">Geburtsdatum: Nicht angegeben</MudText>
+            }
+            <MudText Typo="Typo.body1">Beziehung: @Translations.GetRelationDisplayText(Person.Relation)</MudText>
+        </MudCardContent>
+    </MudCard>
+
+    @if (!Gifts.Any())
+    {
+        <EmptyState Title="Keine Geschenkideen gefunden"
+                    Description="Es wurden noch keine Geschenkideen für diese Person hinzugefügt."
+                    Icon="@Icons.Material.Filled.CardGiftcard" />
+    }
+    else
+    {
+        <MudGrid Spacing="3">
+            @foreach (var gift in Gifts)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <GiftListItem Gift="gift">
+                        <HeaderActionContent>
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"
+                                           OnClick="@(() => UpdateGiftAsync(gift))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary"
+                                           OnClick="@(() => DeleteGiftAsync(gift))" />
+                        </HeaderActionContent>
+                    </GiftListItem>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+}
