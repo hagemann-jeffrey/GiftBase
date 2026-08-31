@@ -18,6 +18,16 @@ public class PersonService(IDbContextFactory<GiftBaseDbContext> dbContextFactory
             .ToListAsync();
     }
 
+    public async Task<Person> GetPersonAsync(int personId, int currentUserId)
+    {
+        await using var dbContext = await dbContextFactory.CreateDbContextAsync();
+
+        return await dbContext.Persons
+            .Where(p => p.Id == personId && p.UserId == currentUserId)
+            .SingleOrDefaultAsync()
+                ?? throw new NotFoundException($"Person konnte nicht gefunden werden: {personId}");
+    }
+
     public async Task<Person> AddPersonAsync(PersonAddDto personAddDto)
     {
         var person = new Person(

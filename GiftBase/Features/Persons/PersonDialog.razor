@@ -1,24 +1,49 @@
 <EditForm Model="PersonInput" OnValidSubmit="Save" novalidate>
     <MudDialog>
+        <TitleContent>
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Primary" Size="Size.Large" />
+                <MudStack Spacing="0">
+                    <MudText Typo="Typo.h6">@DialogTitle</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Tertiary">@DialogSubtitle</MudText>
+                </MudStack>
+            </MudStack>
+        </TitleContent>
         <DialogContent>
             <DataAnnotationsValidator />
-            <MudTextField Immediate Required @bind-Value="PersonInput.FirstName" For="(() => PersonInput.FirstName)"
-                          Label="Vorname" Variant="Variant.Outlined" FullWidth="true" />
-            <MudTextField Immediate Required @bind-Value="PersonInput.LastName" For="(() => PersonInput.LastName)"
-                          Label="Nachname" Variant="Variant.Outlined" FullWidth="true" />
-            <MudDatePicker @bind-Date="PersonInput.DateOfBirth" Label="Geburtsdatum" DateFormat="dd.MM.yyyy" Editable="true"
-                           Mask="@(new DateMask("dd.MM.yyyy"))" Placeholder="dd.mm.yyyy" Variant="Variant.Outlined" />
-            <MudSelect Immediate Required @bind-Value="PersonInput.Relation" For="(() => PersonInput.Relation)" Label="Beziehung"
-                       Variant="Variant.Outlined" FullWidth="true">
-                @foreach (var relation in Enum.GetValues<Core.Enums.Relation>())
-                {
-                    <MudSelectItem Value="relation">@Translations.GetRelationDisplayText(relation)</MudSelectItem>
-                }
-            </MudSelect>
+            <MudGrid Spacing="3">
+                <MudItem xs="12" sm="6">
+                    <MudTextField Immediate Required @bind-Value="PersonInput.FirstName"
+                                  For="(() => PersonInput.FirstName)" Label="Vorname" Variant="Variant.Outlined"
+                                  FullWidth="true" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField Immediate Required @bind-Value="PersonInput.LastName"
+                                  For="(() => PersonInput.LastName)" Label="Nachname" Variant="Variant.Outlined"
+                                  FullWidth="true" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudDatePicker @bind-Date="PersonInput.DateOfBirth" Label="Geburtsdatum (optional)"
+                                   DateFormat="dd.MM.yyyy" Culture="@GermanCulture" Editable="true"
+                                   Mask="@(new DateMask("dd.MM.yyyy"))" Placeholder="dd.mm.yyyy" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudSelect Immediate Required @bind-Value="PersonInput.Relation" For="(() => PersonInput.Relation)"
+                               Label="Beziehung" Variant="Variant.Outlined" FullWidth="true">
+                        @foreach (var relation in Enum.GetValues<Core.Enums.Relation>())
+                        {
+                            <MudSelectItem Value="relation">@Translations.GetRelationDisplayText(relation)</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
         </DialogContent>
         <DialogActions>
-            <MudButton OnClick="Cancel" Color="Color.Secondary">Abbrechen</MudButton>
-            <MudButton Color="Color.Primary" ButtonType="ButtonType.Submit">Speichern</MudButton>
+            <MudButton OnClick="Cancel" Variant="Variant.Outlined" Color="Color.Default">Abbrechen</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit"
+                       StartIcon="@Icons.Material.Filled.Save">
+                Person speichern
+            </MudButton>
         </DialogActions>
     </MudDialog>
 </EditForm>

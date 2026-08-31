@@ -1,5 +1,7 @@
+using System.Globalization;
 using GiftBase.Core.Dtos;
 using GiftBase.Core.Interfaces;
+using GiftBase.Shared;
 using GiftBase.Shared.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -14,6 +16,15 @@ namespace GiftBase.Features.Persons
         public PersonInput PersonInput { get; set; } = new();
         [Parameter]
         public int? ExistingPersonId { get; set; }
+
+        private static CultureInfo GermanCulture => AppCulture.German;
+
+        private string DialogTitle => ExistingPersonId.HasValue ? "Person bearbeiten" : "Person hinzufügen";
+
+        private string DialogSubtitle => ExistingPersonId.HasValue
+            ? "Stammdaten dieser Person bearbeiten"
+            : "Neue Person für deine Geschenkideen anlegen";
+
         public void Cancel() => MudDialog.Cancel();
 
         public async Task Save()
@@ -24,8 +35,8 @@ namespace GiftBase.Features.Persons
                 {
                     var updatedPerson = await personService.UpdatePersonAsync(ExistingPersonId.Value, userId, new Core.Dtos.PersonUpdateDto
                     {
-                        FirstName = PersonInput.FirstName,
-                        LastName = PersonInput.LastName,
+                        FirstName = PersonInput.FirstName.NormalizeRequired(),
+                        LastName = PersonInput.LastName.NormalizeRequired(),
                         DateOfBirth = PersonInput.DateOfBirth.HasValue ? DateOnly.FromDateTime(PersonInput.DateOfBirth.Value) : null,
                         Relation = PersonInput.Relation
                     });
@@ -36,8 +47,8 @@ namespace GiftBase.Features.Persons
                 {
                     var newPerson = new PersonAddDto
                     {
-                        FirstName = PersonInput.FirstName,
-                        LastName = PersonInput.LastName,
+                        FirstName = PersonInput.FirstName.NormalizeRequired(),
+                        LastName = PersonInput.LastName.NormalizeRequired(),
                         DateOfBirth = PersonInput.DateOfBirth.HasValue ? DateOnly.FromDateTime(PersonInput.DateOfBirth.Value) : null,
                         Relation = PersonInput.Relation,
                         UserId = userId

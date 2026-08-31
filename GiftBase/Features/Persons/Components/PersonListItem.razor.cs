@@ -7,7 +7,9 @@ public partial class PersonListItem
     [Parameter, EditorRequired]
     public Core.Entities.Person Person { get; set; } = null!;
     [Parameter]
-    public RenderFragment? HeaderActionContent { get; set; }
+    public int GiftCount { get; set; }
+
+    private string GiftCountText => GiftCount == 1 ? "1 Geschenkidee" : $"{GiftCount} Geschenkideen";
 
     private string GetInitials()
     {

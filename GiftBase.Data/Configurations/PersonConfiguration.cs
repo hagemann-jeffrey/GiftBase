@@ -25,5 +25,10 @@ public class PersonConfiguration : IEntityTypeConfiguration<Person>
                      .IsRequired()
                      .HasConversion<string>()
                      .HasMaxLength(20);
+
+              builder.HasMany(p => p.Gifts)
+                     .WithOne(g => g.Person)
+                     .HasForeignKey(g => g.PersonId)
+                     .OnDelete(DeleteBehavior.Cascade);
        }
 }

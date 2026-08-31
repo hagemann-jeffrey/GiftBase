@@ -8,9 +8,15 @@ using GiftBase.Core.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using GiftBase.Features.User.Login;
 using GiftBase;
+using GiftBase.Features.Gifts;
 using GiftBase.Features.Persons;
+using GiftBase.Shared;
 using GiftBase.Shared.Services;
 using MudBlazor;
+using System.Globalization;
+
+CultureInfo.DefaultThreadCurrentCulture = AppCulture.German;
+CultureInfo.DefaultThreadCurrentUICulture = AppCulture.German;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +39,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<IGiftService, GiftService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<UserActionHelper>();
 
@@ -77,6 +84,11 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+app.UseRequestLocalization(new RequestLocalizationOptions()
+    .SetDefaultCulture(AppCulture.Name)
+    .AddSupportedCultures(AppCulture.Name)
+    .AddSupportedUICultures(AppCulture.Name));
+
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 
 app.UseHttpsRedirection();
