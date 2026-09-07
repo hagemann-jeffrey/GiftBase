@@ -75,4 +75,87 @@ public class GiftTests
         // Assert
         gift.PersonId.ShouldBe(7);
     }
+
+    [Fact]
+    public void Gift_ShouldBeCreated_WithOccasion()
+    {
+        // Act
+        var gift = new Gift("Kaffeemaschine", null, null, null, 1, 42);
+
+        // Assert
+        gift.OccasionId.ShouldBe(42);
+        gift.OccasionLabel.ShouldBeNull();
+        gift.OccasionYear.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Gift_ShouldBeCreated_WithoutOccasion()
+    {
+        // Act
+        var gift = new Gift("Kaffeemaschine", null, null, null, 1);
+
+        // Assert
+        gift.OccasionId.ShouldBeNull();
+    }
+
+    [Fact]
+    public void DetachFromOccasion_ShouldKeepAssignmentAsSnapshot()
+    {
+        // Arrange
+        var gift = new Gift("Kaffeemaschine", null, null, null, 1, 42);
+
+        // Act
+        gift.DetachFromOccasion("Geburtstag", 2027);
+
+        // Assert
+        gift.OccasionId.ShouldBeNull();
+        gift.OccasionLabel.ShouldBe("Geburtstag");
+        gift.OccasionYear.ShouldBe(2027);
+    }
+
+    [Fact]
+    public void Gift_ShouldKeepSnapshot_WhenUpdatedWithoutOccasion()
+    {
+        // Arrange
+        var gift = new Gift("Kaffeemaschine", null, null, null, 1, 42);
+        gift.DetachFromOccasion("Geburtstag", 2027);
+
+        // Act
+        gift.Update(new Core.Dtos.GiftUpdateDto
+        {
+            Title = "Espressomaschine",
+            Status = GiftStatus.Bought,
+            OccasionId = null,
+            OccasionLabel = "Geburtstag",
+            OccasionYear = 2027
+        });
+
+        // Assert
+        gift.OccasionId.ShouldBeNull();
+        gift.OccasionLabel.ShouldBe("Geburtstag");
+        gift.OccasionYear.ShouldBe(2027);
+    }
+
+    [Fact]
+    public void Gift_ShouldDropSnapshot_WhenUpdatedWithOccasion()
+    {
+        // Arrange
+        var gift = new Gift("Kaffeemaschine", null, null, null, 1);
+        gift.DetachFromOccasion("Geburtstag", 2027);
+
+        // Act
+        gift.Update(new Core.Dtos.GiftUpdateDto
+        {
+            Title = "Espressomaschine",
+            Status = GiftStatus.Bought,
+            OccasionId = 99,
+            OccasionLabel = "Geburtstag",
+            OccasionYear = 2027
+        });
+
+        // Assert
+        gift.OccasionId.ShouldBe(99);
+        gift.OccasionLabel.ShouldBeNull();
+        gift.OccasionYear.ShouldBeNull();
+    }
 }

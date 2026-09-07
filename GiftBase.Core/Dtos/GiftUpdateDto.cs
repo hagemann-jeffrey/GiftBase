@@ -7,4 +7,7 @@ public class GiftUpdateDto
     public string? Link { get; set; }
     public decimal? Price { get; set; }
     public Enums.GiftStatus Status { get; set; }
+    public int? OccasionId { get; set; }
+    public string? OccasionLabel { get; set; }
+    public int? OccasionYear { get; set; }
 }

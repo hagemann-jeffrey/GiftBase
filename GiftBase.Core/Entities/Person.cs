@@ -24,6 +24,7 @@ public class Person
     public int UserId { get; private set; }
 
     public List<Gift> Gifts { get; private set; } = [];
+    public List<Occasion> Occasions { get; private set; } = [];
 
     public void Update(PersonUpdateDto personUpdateDto)
     {

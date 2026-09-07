@@ -7,7 +7,7 @@ public class Gift
 {
     private Gift() { }
 
-    public Gift(string title, string? note, string? link, decimal? price, int personId)
+    public Gift(string title, string? note, string? link, decimal? price, int personId, int? occasionId = null)
     {
         Title = title;
         Note = note;
@@ -15,6 +15,7 @@ public class Gift
         Price = price;
         Status = GiftStatus.Idea;
         PersonId = personId;
+        OccasionId = occasionId;
     }
 
     public int Id { get; private set; }
@@ -24,8 +25,12 @@ public class Gift
     public decimal? Price { get; private set; }
     public GiftStatus Status { get; private set; }
     public int PersonId { get; private set; }
+    public int? OccasionId { get; private set; }
+    public string? OccasionLabel { get; private set; }
+    public int? OccasionYear { get; private set; }
 
     public Person Person { get; private set; } = null!;
+    public Occasion? Occasion { get; private set; }
 
     public void Update(GiftUpdateDto giftUpdateDto)
     {
@@ -34,5 +39,15 @@ public class Gift
         Link = giftUpdateDto.Link;
         Price = giftUpdateDto.Price;
         Status = giftUpdateDto.Status;
+        OccasionId = giftUpdateDto.OccasionId;
+        OccasionLabel = giftUpdateDto.OccasionId.HasValue ? null : giftUpdateDto.OccasionLabel;
+        OccasionYear = giftUpdateDto.OccasionId.HasValue ? null : giftUpdateDto.OccasionYear;
+    }
+
+    public void DetachFromOccasion(string occasionLabel, int occasionYear)
+    {
+        OccasionId = null;
+        OccasionLabel = occasionLabel;
+        OccasionYear = occasionYear;
     }
 }
