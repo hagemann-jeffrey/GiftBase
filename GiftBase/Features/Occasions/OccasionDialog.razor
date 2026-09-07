@@ -1,0 +1,54 @@
+<EditForm Model="OccasionInput" OnValidSubmit="Save" novalidate>
+    <MudDialog>
+        <TitleContent>
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                <MudIcon Icon="@Icons.Material.Filled.EditCalendar" Color="Color.Primary" Size="Size.Large" />
+                <MudStack Spacing="0">
+                    <MudText Typo="Typo.h6">@DialogTitle</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Tertiary">@DialogSubtitle</MudText>
+                </MudStack>
+            </MudStack>
+        </TitleContent>
+        <DialogContent>
+            <DataAnnotationsValidator />
+            <MudSelect T="Core.Enums.OccasionType" Immediate Required @bind-Value="OccasionInput.Type"
+                       @bind-Value:after="OnTypeChanged" Label="Anlass" Variant="Variant.Outlined" FullWidth="true"
+                       Disabled="@ExistingOccasionId.HasValue">
+                @foreach (var occasionType in Enum.GetValues<Core.Enums.OccasionType>())
+                {
+                    <MudSelectItem Value="occasionType" Disabled="@IsTypeDisabled(occasionType)">
+                        @Translations.GetOccasionTypeDisplayText(occasionType)
+                    </MudSelectItem>
+                }
+            </MudSelect>
+
+            @if (TypeHint is not null)
+            {
+                <MudAlert Severity="Severity.Info" Dense="true" Class="mt-3">@TypeHint</MudAlert>
+            }
+
+            @if (IsCustom)
+            {
+                <MudTextField Immediate Required @bind-Value="OccasionInput.Title" For="(() => OccasionInput.Title)"
+                              Label="Titel" Placeholder="z. B. Hochzeit" Variant="Variant.Outlined" FullWidth="true"
+                              Class="mt-3" />
+            }
+
+            <MudDatePicker @bind-Date="OccasionInput.Date" Label="Datum" DateFormat="dd.MM.yyyy"
+                           Culture="@GermanCulture" Editable="@IsCustom" Disabled="@(!IsCustom)"
+                           Mask="@(new DateMask("dd.MM.yyyy"))" Placeholder="dd.mm.yyyy" Variant="Variant.Outlined"
+                           Class="mt-3" />
+
+            <MudSwitch T="bool" @bind-Value="OccasionInput.IsRecurring" Color="Color.Primary" Disabled="@(!IsCustom)"
+                       Label="Jährlich wiederholen" Class="mt-3" />
+            <MudText Typo="Typo.caption" Color="Color.Tertiary">Der Anlass wird jedes Jahr angezeigt.</MudText>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="Cancel" Variant="Variant.Outlined" Color="Color.Default">Abbrechen</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit"
+                       StartIcon="@Icons.Material.Filled.Save">
+                Anlass speichern
+            </MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
