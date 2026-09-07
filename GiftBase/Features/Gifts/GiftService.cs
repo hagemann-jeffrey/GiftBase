@@ -30,12 +30,24 @@ public class GiftService(IDbContextFactory<GiftBaseDbContext> dbContextFactory) 
             throw new NotFoundException($"Person konnte nicht gefunden werden: {giftAddDto.PersonId}");
         }
 
+        if (giftAddDto.OccasionId.HasValue)
+        {
+            var occasionExists = await dbContext.Occasions
+                .AnyAsync(o => o.Id == giftAddDto.OccasionId.Value && o.PersonId == giftAddDto.PersonId);
+
+            if (!occasionExists)
+            {
+                throw new NotFoundException($"Anlass konnte nicht gefunden werden: {giftAddDto.OccasionId.Value}");
+            }
+        }
+
         var gift = new Gift(
             giftAddDto.Title,
             giftAddDto.Note,
             giftAddDto.Link,
             giftAddDto.Price,
-            giftAddDto.PersonId
+            giftAddDto.PersonId,
+            giftAddDto.OccasionId
         );
 
         dbContext.Gifts.Add(gift);
@@ -52,6 +64,17 @@ public class GiftService(IDbContextFactory<GiftBaseDbContext> dbContextFactory) 
             .Where(g => g.Id == giftId && g.Person.UserId == currentUserId)
             .SingleOrDefaultAsync()
                 ?? throw new NotFoundException($"Geschenkidee konnte nicht gefunden werden: {giftId}");
+
+        if (giftUpdateDto.OccasionId.HasValue)
+        {
+            var occasionExists = await dbContext.Occasions
+                .AnyAsync(o => o.Id == giftUpdateDto.OccasionId.Value && o.PersonId == gift.PersonId);
+
+            if (!occasionExists)
+            {
+                throw new NotFoundException($"Anlass konnte nicht gefunden werden: {giftUpdateDto.OccasionId.Value}");
+            }
+        }
 
         gift.Update(giftUpdateDto);
 
