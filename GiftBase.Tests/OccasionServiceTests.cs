@@ -45,6 +45,16 @@ public class OccasionServiceTests
         return occasion;
     }
 
+    private async Task<Gift> AddGiftAsync(int personId, int? occasionId, string title = "Kaffeemaschine")
+    {
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var gift = new Gift(title, null, null, null, personId, occasionId);
+        dbContext.Gifts.Add(gift);
+        await dbContext.SaveChangesAsync();
+
+        return gift;
+    }
+
     [Fact]
     public async Task GetOccasionsAsync_ShouldReturnOccasionsSortedByNextOccurrence()
     {
@@ -263,5 +273,201 @@ public class OccasionServiceTests
             await _occasionService.AddOccasionAsync(occasionAddDto, OwnerUserId));
 
         exception.Message.ShouldBe("Person konnte nicht gefunden werden: 999");
+    }
+
+    [Fact]
+    public async Task UpdateOccasionAsync_ShouldUpdateCustomOccasion()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var occasion = await AddOccasionAsync(person.Id, OccasionType.Custom, "Hochzeit", new DateOnly(2027, 6, 5), false);
+        var occasionUpdateDto = new OccasionUpdateDto
+        {
+            Title = "Studienabschluss",
+            Date = new DateOnly(2027, 9, 30),
+            IsRecurring = true
+        };
+
+        // Act
+        var updatedOccasion = await _occasionService.UpdateOccasionAsync(occasion.Id, OwnerUserId, occasionUpdateDto);
+
+        // Assert
+        updatedOccasion.Title.ShouldBe("Studienabschluss");
+        updatedOccasion.Date.ShouldBe(new DateOnly(2027, 9, 30));
+        updatedOccasion.IsRecurring.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task UpdateOccasionAsync_ShouldKeepGiftAssignment()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var occasion = await AddOccasionAsync(person.Id, OccasionType.Custom, "Hochzeit", new DateOnly(2027, 6, 5), false);
+        var gift = await AddGiftAsync(person.Id, occasion.Id);
+
+        // Act
+        await _occasionService.UpdateOccasionAsync(occasion.Id, OwnerUserId, new OccasionUpdateDto
+        {
+            Title = "Studienabschluss",
+            Date = new DateOnly(2027, 9, 30),
+            IsRecurring = true
+        });
+
+        // Assert
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var giftInDb = await dbContext.Gifts.SingleAsync(g => g.Id == gift.Id);
+        giftInDb.OccasionId.ShouldBe(occasion.Id);
+        giftInDb.OccasionLabel.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task UpdateOccasionAsync_ShouldThrowConflictException_WhenOccasionTypeIsFixed()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var occasion = await AddOccasionAsync(person.Id, OccasionType.Christmas, null, new DateOnly(2026, 12, 24), true);
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<ConflictException>(async () =>
+            await _occasionService.UpdateOccasionAsync(occasion.Id, OwnerUserId, new OccasionUpdateDto
+            {
+                Title = "Heiligabend",
+                Date = new DateOnly(2026, 12, 25),
+                IsRecurring = false
+            }));
+
+        exception.Message.ShouldBe("Feste Anlässe können nicht bearbeitet werden.");
+    }
+
+    [Fact]
+    public async Task UpdateOccasionAsync_ShouldThrowConflictException_WhenTitleIsMissing()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var occasion = await AddOccasionAsync(person.Id, OccasionType.Custom, "Hochzeit", new DateOnly(2027, 6, 5), false);
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<ConflictException>(async () =>
+            await _occasionService.UpdateOccasionAsync(occasion.Id, OwnerUserId, new OccasionUpdateDto
+            {
+                Title = "   ",
+                Date = new DateOnly(2027, 6, 5),
+                IsRecurring = false
+            }));
+
+        exception.Message.ShouldBe("Für einen benutzerdefinierten Anlass ist ein Titel erforderlich.");
+    }
+
+    [Fact]
+    public async Task UpdateOccasionAsync_ShouldThrowNotFoundException_WhenOccasionBelongsToAnotherUser()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var occasion = await AddOccasionAsync(person.Id, OccasionType.Custom, "Hochzeit", new DateOnly(2027, 6, 5), false);
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
+            await _occasionService.UpdateOccasionAsync(occasion.Id, OtherUserId, new OccasionUpdateDto
+            {
+                Title = "Studienabschluss",
+                Date = new DateOnly(2027, 9, 30),
+                IsRecurring = false
+            }));
+
+        exception.Message.ShouldBe($"Anlass konnte nicht gefunden werden: {occasion.Id}");
+    }
+
+    [Fact]
+    public async Task UpdateOccasionAsync_ShouldThrowNotFoundException_WhenOccasionDoesNotExist()
+    {
+        // Act & Assert
+        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
+            await _occasionService.UpdateOccasionAsync(999, OwnerUserId, new OccasionUpdateDto
+            {
+                Title = "Studienabschluss",
+                Date = new DateOnly(2027, 9, 30),
+                IsRecurring = false
+            }));
+
+        exception.Message.ShouldBe("Anlass konnte nicht gefunden werden: 999");
+    }
+
+    [Fact]
+    public async Task DeleteOccasionAsync_ShouldDeleteOccasion()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var occasion = await AddOccasionAsync(person.Id, OccasionType.Custom, "Hochzeit", new DateOnly(2027, 6, 5), false);
+
+        // Act
+        await _occasionService.DeleteOccasionAsync(occasion.Id, OwnerUserId);
+
+        // Assert
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var deletedOccasion = await dbContext.Occasions.SingleOrDefaultAsync(o => o.Id == occasion.Id);
+        deletedOccasion.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task DeleteOccasionAsync_ShouldKeepGiftAndStoreOccasionSnapshot()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var occasion = await AddOccasionAsync(person.Id, OccasionType.Custom, "Hochzeit", new DateOnly(2027, 6, 5), false);
+        var gift = await AddGiftAsync(person.Id, occasion.Id);
+
+        // Act
+        await _occasionService.DeleteOccasionAsync(occasion.Id, OwnerUserId);
+
+        // Assert
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var giftInDb = await dbContext.Gifts.SingleOrDefaultAsync(g => g.Id == gift.Id);
+        giftInDb.ShouldNotBeNull();
+        giftInDb.OccasionId.ShouldBeNull();
+        giftInDb.OccasionLabel.ShouldBe("Hochzeit");
+        giftInDb.OccasionYear.ShouldBe(2027);
+    }
+
+    [Fact]
+    public async Task DeleteOccasionAsync_ShouldStoreTypeNameAsSnapshotLabel_ForFixedOccasions()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var occasion = await AddOccasionAsync(person.Id, OccasionType.Birthday, null, DateOfBirth, true);
+        var gift = await AddGiftAsync(person.Id, occasion.Id);
+        var expectedYear = occasion.GetNextOccurrence(DateOnly.FromDateTime(DateTime.Today)).Year;
+
+        // Act
+        await _occasionService.DeleteOccasionAsync(occasion.Id, OwnerUserId);
+
+        // Assert
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var giftInDb = await dbContext.Gifts.SingleAsync(g => g.Id == gift.Id);
+        giftInDb.OccasionLabel.ShouldBe("Geburtstag");
+        giftInDb.OccasionYear.ShouldBe(expectedYear);
+    }
+
+    [Fact]
+    public async Task DeleteOccasionAsync_ShouldThrowNotFoundException_WhenOccasionBelongsToAnotherUser()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var occasion = await AddOccasionAsync(person.Id, OccasionType.Custom, "Hochzeit", new DateOnly(2027, 6, 5), false);
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
+            await _occasionService.DeleteOccasionAsync(occasion.Id, OtherUserId));
+
+        exception.Message.ShouldBe($"Anlass konnte nicht gefunden werden: {occasion.Id}");
+    }
+
+    [Fact]
+    public async Task DeleteOccasionAsync_ShouldThrowNotFoundException_WhenOccasionDoesNotExist()
+    {
+        // Act & Assert
+        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
+            await _occasionService.DeleteOccasionAsync(999, OwnerUserId));
+
+        exception.Message.ShouldBe("Anlass konnte nicht gefunden werden: 999");
     }
 }

@@ -83,4 +83,57 @@ public class OccasionService(IDbContextFactory<GiftBaseDbContext> dbContextFacto
             occasionAddDto.IsRecurring,
             occasionAddDto.PersonId);
     }
+
+    public async Task<Occasion> UpdateOccasionAsync(int occasionId, int currentUserId, OccasionUpdateDto occasionUpdateDto)
+    {
+        await using var dbContext = await dbContextFactory.CreateDbContextAsync();
+
+        var occasion = await dbContext.Occasions
+            .Where(o => o.Id == occasionId && o.Person.UserId == currentUserId)
+            .SingleOrDefaultAsync()
+                ?? throw new NotFoundException($"Anlass konnte nicht gefunden werden: {occasionId}");
+
+        if (occasion.Type != OccasionType.Custom)
+        {
+            throw new ConflictException("Feste Anlässe können nicht bearbeitet werden.");
+        }
+
+        if (string.IsNullOrWhiteSpace(occasionUpdateDto.Title))
+        {
+            throw new ConflictException("Für einen benutzerdefinierten Anlass ist ein Titel erforderlich.");
+        }
+
+        occasion.Update(new OccasionUpdateDto
+        {
+            Title = occasionUpdateDto.Title.Trim(),
+            Date = occasionUpdateDto.Date,
+            IsRecurring = occasionUpdateDto.IsRecurring
+        });
+
+        await dbContext.SaveChangesAsync();
+
+        return occasion;
+    }
+
+    public async Task DeleteOccasionAsync(int occasionId, int currentUserId)
+    {
+        await using var dbContext = await dbContextFactory.CreateDbContextAsync();
+
+        var occasion = await dbContext.Occasions
+            .Where(o => o.Id == occasionId && o.Person.UserId == currentUserId)
+            .Include(o => o.Gifts)
+            .SingleOrDefaultAsync()
+                ?? throw new NotFoundException($"Anlass konnte nicht gefunden werden: {occasionId}");
+
+        var occasionLabel = Translations.GetOccasionDisplayTitle(occasion);
+        var occasionYear = occasion.GetNextOccurrence(DateOnly.FromDateTime(DateTime.Today)).Year;
+
+        foreach (var gift in occasion.Gifts)
+        {
+            gift.DetachFromOccasion(occasionLabel, occasionYear);
+        }
+
+        dbContext.Occasions.Remove(occasion);
+        await dbContext.SaveChangesAsync();
+    }
 }
