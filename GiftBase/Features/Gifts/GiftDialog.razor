@@ -25,6 +25,23 @@
             <MudTextField Immediate @bind-Value="GiftInput.Link" For="(() => GiftInput.Link)" Label="Link (optional)"
                           Placeholder="https://..." HelperText="Produktseite oder Inspirationsquelle" Adornment="Adornment.Start"
                           AdornmentIcon="@Icons.Material.Filled.Link" Variant="Variant.Outlined" FullWidth="true" />
+            @if (HasDeletedOccasionSnapshot)
+            {
+                <MudAlert Severity="Severity.Info" Dense="true" Class="mt-3">
+                    Bisheriger Anlass: @DeletedOccasionText. Der Anlass wurde gelöscht; die Angabe bleibt erhalten,
+                    bis ein anderer Anlass gewählt wird.
+                </MudAlert>
+            }
+            <MudSelect T="int?" Immediate @bind-Value="GiftInput.OccasionId" Label="Anlass (optional)"
+                       Variant="Variant.Outlined" FullWidth="true" Class="mt-3">
+                <MudSelectItem T="int?" Value="@((int?)null)">Kein Anlass</MudSelectItem>
+                @foreach (var occasion in Occasions)
+                {
+                    <MudSelectItem T="int?" Value="@((int?)occasion.Id)">
+                        @Translations.GetOccasionDisplayTitle(occasion)
+                    </MudSelectItem>
+                }
+            </MudSelect>
             @if (ExistingGiftId.HasValue)
             {
                 <MudSelect Immediate Required @bind-Value="GiftInput.Status" For="(() => GiftInput.Status)" Label="Status"

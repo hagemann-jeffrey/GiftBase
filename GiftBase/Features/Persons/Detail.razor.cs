@@ -68,7 +68,8 @@ public partial class Detail(
         var parameters = new DialogParameters<GiftDialog>
         {
             { x => x.PersonId, PersonId },
-            { x => x.PersonName, PersonFullName }
+            { x => x.PersonName, PersonFullName },
+            { x => x.Occasions, Occasions }
         };
 
         var dialog = await DialogService.ShowAsync<GiftDialog>(null, parameters, DefaultDialogOptions);
@@ -91,11 +92,15 @@ public partial class Detail(
                 Note = gift.Note,
                 Link = gift.Link,
                 Price = gift.Price,
-                Status = gift.Status
+                Status = gift.Status,
+                OccasionId = gift.OccasionId,
+                OccasionLabel = gift.OccasionLabel,
+                OccasionYear = gift.OccasionYear
             }
             },
             { x => x.PersonId, PersonId },
             { x => x.PersonName, PersonFullName },
+            { x => x.Occasions, Occasions },
             { x => x.ExistingGiftId, gift.Id }
         };
 
@@ -218,6 +223,18 @@ public partial class Detail(
     }
 
     private int GetGiftCountForOccasion(int occasionId) => Gifts.Count(g => g.OccasionId == occasionId);
+
+    private string? GetGiftOccasionText(Gift gift)
+    {
+        if (gift.OccasionId.HasValue)
+        {
+            var occasion = Occasions.SingleOrDefault(o => o.Id == gift.OccasionId.Value);
+
+            return occasion is null ? null : Translations.GetOccasionDisplayTitle(occasion);
+        }
+
+        return gift.OccasionLabel is null ? null : $"{gift.OccasionLabel} {gift.OccasionYear} (gelöscht)";
+    }
 
     private async Task AddOccasionAsync()
     {

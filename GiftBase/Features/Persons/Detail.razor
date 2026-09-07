@@ -100,7 +100,7 @@ else
             @foreach (var gift in Gifts)
             {
                 <MudItem xs="12" sm="6" md="4" lg="3">
-                    <GiftListItem Gift="gift">
+                    <GiftListItem Gift="gift" OccasionText="@GetGiftOccasionText(gift)">
                         <HeaderActionContent>
                             <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"
                                            OnClick="@(() => UpdateGiftAsync(gift))" />

@@ -10,6 +10,8 @@ public partial class GiftListItem
     public Core.Entities.Gift Gift { get; set; } = null!;
     [Parameter]
     public RenderFragment? HeaderActionContent { get; set; }
+    [Parameter]
+    public string? OccasionText { get; set; }
 
     private Color StatusColor => Gift.Status switch
     {

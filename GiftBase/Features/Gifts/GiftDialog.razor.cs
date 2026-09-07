@@ -1,5 +1,6 @@
 using System.Globalization;
 using GiftBase.Core.Dtos;
+using GiftBase.Core.Entities;
 using GiftBase.Core.Interfaces;
 using GiftBase.Shared;
 using GiftBase.Shared.Services;
@@ -20,6 +21,13 @@ namespace GiftBase.Features.Gifts
         public string PersonName { get; set; } = string.Empty;
         [Parameter]
         public int? ExistingGiftId { get; set; }
+        [Parameter]
+        public IReadOnlyList<Occasion> Occasions { get; set; } = [];
+
+        private bool HasDeletedOccasionSnapshot =>
+            !GiftInput.OccasionId.HasValue && !string.IsNullOrWhiteSpace(GiftInput.OccasionLabel);
+
+        private string DeletedOccasionText => $"{GiftInput.OccasionLabel} {GiftInput.OccasionYear}";
 
         private static CultureInfo GermanCulture => AppCulture.German;
 
@@ -43,7 +51,10 @@ namespace GiftBase.Features.Gifts
                         Note = GiftInput.Note.NormalizeOptional(),
                         Link = GiftInput.Link.NormalizeOptional(),
                         Price = GiftInput.Price,
-                        Status = GiftInput.Status
+                        Status = GiftInput.Status,
+                        OccasionId = GiftInput.OccasionId,
+                        OccasionLabel = GiftInput.OccasionLabel,
+                        OccasionYear = GiftInput.OccasionYear
                     });
 
                     MudDialog.Close(DialogResult.Ok(updatedGift));
@@ -57,7 +68,8 @@ namespace GiftBase.Features.Gifts
                         Link = GiftInput.Link.NormalizeOptional(),
                         Price = GiftInput.Price,
                         Status = GiftInput.Status,
-                        PersonId = PersonId
+                        PersonId = PersonId,
+                        OccasionId = GiftInput.OccasionId
                     };
 
                     var addedGift = await giftService.AddGiftAsync(newGift, userId);
