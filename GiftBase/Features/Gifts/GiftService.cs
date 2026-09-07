@@ -30,16 +30,7 @@ public class GiftService(IDbContextFactory<GiftBaseDbContext> dbContextFactory) 
             throw new NotFoundException($"Person konnte nicht gefunden werden: {giftAddDto.PersonId}");
         }
 
-        if (giftAddDto.OccasionId.HasValue)
-        {
-            var occasionExists = await dbContext.Occasions
-                .AnyAsync(o => o.Id == giftAddDto.OccasionId.Value && o.PersonId == giftAddDto.PersonId);
-
-            if (!occasionExists)
-            {
-                throw new NotFoundException($"Anlass konnte nicht gefunden werden: {giftAddDto.OccasionId.Value}");
-            }
-        }
+        await EnsureOccasionBelongsToPersonAsync(dbContext, giftAddDto.OccasionId, giftAddDto.PersonId);
 
         var gift = new Gift(
             giftAddDto.Title,
@@ -65,16 +56,7 @@ public class GiftService(IDbContextFactory<GiftBaseDbContext> dbContextFactory) 
             .SingleOrDefaultAsync()
                 ?? throw new NotFoundException($"Geschenkidee konnte nicht gefunden werden: {giftId}");
 
-        if (giftUpdateDto.OccasionId.HasValue)
-        {
-            var occasionExists = await dbContext.Occasions
-                .AnyAsync(o => o.Id == giftUpdateDto.OccasionId.Value && o.PersonId == gift.PersonId);
-
-            if (!occasionExists)
-            {
-                throw new NotFoundException($"Anlass konnte nicht gefunden werden: {giftUpdateDto.OccasionId.Value}");
-            }
-        }
+        await EnsureOccasionBelongsToPersonAsync(dbContext, giftUpdateDto.OccasionId, gift.PersonId);
 
         gift.Update(giftUpdateDto);
 
@@ -104,5 +86,21 @@ public class GiftService(IDbContextFactory<GiftBaseDbContext> dbContextFactory) 
             .Where(p => p.UserId == currentUserId)
             .Select(p => new { p.Id, GiftCount = p.Gifts.Count })
             .ToDictionaryAsync(x => x.Id, x => x.GiftCount);
+    }
+
+    private static async Task EnsureOccasionBelongsToPersonAsync(GiftBaseDbContext dbContext, int? occasionId, int personId)
+    {
+        if (!occasionId.HasValue)
+        {
+            return;
+        }
+
+        var occasionExists = await dbContext.Occasions
+            .AnyAsync(o => o.Id == occasionId.Value && o.PersonId == personId);
+
+        if (!occasionExists)
+        {
+            throw new NotFoundException($"Anlass konnte nicht gefunden werden: {occasionId.Value}");
+        }
     }
 }
