@@ -1,5 +1,7 @@
 @using GiftBase.Features.Gifts
 @using GiftBase.Features.Gifts.Components
+@using GiftBase.Features.Occasions
+@using GiftBase.Features.Occasions.Components
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [Authorize]
@@ -22,6 +24,10 @@ else
 {
     <PageHeader Title="@PersonFullName" Description="Sammle hier alle Geschenkideen für diese Person.">
         <ActionContent>
+            <MudButton OnClick="AddOccasionAsync" Variant="Variant.Outlined" Color="Color.Primary">
+                <MudIcon Icon="@Icons.Material.Filled.EditCalendar" Class="mr-2" />
+                Anlass hinzufügen
+            </MudButton>
             <MudButton OnClick="AddGiftAsync" Variant="Variant.Filled" Color="Color.Primary">
                 <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-2" />
                 Geschenkidee hinzufügen
@@ -44,8 +50,43 @@ else
                 <MudText Typo="Typo.body1">Geburtsdatum: Nicht angegeben</MudText>
             }
             <MudText Typo="Typo.body1">Beziehung: @Translations.GetRelationDisplayText(Person.Relation)</MudText>
+            <MudText Typo="Typo.body1">Nächster Anlass: @NextOccasionText</MudText>
         </MudCardContent>
     </MudCard>
+
+    <MudText Typo="Typo.h5" Class="mb-3">Anlässe</MudText>
+
+    @if (!Occasions.Any())
+    {
+        <EmptyState Title="Keine Anlässe gefunden"
+                    Description="Es wurden noch keine Anlässe für diese Person hinzugefügt."
+                    Icon="@Icons.Material.Filled.EditCalendar" />
+    }
+    else
+    {
+        <MudGrid Spacing="3" Class="mb-8">
+            @foreach (var occasion in Occasions)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <OccasionListItem Occasion="occasion" GiftCount="@GetGiftCountForOccasion(occasion.Id)">
+                        <HeaderActionContent>
+                            @if (occasion.Type == Core.Enums.OccasionType.Custom)
+                            {
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary"
+                                               OnClick="@(() => UpdateOccasionAsync(occasion))"
+                                               aria-label="Anlass bearbeiten" />
+                            }
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary"
+                                           OnClick="@(() => DeleteOccasionAsync(occasion))"
+                                           aria-label="Anlass löschen" />
+                        </HeaderActionContent>
+                    </OccasionListItem>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+
+    <MudText Typo="Typo.h5" Class="mb-3">Geschenkideen</MudText>
 
     @if (!Gifts.Any())
     {
