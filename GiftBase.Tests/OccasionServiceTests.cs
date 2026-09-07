@@ -470,4 +470,38 @@ public class OccasionServiceTests
 
         exception.Message.ShouldBe("Anlass konnte nicht gefunden werden: 999");
     }
+
+    [Fact]
+    public async Task DeleteOccasionAsync_ShouldStoreSnapshotForEveryAttachedGift()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var occasion = await AddOccasionAsync(person.Id, OccasionType.Custom, "Hochzeit", new DateOnly(2027, 6, 5), false);
+        var firstGift = await AddGiftAsync(person.Id, occasion.Id, "Kaffeemaschine");
+        var secondGift = await AddGiftAsync(person.Id, occasion.Id, "Buch");
+        var unrelatedGift = await AddGiftAsync(person.Id, null, "Gutschein");
+
+        // Act
+        await _occasionService.DeleteOccasionAsync(occasion.Id, OwnerUserId);
+
+        // Assert
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var giftsInDb = await dbContext.Gifts.ToListAsync();
+        giftsInDb.Count.ShouldBe(3);
+
+        var firstGiftInDb = giftsInDb.Single(g => g.Id == firstGift.Id);
+        firstGiftInDb.OccasionId.ShouldBeNull();
+        firstGiftInDb.OccasionLabel.ShouldBe("Hochzeit");
+        firstGiftInDb.OccasionYear.ShouldBe(2027);
+
+        var secondGiftInDb = giftsInDb.Single(g => g.Id == secondGift.Id);
+        secondGiftInDb.OccasionId.ShouldBeNull();
+        secondGiftInDb.OccasionLabel.ShouldBe("Hochzeit");
+        secondGiftInDb.OccasionYear.ShouldBe(2027);
+
+        var unrelatedGiftInDb = giftsInDb.Single(g => g.Id == unrelatedGift.Id);
+        unrelatedGiftInDb.OccasionId.ShouldBeNull();
+        unrelatedGiftInDb.OccasionLabel.ShouldBeNull();
+        unrelatedGiftInDb.OccasionYear.ShouldBeNull();
+    }
 }
