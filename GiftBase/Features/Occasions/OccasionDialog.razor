@@ -22,9 +22,14 @@
                 }
             </MudSelect>
 
-            @if (TypeHint is not null)
+            @if (FixedTypeHint is not null)
             {
-                <MudAlert Severity="Severity.Info" Dense="true" Class="mt-3">@TypeHint</MudAlert>
+                <MudAlert Severity="Severity.Info" Dense="true" Class="mt-3">@FixedTypeHint</MudAlert>
+            }
+
+            @if (MissingDateOfBirthHint is not null)
+            {
+                <MudAlert Severity="Severity.Info" Dense="true" Class="mt-3">@MissingDateOfBirthHint</MudAlert>
             }
 
             @if (IsCustom)

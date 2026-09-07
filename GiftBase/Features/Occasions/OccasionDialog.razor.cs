@@ -36,23 +36,14 @@ namespace GiftBase.Features.Occasions
             ? $"Anlass für {PersonName} bearbeiten"
             : $"Neuen Anlass für {PersonName} eintragen";
 
-        private string? TypeHint
-        {
-            get
-            {
-                if (!IsCustom)
-                {
-                    return "Datum und Wiederholung sind bei diesem Anlass fest vorgegeben.";
-                }
+        private string? FixedTypeHint => IsCustom
+            ? null
+            : "Datum und Wiederholung sind bei diesem Anlass fest vorgegeben.";
 
-                if (!PersonDateOfBirth.HasValue)
-                {
-                    return "Für den Anlass Geburtstag muss zuerst ein Geburtsdatum bei der Person hinterlegt werden.";
-                }
-
-                return null;
-            }
-        }
+        private string? MissingDateOfBirthHint =>
+            ExistingOccasionId.HasValue || PersonDateOfBirth.HasValue
+                ? null
+                : "Für den Anlass Geburtstag muss zuerst ein Geburtsdatum bei der Person hinterlegt werden.";
 
         private bool IsTypeDisabled(OccasionType occasionType)
         {
