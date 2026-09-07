@@ -1,3 +1,4 @@
+using GiftBase.Core.Entities;
 using GiftBase.Core.Enums;
 
 namespace GiftBase.Shared.Translations;
@@ -23,4 +24,15 @@ public static class Translations
         GiftStatus.Given => "Verschenkt",
         _ => throw new ArgumentOutOfRangeException(nameof(giftStatus), giftStatus, null)
     };
+
+    public static string GetOccasionTypeDisplayText(OccasionType occasionType) => occasionType switch
+    {
+        OccasionType.Birthday => "Geburtstag",
+        OccasionType.Christmas => "Weihnachten",
+        OccasionType.Custom => "Benutzerdefiniert",
+        _ => throw new ArgumentOutOfRangeException(nameof(occasionType), occasionType, null)
+    };
+
+    public static string GetOccasionDisplayTitle(Occasion occasion) =>
+        occasion.Type == OccasionType.Custom ? occasion.Title ?? string.Empty : GetOccasionTypeDisplayText(occasion.Type);
 }
