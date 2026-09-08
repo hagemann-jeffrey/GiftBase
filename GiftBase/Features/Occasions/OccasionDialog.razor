@@ -11,7 +11,7 @@
         </TitleContent>
         <DialogContent>
             <DataAnnotationsValidator />
-            <MudSelect T="Core.Enums.OccasionType" Immediate Required @bind-Value="OccasionInput.Type"
+            <MudSelect Immediate Required @bind-Value="OccasionInput.Type"
                        @bind-Value:after="OnTypeChanged" Label="Anlass" Variant="Variant.Outlined" FullWidth="true"
                        Disabled="@ExistingOccasionId.HasValue">
                 @foreach (var occasionType in Enum.GetValues<Core.Enums.OccasionType>())
@@ -38,7 +38,7 @@
                 <MudText Typo="Typo.caption" Color="Color.Tertiary">@FixedValueHint</MudText>
             }
 
-            <MudSwitch T="bool" @bind-Value="OccasionInput.IsRecurring" Color="Color.Primary" Disabled="@(!IsCustom)"
+            <MudSwitch @bind-Value="OccasionInput.IsRecurring" Color="Color.Primary" Disabled="@(!IsCustom)"
                        Label="Jährlich wiederholen" Class="mt-3" />
         </DialogContent>
         <DialogActions>
