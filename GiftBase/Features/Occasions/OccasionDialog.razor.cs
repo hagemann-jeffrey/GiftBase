@@ -107,7 +107,7 @@ namespace GiftBase.Features.Occasions
                     {
                         Type = OccasionInput.Type,
                         Title = OccasionInput.Title.NormalizeOptional(),
-                        Date = OccasionInput.Date.HasValue ? DateOnly.FromDateTime(OccasionInput.Date.Value) : default,
+                        Date = DateOnly.FromDateTime(OccasionInput.Date!.Value),
                         IsRecurring = OccasionInput.IsRecurring,
                         PersonId = PersonId
                     }, userId);
