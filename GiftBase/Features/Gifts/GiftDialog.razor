@@ -11,37 +11,6 @@
         </TitleContent>
         <DialogContent>
             <DataAnnotationsValidator />
-            <MudTextField Immediate Required @bind-Value="GiftInput.Title" For="(() => GiftInput.Title)" Label="Titel"
-                          Variant="Variant.Outlined" FullWidth="true" />
-            <MudTextField Immediate @bind-Value="GiftInput.Note" For="(() => GiftInput.Note)" Label="Notiz (optional)"
-                          Lines="3" Variant="Variant.Outlined" FullWidth="true" />
-            <MudGrid Spacing="3">
-                <MudItem xs="12" sm="6">
-                    <MudNumericField T="decimal?" Immediate @bind-Value="GiftInput.Price" For="(() => GiftInput.Price)"
-                                     Label="Preis (optional)" Min="0" Format="0.00" Culture="@GermanCulture" HideSpinButtons="true"
-                                     Adornment="Adornment.End" AdornmentText="€" Variant="Variant.Outlined" FullWidth="true" />
-                </MudItem>
-            </MudGrid>
-            <MudTextField Immediate @bind-Value="GiftInput.Link" For="(() => GiftInput.Link)" Label="Link (optional)"
-                          Placeholder="https://..." HelperText="Produktseite oder Inspirationsquelle" Adornment="Adornment.Start"
-                          AdornmentIcon="@Icons.Material.Filled.Link" Variant="Variant.Outlined" FullWidth="true" />
-            @if (HasDeletedOccasionSnapshot)
-            {
-                <MudAlert Severity="Severity.Info" Dense="true" Class="mt-3">
-                    Bisheriger Anlass: @DeletedOccasionText. Der Anlass wurde gelöscht; die Angabe bleibt erhalten,
-                    bis ein anderer Anlass gewählt wird.
-                </MudAlert>
-            }
-            <MudSelect T="int?" Immediate @bind-Value="GiftInput.OccasionId" Label="Anlass (optional)"
-                       Variant="Variant.Outlined" FullWidth="true" Class="mt-3">
-                <MudSelectItem T="int?" Value="@((int?)null)">Kein Anlass</MudSelectItem>
-                @foreach (var occasion in Occasions)
-                {
-                    <MudSelectItem T="int?" Value="@((int?)occasion.Id)">
-                        @Translations.GetOccasionDisplayTitle(occasion)
-                    </MudSelectItem>
-                }
-            </MudSelect>
             @if (ExistingGiftId.HasValue)
             {
                 <MudSelect Immediate Required @bind-Value="GiftInput.Status" For="(() => GiftInput.Status)" Label="Status"
@@ -52,6 +21,33 @@
                     }
                 </MudSelect>
             }
+            <MudTextField Immediate Required @bind-Value="GiftInput.Title" For="(() => GiftInput.Title)" Label="Titel"
+                          Variant="Variant.Outlined" FullWidth="true" />
+            <MudTextField Immediate @bind-Value="GiftInput.Note" For="(() => GiftInput.Note)" Label="Notiz" Lines="3"
+                          Variant="Variant.Outlined" FullWidth="true" />
+            <MudNumericField T="decimal?" Immediate @bind-Value="GiftInput.Price" For="(() => GiftInput.Price)"
+                             Label="Preis" Min="0" Format="0.00" Culture="@GermanCulture" HideSpinButtons="true"
+                             Adornment="Adornment.End" AdornmentText="€" Variant="Variant.Outlined" FullWidth="true" />
+            <MudTextField Immediate @bind-Value="GiftInput.Link" For="(() => GiftInput.Link)" Label="Link"
+                          Placeholder="https://..." HelperText="Produktseite oder Inspirationsquelle" Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Link" Variant="Variant.Outlined" FullWidth="true" />
+            @if (HasDeletedOccasionSnapshot)
+            {
+                <MudAlert Severity="Severity.Info" Dense="true" Class="mt-3">
+                    Bisheriger Anlass: @DeletedOccasionText. Der Anlass wurde gelöscht; die Angabe bleibt erhalten,
+                    bis ein anderer Anlass gewählt wird.
+                </MudAlert>
+            }
+            <MudSelect T="int?" Immediate @bind-Value="GiftInput.OccasionId" Label="Anlass" Variant="Variant.Outlined"
+                       FullWidth="true" Class="mt-3">
+                <MudSelectItem T="int?" Value="@((int?)null)">Kein Anlass</MudSelectItem>
+                @foreach (var occasion in Occasions)
+                {
+                    <MudSelectItem T="int?" Value="@((int?)occasion.Id)">
+                        @Translations.GetOccasionDisplayTitle(occasion)
+                    </MudSelectItem>
+                }
+            </MudSelect>
         </DialogContent>
         <DialogActions>
             <MudButton OnClick="Cancel" Variant="Variant.Outlined" Color="Color.Default">Abbrechen</MudButton>
