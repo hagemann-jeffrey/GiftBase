@@ -6,6 +6,7 @@ using GiftBase.Shared;
 using GiftBase.Shared.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using Translations = GiftBase.Shared.Translations.Translations;
 
 namespace GiftBase.Features.Occasions
 {
@@ -36,29 +37,36 @@ namespace GiftBase.Features.Occasions
             ? $"Anlass für {PersonName} bearbeiten"
             : $"Neuen Anlass für {PersonName} eintragen";
 
-        private string? FixedTypeHint => IsCustom
+        private string? FixedValueHint => IsCustom
             ? null
             : "Datum und Wiederholung sind bei diesem Anlass fest vorgegeben.";
 
-        private string? MissingDateOfBirthHint =>
-            ExistingOccasionId.HasValue || PersonDateOfBirth.HasValue
-                ? null
-                : "Für den Anlass Geburtstag muss zuerst ein Geburtsdatum bei der Person hinterlegt werden.";
-
-        private bool IsTypeDisabled(OccasionType occasionType)
+        private string? GetDisabledReason(OccasionType occasionType)
         {
             if (occasionType == OccasionType.Custom)
             {
-                return false;
+                return null;
             }
 
             if (ExistingTypes.Contains(occasionType))
             {
-                return true;
+                return "bereits angelegt";
             }
 
-            return occasionType == OccasionType.Birthday && !PersonDateOfBirth.HasValue;
+            return occasionType == OccasionType.Birthday && !PersonDateOfBirth.HasValue
+                ? "Geburtsdatum fehlt"
+                : null;
         }
+
+        private string GetTypeLabel(OccasionType occasionType)
+        {
+            var label = Translations.GetOccasionTypeDisplayText(occasionType);
+            var disabledReason = GetDisabledReason(occasionType);
+
+            return disabledReason is null ? label : $"{label} · {disabledReason}";
+        }
+
+        private bool IsTypeDisabled(OccasionType occasionType) => GetDisabledReason(occasionType) is not null;
 
         private void OnTypeChanged()
         {

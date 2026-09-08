@@ -17,20 +17,10 @@
                 @foreach (var occasionType in Enum.GetValues<Core.Enums.OccasionType>())
                 {
                     <MudSelectItem Value="occasionType" Disabled="@IsTypeDisabled(occasionType)">
-                        @Translations.GetOccasionTypeDisplayText(occasionType)
+                        @GetTypeLabel(occasionType)
                     </MudSelectItem>
                 }
             </MudSelect>
-
-            @if (FixedTypeHint is not null)
-            {
-                <MudAlert Severity="Severity.Info" Dense="true" Class="mt-3">@FixedTypeHint</MudAlert>
-            }
-
-            @if (MissingDateOfBirthHint is not null)
-            {
-                <MudAlert Severity="Severity.Info" Dense="true" Class="mt-3">@MissingDateOfBirthHint</MudAlert>
-            }
 
             @if (IsCustom)
             {
@@ -43,6 +33,10 @@
                            Culture="@GermanCulture" Editable="@IsCustom" Disabled="@(!IsCustom)"
                            Mask="@(new DateMask("dd.MM.yyyy"))" Placeholder="dd.mm.yyyy" Variant="Variant.Outlined"
                            Class="mt-3" />
+            @if (FixedValueHint is not null)
+            {
+                <MudText Typo="Typo.caption" Color="Color.Tertiary">@FixedValueHint</MudText>
+            }
 
             <MudSwitch T="bool" @bind-Value="OccasionInput.IsRecurring" Color="Color.Primary" Disabled="@(!IsCustom)"
                        Label="Jährlich wiederholen" Class="mt-3" />
