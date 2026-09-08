@@ -125,9 +125,7 @@ public class GiftTests
         {
             Title = "Espressomaschine",
             Status = GiftStatus.Bought,
-            OccasionId = null,
-            OccasionLabel = "Geburtstag",
-            OccasionYear = 2027
+            OccasionId = null
         });
 
         // Assert
@@ -148,9 +146,7 @@ public class GiftTests
         {
             Title = "Espressomaschine",
             Status = GiftStatus.Bought,
-            OccasionId = 99,
-            OccasionLabel = "Geburtstag",
-            OccasionYear = 2027
+            OccasionId = 99
         });
 
         // Assert

@@ -52,9 +52,7 @@ namespace GiftBase.Features.Gifts
                         Link = GiftInput.Link.NormalizeOptional(),
                         Price = GiftInput.Price,
                         Status = GiftInput.Status,
-                        OccasionId = GiftInput.OccasionId,
-                        OccasionLabel = GiftInput.OccasionLabel,
-                        OccasionYear = GiftInput.OccasionYear
+                        OccasionId = GiftInput.OccasionId
                     });
 
                     MudDialog.Close(DialogResult.Ok(updatedGift));

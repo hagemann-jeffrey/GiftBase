@@ -40,8 +40,12 @@ public class Gift
         Price = giftUpdateDto.Price;
         Status = giftUpdateDto.Status;
         OccasionId = giftUpdateDto.OccasionId;
-        OccasionLabel = giftUpdateDto.OccasionId.HasValue ? null : giftUpdateDto.OccasionLabel;
-        OccasionYear = giftUpdateDto.OccasionId.HasValue ? null : giftUpdateDto.OccasionYear;
+
+        if (giftUpdateDto.OccasionId.HasValue)
+        {
+            OccasionLabel = null;
+            OccasionYear = null;
+        }
     }
 
     public void DetachFromOccasion(string occasionLabel, int occasionYear)

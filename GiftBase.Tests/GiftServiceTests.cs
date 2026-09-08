@@ -43,6 +43,17 @@ public class GiftServiceTests
         return gift;
     }
 
+    private async Task<Gift> AddGiftWithDeletedOccasionAsync(int personId, string occasionLabel, int occasionYear)
+    {
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var gift = new Gift("Kaffeemaschine", null, null, null, personId);
+        gift.DetachFromOccasion(occasionLabel, occasionYear);
+        dbContext.Gifts.Add(gift);
+        await dbContext.SaveChangesAsync();
+
+        return gift;
+    }
+
     private async Task<Occasion> AddOccasionAsync(int personId, string title = "Hochzeit")
     {
         await using var dbContext = _dbContextFactory.CreateDbContext();
@@ -404,19 +415,18 @@ public class GiftServiceTests
     {
         // Arrange
         var person = await AddPersonAsync(OwnerUserId);
-        var gift = await AddGiftAsync(person.Id);
+        var gift = await AddGiftWithDeletedOccasionAsync(person.Id, "Hochzeit", 2027);
 
         // Act
         var updatedGift = await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
         {
-            Title = "Kaffeemaschine",
-            Status = GiftStatus.Idea,
-            OccasionId = null,
-            OccasionLabel = "Hochzeit",
-            OccasionYear = 2027
+            Title = "Espressomaschine",
+            Status = GiftStatus.Bought,
+            OccasionId = null
         });
 
         // Assert
+        updatedGift.Title.ShouldBe("Espressomaschine");
         updatedGift.OccasionId.ShouldBeNull();
         updatedGift.OccasionLabel.ShouldBe("Hochzeit");
         updatedGift.OccasionYear.ShouldBe(2027);
