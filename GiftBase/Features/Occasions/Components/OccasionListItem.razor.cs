@@ -28,8 +28,6 @@ public partial class OccasionListItem
 
     private string RecurrenceText => Occasion.IsRecurring ? "jährlich" : "einmalig";
 
-    private Color RecurrenceColor => Occasion.IsRecurring ? Color.Primary : Color.Default;
-
     private string GiftCountText => GiftCount == 1 ? "1 Geschenkidee" : $"{GiftCount} Geschenkideen";
 
     private string CountdownText
