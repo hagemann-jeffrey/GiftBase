@@ -24,15 +24,15 @@
 
             @if (IsCustom)
             {
-                <MudTextField Immediate Required @bind-Value="OccasionInput.Title" For="(() => OccasionInput.Title)"
-                              Label="Titel" Placeholder="z. B. Hochzeit" Variant="Variant.Outlined" FullWidth="true"
-                              Class="mt-3" />
+                <MudTextField Immediate Required RequiredError="Titel ist erforderlich." @bind-Value="OccasionInput.Title"
+                              For="(() => OccasionInput.Title)" Label="Titel" Placeholder="z. B. Hochzeit" Variant="Variant.Outlined"
+                              FullWidth="true" Class="mt-3" />
             }
 
-            <MudDatePicker @bind-Date="OccasionInput.Date" Label="Datum" DateFormat="dd.MM.yyyy"
-                           Culture="@GermanCulture" Editable="@IsCustom" Disabled="@(!IsCustom)"
-                           Mask="@(new DateMask("dd.MM.yyyy"))" Placeholder="dd.mm.yyyy" Variant="Variant.Outlined"
-                           Class="mt-3" />
+            <MudDatePicker @bind-Date="OccasionInput.Date" For="(() => OccasionInput.Date)" Label="Datum" Required
+                           RequiredError="Datum ist erforderlich." DateFormat="dd.MM.yyyy" Culture="@GermanCulture"
+                           Editable="@IsCustom" Disabled="@(!IsCustom)" Mask="@(new DateMask("dd.MM.yyyy"))"
+                           Placeholder="dd.mm.yyyy" Variant="Variant.Outlined" Class="mt-3" />
             @if (FixedValueHint is not null)
             {
                 <MudText Typo="Typo.caption" Color="Color.Tertiary">@FixedValueHint</MudText>
@@ -40,7 +40,6 @@
 
             <MudSwitch T="bool" @bind-Value="OccasionInput.IsRecurring" Color="Color.Primary" Disabled="@(!IsCustom)"
                        Label="Jährlich wiederholen" Class="mt-3" />
-            <MudText Typo="Typo.caption" Color="Color.Tertiary">Der Anlass wird jedes Jahr angezeigt.</MudText>
         </DialogContent>
         <DialogActions>
             <MudButton OnClick="Cancel" Variant="Variant.Outlined" Color="Color.Default">Abbrechen</MudButton>
