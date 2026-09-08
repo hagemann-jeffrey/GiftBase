@@ -1,5 +1,6 @@
 using GiftBase.Core.Dtos;
 using GiftBase.Core.Entities;
+using GiftBase.Core.Enums;
 using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
 using GiftBase.Data;
@@ -52,10 +53,23 @@ public class PersonService(IDbContextFactory<GiftBaseDbContext> dbContextFactory
 
         var person = await dbContext.Persons
             .Where(p => p.Id == personId && p.UserId == currentUserId)
+            .Include(p => p.Occasions)
             .SingleOrDefaultAsync()
                 ?? throw new NotFoundException($"Person konnte nicht gefunden werden: {personId}");
 
+        var birthday = person.Occasions.SingleOrDefault(o => o.Type == OccasionType.Birthday);
+
+        if (birthday is not null && !personUpdateDto.DateOfBirth.HasValue)
+        {
+            throw new ConflictException("Das Geburtsdatum kann nicht entfernt werden, solange ein Geburtstags-Anlass besteht.");
+        }
+
         person.Update(personUpdateDto);
+
+        if (birthday is not null && personUpdateDto.DateOfBirth.HasValue)
+        {
+            birthday.SetDate(personUpdateDto.DateOfBirth.Value);
+        }
 
         await dbContext.SaveChangesAsync();
 
@@ -68,6 +82,8 @@ public class PersonService(IDbContextFactory<GiftBaseDbContext> dbContextFactory
 
         var person = await dbContext.Persons
             .Where(p => p.Id == personId && p.UserId == currentUserId)
+            .Include(p => p.Gifts)
+            .Include(p => p.Occasions)
             .SingleOrDefaultAsync()
                 ?? throw new NotFoundException($"Person konnte nicht gefunden werden: {personId}");
 

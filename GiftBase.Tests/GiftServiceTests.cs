@@ -43,6 +43,27 @@ public class GiftServiceTests
         return gift;
     }
 
+    private async Task<Gift> AddGiftWithDeletedOccasionAsync(int personId, string occasionLabel, int occasionYear)
+    {
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var gift = new Gift("Kaffeemaschine", null, null, null, personId);
+        gift.DetachFromOccasion(occasionLabel, occasionYear);
+        dbContext.Gifts.Add(gift);
+        await dbContext.SaveChangesAsync();
+
+        return gift;
+    }
+
+    private async Task<Occasion> AddOccasionAsync(int personId, string title = "Hochzeit")
+    {
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var occasion = new Occasion(OccasionType.Custom, title, new DateOnly(2027, 6, 5), false, personId);
+        dbContext.Occasions.Add(occasion);
+        await dbContext.SaveChangesAsync();
+
+        return occasion;
+    }
+
     [Fact]
     public async Task GetGiftsAsync_ShouldReturnGiftsForPerson()
     {
@@ -303,5 +324,111 @@ public class GiftServiceTests
 
         // Assert
         giftCounts.Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task AddGiftAsync_ShouldAssignOccasion()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var occasion = await AddOccasionAsync(person.Id);
+        var giftAddDto = new GiftAddDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea,
+            PersonId = person.Id,
+            OccasionId = occasion.Id
+        };
+
+        // Act
+        var addedGift = await _giftService.AddGiftAsync(giftAddDto, OwnerUserId);
+
+        // Assert
+        addedGift.OccasionId.ShouldBe(occasion.Id);
+    }
+
+    [Fact]
+    public async Task AddGiftAsync_ShouldThrowNotFoundException_WhenOccasionBelongsToAnotherPerson()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId, "John");
+        var otherPerson = await AddPersonAsync(OwnerUserId, "Jane");
+        var occasion = await AddOccasionAsync(otherPerson.Id);
+        var giftAddDto = new GiftAddDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea,
+            PersonId = person.Id,
+            OccasionId = occasion.Id
+        };
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
+            await _giftService.AddGiftAsync(giftAddDto, OwnerUserId));
+
+        exception.Message.ShouldBe($"Anlass konnte nicht gefunden werden: {occasion.Id}");
+    }
+
+    [Fact]
+    public async Task UpdateGiftAsync_ShouldAssignOccasion()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var occasion = await AddOccasionAsync(person.Id);
+        var gift = await AddGiftAsync(person.Id);
+
+        // Act
+        var updatedGift = await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea,
+            OccasionId = occasion.Id
+        });
+
+        // Assert
+        updatedGift.OccasionId.ShouldBe(occasion.Id);
+    }
+
+    [Fact]
+    public async Task UpdateGiftAsync_ShouldThrowNotFoundException_WhenOccasionBelongsToAnotherPerson()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId, "John");
+        var otherPerson = await AddPersonAsync(OwnerUserId, "Jane");
+        var occasion = await AddOccasionAsync(otherPerson.Id);
+        var gift = await AddGiftAsync(person.Id);
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
+            await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
+            {
+                Title = "Kaffeemaschine",
+                Status = GiftStatus.Idea,
+                OccasionId = occasion.Id
+            }));
+
+        exception.Message.ShouldBe($"Anlass konnte nicht gefunden werden: {occasion.Id}");
+    }
+
+    [Fact]
+    public async Task UpdateGiftAsync_ShouldKeepOccasionSnapshot_WhenNoOccasionIsSelected()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var gift = await AddGiftWithDeletedOccasionAsync(person.Id, "Hochzeit", 2027);
+
+        // Act
+        var updatedGift = await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
+        {
+            Title = "Espressomaschine",
+            Status = GiftStatus.Bought,
+            OccasionId = null
+        });
+
+        // Assert
+        updatedGift.Title.ShouldBe("Espressomaschine");
+        updatedGift.OccasionId.ShouldBeNull();
+        updatedGift.OccasionLabel.ShouldBe("Hochzeit");
+        updatedGift.OccasionYear.ShouldBe(2027);
     }
 }

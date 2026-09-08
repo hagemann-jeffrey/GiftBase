@@ -1,0 +1,52 @@
+<EditForm Model="OccasionInput" OnValidSubmit="Save" novalidate>
+    <MudDialog>
+        <TitleContent>
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                <MudIcon Icon="@Icons.Material.Filled.EditCalendar" Color="Color.Primary" Size="Size.Large" />
+                <MudStack Spacing="0">
+                    <MudText Typo="Typo.h6">@DialogTitle</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Tertiary">@DialogSubtitle</MudText>
+                </MudStack>
+            </MudStack>
+        </TitleContent>
+        <DialogContent>
+            <DataAnnotationsValidator />
+            <MudSelect Immediate Required @bind-Value="OccasionInput.Type"
+                       @bind-Value:after="OnTypeChanged" Label="Anlass" Variant="Variant.Outlined" FullWidth="true"
+                       Disabled="@ExistingOccasionId.HasValue">
+                @foreach (var occasionType in Enum.GetValues<Core.Enums.OccasionType>())
+                {
+                    <MudSelectItem Value="occasionType" Disabled="@IsTypeDisabled(occasionType)">
+                        @GetTypeLabel(occasionType)
+                    </MudSelectItem>
+                }
+            </MudSelect>
+
+            @if (IsCustom)
+            {
+                <MudTextField Immediate Required RequiredError="Titel ist erforderlich." @bind-Value="OccasionInput.Title"
+                              For="(() => OccasionInput.Title)" Label="Titel" Placeholder="z. B. Hochzeit" Variant="Variant.Outlined"
+                              FullWidth="true" Class="mt-3" />
+            }
+
+            <MudDatePicker @bind-Date="OccasionInput.Date" For="(() => OccasionInput.Date)" Label="Datum" Required
+                           RequiredError="Datum ist erforderlich." DateFormat="dd.MM.yyyy" Culture="@GermanCulture"
+                           Editable="@IsCustom" Disabled="@(!IsCustom)" Mask="@(new DateMask("dd.MM.yyyy"))"
+                           Placeholder="dd.mm.yyyy" Variant="Variant.Outlined" Class="mt-3" />
+            @if (FixedValueHint is not null)
+            {
+                <MudText Typo="Typo.caption" Color="Color.Tertiary">@FixedValueHint</MudText>
+            }
+
+            <MudSwitch @bind-Value="OccasionInput.IsRecurring" Color="Color.Primary" Disabled="@(!IsCustom)"
+                       Label="Jährlich wiederholen" Class="mt-3" />
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="Cancel" Variant="Variant.Outlined" Color="Color.Default">Abbrechen</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit"
+                       StartIcon="@Icons.Material.Filled.Save">
+                Anlass speichern
+            </MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>

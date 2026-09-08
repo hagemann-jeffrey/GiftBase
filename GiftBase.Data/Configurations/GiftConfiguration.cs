@@ -30,5 +30,12 @@ public class GiftConfiguration : IEntityTypeConfiguration<Gift>
                      .IsRequired()
                      .HasConversion<string>()
                      .HasMaxLength(20);
+
+              builder.Property(g => g.OccasionLabel)
+                     .IsRequired(false)
+                     .HasMaxLength(100);
+
+              builder.Property(g => g.OccasionYear)
+                     .IsRequired(false);
        }
 }

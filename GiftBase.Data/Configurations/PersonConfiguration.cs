@@ -30,5 +30,10 @@ public class PersonConfiguration : IEntityTypeConfiguration<Person>
                      .WithOne(g => g.Person)
                      .HasForeignKey(g => g.PersonId)
                      .OnDelete(DeleteBehavior.Cascade);
+
+              builder.HasMany(p => p.Occasions)
+                     .WithOne(o => o.Person)
+                     .HasForeignKey(o => o.PersonId)
+                     .OnDelete(DeleteBehavior.Cascade);
        }
 }

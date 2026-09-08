@@ -30,12 +30,15 @@ public class GiftService(IDbContextFactory<GiftBaseDbContext> dbContextFactory) 
             throw new NotFoundException($"Person konnte nicht gefunden werden: {giftAddDto.PersonId}");
         }
 
+        await EnsureOccasionBelongsToPersonAsync(dbContext, giftAddDto.OccasionId, giftAddDto.PersonId);
+
         var gift = new Gift(
             giftAddDto.Title,
             giftAddDto.Note,
             giftAddDto.Link,
             giftAddDto.Price,
-            giftAddDto.PersonId
+            giftAddDto.PersonId,
+            giftAddDto.OccasionId
         );
 
         dbContext.Gifts.Add(gift);
@@ -52,6 +55,8 @@ public class GiftService(IDbContextFactory<GiftBaseDbContext> dbContextFactory) 
             .Where(g => g.Id == giftId && g.Person.UserId == currentUserId)
             .SingleOrDefaultAsync()
                 ?? throw new NotFoundException($"Geschenkidee konnte nicht gefunden werden: {giftId}");
+
+        await EnsureOccasionBelongsToPersonAsync(dbContext, giftUpdateDto.OccasionId, gift.PersonId);
 
         gift.Update(giftUpdateDto);
 
@@ -81,5 +86,21 @@ public class GiftService(IDbContextFactory<GiftBaseDbContext> dbContextFactory) 
             .Where(p => p.UserId == currentUserId)
             .Select(p => new { p.Id, GiftCount = p.Gifts.Count })
             .ToDictionaryAsync(x => x.Id, x => x.GiftCount);
+    }
+
+    private static async Task EnsureOccasionBelongsToPersonAsync(GiftBaseDbContext dbContext, int? occasionId, int personId)
+    {
+        if (!occasionId.HasValue)
+        {
+            return;
+        }
+
+        var occasionExists = await dbContext.Occasions
+            .AnyAsync(o => o.Id == occasionId.Value && o.PersonId == personId);
+
+        if (!occasionExists)
+        {
+            throw new NotFoundException($"Anlass konnte nicht gefunden werden: {occasionId.Value}");
+        }
     }
 }

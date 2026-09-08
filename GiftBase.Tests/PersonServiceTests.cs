@@ -1,5 +1,6 @@
 using GiftBase.Core.Dtos;
 using GiftBase.Core.Entities;
+using GiftBase.Core.Enums;
 using GiftBase.Core.Exceptions;
 using GiftBase.Features.Persons;
 using GiftBase.Tests.Helper;
@@ -250,5 +251,79 @@ public class PersonServiceTests
             await _personService.DeletePersonAsync(999, 1));
 
         exception.Message.ShouldBe("Person konnte nicht gefunden werden: 999");
+    }
+
+    [Fact]
+    public async Task UpdatePersonAsync_ShouldMoveBirthdayOccasion_WhenDateOfBirthChanges()
+    {
+        // Arrange
+        await using var arrangeContext = _dbContextFactory.CreateDbContext();
+        var person = new Person("John", "Doe", new DateOnly(1990, 5, 24), Core.Enums.Relation.Friend, 1);
+        arrangeContext.Persons.Add(person);
+        await arrangeContext.SaveChangesAsync();
+        arrangeContext.Occasions.Add(new Occasion(Core.Enums.OccasionType.Birthday, null, new DateOnly(1990, 5, 24), true, person.Id));
+        await arrangeContext.SaveChangesAsync();
+
+        // Act
+        await _personService.UpdatePersonAsync(person.Id, 1, new PersonUpdateDto
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            DateOfBirth = new DateOnly(1991, 6, 30),
+            Relation = Core.Enums.Relation.Friend
+        });
+
+        // Assert
+        await using var assertContext = _dbContextFactory.CreateDbContext();
+        var birthday = await assertContext.Occasions.SingleAsync(o => o.PersonId == person.Id);
+        birthday.Date.ShouldBe(new DateOnly(1991, 6, 30));
+    }
+
+    [Fact]
+    public async Task UpdatePersonAsync_ShouldThrowConflictException_WhenDateOfBirthIsRemovedWhileBirthdayOccasionExists()
+    {
+        // Arrange
+        await using var arrangeContext = _dbContextFactory.CreateDbContext();
+        var person = new Person("John", "Doe", new DateOnly(1990, 5, 24), Core.Enums.Relation.Friend, 1);
+        arrangeContext.Persons.Add(person);
+        await arrangeContext.SaveChangesAsync();
+        arrangeContext.Occasions.Add(new Occasion(Core.Enums.OccasionType.Birthday, null, new DateOnly(1990, 5, 24), true, person.Id));
+        await arrangeContext.SaveChangesAsync();
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<ConflictException>(async () =>
+            await _personService.UpdatePersonAsync(person.Id, 1, new PersonUpdateDto
+            {
+                FirstName = "John",
+                LastName = "Doe",
+                DateOfBirth = null,
+                Relation = Core.Enums.Relation.Friend
+            }));
+
+        exception.Message.ShouldBe("Das Geburtsdatum kann nicht entfernt werden, solange ein Geburtstags-Anlass besteht.");
+    }
+
+    [Fact]
+    public async Task DeletePersonAsync_ShouldDeleteOccasionsAndGifts()
+    {
+        // Arrange
+        await using var arrangeContext = _dbContextFactory.CreateDbContext();
+        var person = new Person("John", "Doe", new DateOnly(1990, 5, 24), Core.Enums.Relation.Friend, 1);
+        arrangeContext.Persons.Add(person);
+        await arrangeContext.SaveChangesAsync();
+        var occasion = new Occasion(Core.Enums.OccasionType.Birthday, null, new DateOnly(1990, 5, 24), true, person.Id);
+        arrangeContext.Occasions.Add(occasion);
+        await arrangeContext.SaveChangesAsync();
+        arrangeContext.Gifts.Add(new Gift("Kaffeemaschine", null, null, null, person.Id, occasion.Id));
+        await arrangeContext.SaveChangesAsync();
+
+        // Act
+        await _personService.DeletePersonAsync(person.Id, 1);
+
+        // Assert
+        await using var assertContext = _dbContextFactory.CreateDbContext();
+        (await assertContext.Persons.CountAsync()).ShouldBe(0);
+        (await assertContext.Occasions.CountAsync()).ShouldBe(0);
+        (await assertContext.Gifts.CountAsync()).ShouldBe(0);
     }
 }

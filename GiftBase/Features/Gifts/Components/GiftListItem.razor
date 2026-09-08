@@ -12,9 +12,18 @@
     </MudCardHeader>
     <MudCardContent Class="pa-3">
         <MudStack Spacing="2" AlignItems="AlignItems.Start">
-            <MudChip T="string" Size="Size.Small" Color="@StatusColor">
-                @Translations.GetGiftStatusDisplayText(Gift.Status)
-            </MudChip>
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                <MudChip T="string" Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined">
+                    @Translations.GetGiftStatusDisplayText(Gift.Status)
+                </MudChip>
+                @if (!string.IsNullOrWhiteSpace(OccasionText))
+                {
+                    <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary"
+                             Icon="@Icons.Material.Filled.EditCalendar">
+                        @OccasionText
+                    </MudChip>
+                }
+            </MudStack>
 
             @if (Gift.Price.HasValue)
             {

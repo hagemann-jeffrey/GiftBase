@@ -20,6 +20,10 @@ public class UserActionHelper(ICurrentUserService currentUserService, ISnackbar 
         {
             await action(userId.Value);
         }
+        catch (ConflictException ex)
+        {
+            snackbar.Add(ex.Message, Severity.Warning);
+        }
         catch (NotFoundException ex)
         {
             snackbar.Add($"Nicht gefunden: {ex.Message}", Severity.Warning);

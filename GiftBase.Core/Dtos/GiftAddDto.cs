@@ -8,4 +8,5 @@ public class GiftAddDto
     public decimal? Price { get; set; }
     public Enums.GiftStatus Status { get; set; }
     public int PersonId { get; set; }
+    public int? OccasionId { get; set; }
 }

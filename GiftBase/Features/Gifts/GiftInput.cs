@@ -16,5 +16,8 @@ namespace GiftBase.Features.Gifts
         [Range(0, 99_999_999, ErrorMessage = "Preis muss zwischen 0 und 99.999.999 liegen.")]
         public decimal? Price { get; set; }
         public Core.Enums.GiftStatus Status { get; set; }
+        public int? OccasionId { get; set; }
+        public string? OccasionLabel { get; set; }
+        public int? OccasionYear { get; set; }
     }
 }
