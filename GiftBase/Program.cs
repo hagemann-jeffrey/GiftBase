@@ -34,7 +34,11 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddDbContextFactory<GiftBaseDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("GiftBase")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("GiftBase"),
+        sqlOptions => sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 6,
+            maxRetryDelay: TimeSpan.FromSeconds(15),
+            errorNumbersToAdd: null)));
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
