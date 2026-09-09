@@ -76,6 +76,7 @@ using (var scope = app.Services.CreateScope())
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "Ein Fehler ist beim Migrieren der Datenbank aufgetreten.");
+        throw;
     }
 }
 
