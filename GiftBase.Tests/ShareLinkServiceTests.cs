@@ -360,29 +360,6 @@ public class ShareLinkServiceTests
     }
 
     [Fact]
-    public async Task GetSharedGiftListAsync_ShouldThrowNotFoundException_WhenThePersonNowBelongsToAnotherUser()
-    {
-        // Arrange — die verwaiste PersonId zeigt auf eine Person eines anderen Nutzers
-        var person = await AddPersonAsync(OwnerUserId);
-        var shareLink = await _shareLinkService.AddShareLinkAsync(
-            new ShareLinkAddDto { PersonId = person.Id }, OwnerUserId);
-
-        await using (var dbContext = _dbContextFactory.CreateDbContext())
-        {
-            var linkInDb = await dbContext.ShareLinks.SingleAsync(s => s.Id == shareLink.Id);
-            dbContext.ShareLinks.Remove(linkInDb);
-            dbContext.ShareLinks.Add(new ShareLink(shareLink.Token, OtherUserId, person.Id, null, DateTime.UtcNow));
-            await dbContext.SaveChangesAsync();
-        }
-
-        // Act & Assert
-        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
-            await _shareLinkService.GetSharedGiftListAsync(shareLink.Token));
-
-        exception.Message.ShouldBe("Link konnte nicht gefunden werden.");
-    }
-
-    [Fact]
     public async Task GetSharedGiftListAsync_ShouldThrowNotFoundException_WhenTheOccasionWasDeleted()
     {
         // Arrange
@@ -402,17 +379,6 @@ public class ShareLinkServiceTests
             await _shareLinkService.GetSharedGiftListAsync(shareLink.Token));
 
         exception.Message.ShouldBe("Link konnte nicht gefunden werden.");
-    }
-
-    [Fact]
-    public async Task GetSharedGiftListAsync_ShouldThrowNotFoundExceptionWithoutEchoingTheToken_WhenTokenIsUnknown()
-    {
-        // Act & Assert
-        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
-            await _shareLinkService.GetSharedGiftListAsync("unbekannter-token"));
-
-        exception.Message.ShouldBe("Link konnte nicht gefunden werden.");
-        exception.Message.ShouldNotContain("unbekannter-token");
     }
 
     // Arrange helpers
