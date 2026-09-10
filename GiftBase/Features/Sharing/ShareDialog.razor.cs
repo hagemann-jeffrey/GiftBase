@@ -53,7 +53,7 @@ public partial class ShareDialog(
         : $"Gültig bis {shareLink.ExpiresAt.ToLocalTime():dd.MM.yyyy}";
 
     private string BuildShareUrl(ShareLink shareLink) =>
-        navigationManager.ToAbsoluteUri($"geteilt/{shareLink.Token}").ToString();
+        navigationManager.ToAbsoluteUri($"share/{shareLink.Token}").ToString();
 
     private string GetScopeText(ShareLink shareLink)
     {
