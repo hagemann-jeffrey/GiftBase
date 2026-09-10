@@ -2,10 +2,12 @@ using System.Buffers.Text;
 using System.Security.Cryptography;
 using GiftBase.Core.Dtos;
 using GiftBase.Core.Entities;
+using GiftBase.Core.Enums;
 using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
 using GiftBase.Data;
 using Microsoft.EntityFrameworkCore;
+using Translations = GiftBase.Shared.Translations.Translations;
 
 namespace GiftBase.Features.Sharing;
 
@@ -84,8 +86,60 @@ public class ShareLinkService(IDbContextFactory<GiftBaseDbContext> dbContextFact
         await dbContext.SaveChangesAsync();
     }
 
-    public Task<SharedGiftListDto> GetSharedGiftListAsync(string token) =>
-        throw new NotImplementedException();
+    public async Task<SharedGiftListDto> GetSharedGiftListAsync(string token)
+    {
+        await using var dbContext = await dbContextFactory.CreateDbContextAsync();
+
+        var shareLink = await dbContext.ShareLinks
+            .SingleOrDefaultAsync(s => s.Token == token)
+                ?? throw new NotFoundException("Link konnte nicht gefunden werden.");
+
+        if (shareLink.IsExpired(DateTime.UtcNow))
+        {
+            throw new NotFoundException("Link konnte nicht gefunden werden.");
+        }
+
+        var person = await dbContext.Persons
+            .SingleOrDefaultAsync(p => p.Id == shareLink.PersonId && p.UserId == shareLink.UserId)
+                ?? throw new NotFoundException("Link konnte nicht gefunden werden.");
+
+        string? occasionTitle = null;
+
+        if (shareLink.OccasionId.HasValue)
+        {
+            var occasion = await dbContext.Occasions
+                .SingleOrDefaultAsync(o => o.Id == shareLink.OccasionId.Value && o.PersonId == person.Id)
+                    ?? throw new NotFoundException("Link konnte nicht gefunden werden.");
+
+            occasionTitle = Translations.GetOccasionDisplayTitle(occasion);
+        }
+
+        var giftsQuery = dbContext.Gifts
+            .Where(g => g.PersonId == person.Id && g.Status == GiftStatus.Idea);
+
+        if (shareLink.OccasionId.HasValue)
+        {
+            giftsQuery = giftsQuery.Where(g => g.OccasionId == shareLink.OccasionId.Value);
+        }
+
+        var gifts = await giftsQuery
+            .OrderBy(g => g.Title)
+            .Select(g => new SharedGiftDto
+            {
+                Title = g.Title,
+                Note = g.Note,
+                Price = g.Price,
+                Link = g.Link
+            })
+            .ToListAsync();
+
+        return new SharedGiftListDto
+        {
+            RecipientFirstName = person.FirstName,
+            OccasionTitle = occasionTitle,
+            Gifts = gifts
+        };
+    }
 
     private static string GenerateToken() => Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(32));
 }

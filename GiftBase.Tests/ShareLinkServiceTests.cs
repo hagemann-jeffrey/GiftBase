@@ -215,6 +215,206 @@ public class ShareLinkServiceTests
         exception.Message.ShouldBe("Link konnte nicht gefunden werden: 999");
     }
 
+    // GetSharedGiftListAsync
+
+    [Fact]
+    public async Task GetSharedGiftListAsync_ShouldReturnOnlyIdeaGifts_WhenShareLinkIsScopedToThePerson()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        await AddGiftAsync(person.Id, "Kaffeemaschine", GiftStatus.Idea);
+        await AddGiftAsync(person.Id, "Buch", GiftStatus.Idea);
+        await AddGiftAsync(person.Id, "Bereits gekauft", GiftStatus.Bought);
+        await AddGiftAsync(person.Id, "Schon verschenkt", GiftStatus.Given);
+
+        var shareLink = await _shareLinkService.AddShareLinkAsync(
+            new ShareLinkAddDto { PersonId = person.Id }, OwnerUserId);
+
+        // Act
+        var sharedGiftList = await _shareLinkService.GetSharedGiftListAsync(shareLink.Token);
+
+        // Assert
+        sharedGiftList.Gifts.Count.ShouldBe(2);
+        sharedGiftList.Gifts.Select(g => g.Title).ShouldBe(["Buch", "Kaffeemaschine"]);
+    }
+
+    [Fact]
+    public async Task GetSharedGiftListAsync_ShouldExposeOnlyTheFirstName_WhenShareLinkIsValid()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var shareLink = await _shareLinkService.AddShareLinkAsync(
+            new ShareLinkAddDto { PersonId = person.Id }, OwnerUserId);
+
+        // Act
+        var sharedGiftList = await _shareLinkService.GetSharedGiftListAsync(shareLink.Token);
+
+        // Assert
+        sharedGiftList.RecipientFirstName.ShouldBe("Anna");
+        sharedGiftList.OccasionTitle.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task GetSharedGiftListAsync_ShouldReturnOnlyTheSharedFields_WhenGiftIsReturned()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        await AddGiftAsync(person.Id, "Kaffeemaschine", GiftStatus.Idea);
+        var shareLink = await _shareLinkService.AddShareLinkAsync(
+            new ShareLinkAddDto { PersonId = person.Id }, OwnerUserId);
+
+        // Act
+        var sharedGiftList = await _shareLinkService.GetSharedGiftListAsync(shareLink.Token);
+
+        // Assert
+        var sharedGift = sharedGiftList.Gifts.Single();
+        sharedGift.Title.ShouldBe("Kaffeemaschine");
+        sharedGift.Note.ShouldBe("Notiz");
+        sharedGift.Price.ShouldBe(42.50m);
+        sharedGift.Link.ShouldBe("https://example.com/artikel");
+    }
+
+    [Fact]
+    public async Task GetSharedGiftListAsync_ShouldReturnOnlyGiftsOfThatOccasion_WhenShareLinkIsScopedToAnOccasion()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var occasion = await AddOccasionAsync(person.Id);
+        await AddGiftAsync(person.Id, "Weihnachtsgeschenk", GiftStatus.Idea, occasion.Id);
+        await AddGiftAsync(person.Id, "Ohne Anlass", GiftStatus.Idea);
+
+        var shareLink = await _shareLinkService.AddShareLinkAsync(
+            new ShareLinkAddDto { PersonId = person.Id, OccasionId = occasion.Id }, OwnerUserId);
+
+        // Act
+        var sharedGiftList = await _shareLinkService.GetSharedGiftListAsync(shareLink.Token);
+
+        // Assert
+        sharedGiftList.Gifts.Single().Title.ShouldBe("Weihnachtsgeschenk");
+        sharedGiftList.OccasionTitle.ShouldBe("Weihnachten");
+    }
+
+    [Fact]
+    public async Task GetSharedGiftListAsync_ShouldReturnEmptyGiftList_WhenPersonHasNoIdeas()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var shareLink = await _shareLinkService.AddShareLinkAsync(
+            new ShareLinkAddDto { PersonId = person.Id }, OwnerUserId);
+
+        // Act
+        var sharedGiftList = await _shareLinkService.GetSharedGiftListAsync(shareLink.Token);
+
+        // Assert
+        sharedGiftList.Gifts.ShouldBeEmpty();
+        sharedGiftList.RecipientFirstName.ShouldBe("Anna");
+    }
+
+    [Fact]
+    public async Task GetSharedGiftListAsync_ShouldThrowNotFoundException_WhenShareLinkIsExpired()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var shareLink = await AddExpiredShareLinkAsync(OwnerUserId, person.Id, null);
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
+            await _shareLinkService.GetSharedGiftListAsync(shareLink.Token));
+
+        exception.Message.ShouldBe("Link konnte nicht gefunden werden.");
+    }
+
+    [Fact]
+    public async Task GetSharedGiftListAsync_ShouldThrowNotFoundException_WhenShareLinkWasDeleted()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var shareLink = await _shareLinkService.AddShareLinkAsync(
+            new ShareLinkAddDto { PersonId = person.Id }, OwnerUserId);
+        await _shareLinkService.DeleteShareLinkAsync(shareLink.Id, OwnerUserId);
+
+        // Act & Assert
+        await Should.ThrowAsync<NotFoundException>(async () =>
+            await _shareLinkService.GetSharedGiftListAsync(shareLink.Token));
+    }
+
+    [Fact]
+    public async Task GetSharedGiftListAsync_ShouldThrowNotFoundException_WhenThePersonWasDeleted()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var shareLink = await _shareLinkService.AddShareLinkAsync(
+            new ShareLinkAddDto { PersonId = person.Id }, OwnerUserId);
+
+        await using (var dbContext = _dbContextFactory.CreateDbContext())
+        {
+            dbContext.Persons.Remove(await dbContext.Persons.SingleAsync(p => p.Id == person.Id));
+            await dbContext.SaveChangesAsync();
+        }
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
+            await _shareLinkService.GetSharedGiftListAsync(shareLink.Token));
+
+        exception.Message.ShouldBe("Link konnte nicht gefunden werden.");
+    }
+
+    [Fact]
+    public async Task GetSharedGiftListAsync_ShouldThrowNotFoundException_WhenThePersonNowBelongsToAnotherUser()
+    {
+        // Arrange — die verwaiste PersonId zeigt auf eine Person eines anderen Nutzers
+        var person = await AddPersonAsync(OwnerUserId);
+        var shareLink = await _shareLinkService.AddShareLinkAsync(
+            new ShareLinkAddDto { PersonId = person.Id }, OwnerUserId);
+
+        await using (var dbContext = _dbContextFactory.CreateDbContext())
+        {
+            var linkInDb = await dbContext.ShareLinks.SingleAsync(s => s.Id == shareLink.Id);
+            dbContext.ShareLinks.Remove(linkInDb);
+            dbContext.ShareLinks.Add(new ShareLink(shareLink.Token, OtherUserId, person.Id, null, DateTime.UtcNow));
+            await dbContext.SaveChangesAsync();
+        }
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
+            await _shareLinkService.GetSharedGiftListAsync(shareLink.Token));
+
+        exception.Message.ShouldBe("Link konnte nicht gefunden werden.");
+    }
+
+    [Fact]
+    public async Task GetSharedGiftListAsync_ShouldThrowNotFoundException_WhenTheOccasionWasDeleted()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var occasion = await AddOccasionAsync(person.Id);
+        var shareLink = await _shareLinkService.AddShareLinkAsync(
+            new ShareLinkAddDto { PersonId = person.Id, OccasionId = occasion.Id }, OwnerUserId);
+
+        await using (var dbContext = _dbContextFactory.CreateDbContext())
+        {
+            dbContext.Occasions.Remove(await dbContext.Occasions.SingleAsync(o => o.Id == occasion.Id));
+            await dbContext.SaveChangesAsync();
+        }
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
+            await _shareLinkService.GetSharedGiftListAsync(shareLink.Token));
+
+        exception.Message.ShouldBe("Link konnte nicht gefunden werden.");
+    }
+
+    [Fact]
+    public async Task GetSharedGiftListAsync_ShouldThrowNotFoundExceptionWithoutEchoingTheToken_WhenTokenIsUnknown()
+    {
+        // Act & Assert
+        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
+            await _shareLinkService.GetSharedGiftListAsync("unbekannter-token"));
+
+        exception.Message.ShouldBe("Link konnte nicht gefunden werden.");
+        exception.Message.ShouldNotContain("unbekannter-token");
+    }
+
     // Arrange helpers
 
     private async Task<Person> AddPersonAsync(int userId)
