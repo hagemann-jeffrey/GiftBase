@@ -11,6 +11,7 @@ using GiftBase;
 using GiftBase.Features.Gifts;
 using GiftBase.Features.Occasions;
 using GiftBase.Features.Persons;
+using GiftBase.Features.Sharing;
 using GiftBase.Shared;
 using GiftBase.Shared.Services;
 using MudBlazor;
@@ -46,6 +47,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IGiftService, GiftService>();
 builder.Services.AddScoped<IOccasionService, OccasionService>();
+builder.Services.AddScoped<IShareLinkService, ShareLinkService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<UserActionHelper>();
 

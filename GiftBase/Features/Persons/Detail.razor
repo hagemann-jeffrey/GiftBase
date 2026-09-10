@@ -2,6 +2,7 @@
 @using GiftBase.Features.Gifts.Components
 @using GiftBase.Features.Occasions
 @using GiftBase.Features.Occasions.Components
+@using GiftBase.Features.Sharing
 @using Microsoft.AspNetCore.Authorization
 
 @attribute [Authorize]
@@ -32,6 +33,8 @@ else
                 <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-2" />
                 Geschenkidee hinzufügen
             </MudButton>
+            <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" OnClick="ShareAsync"
+                           aria-label="Geschenkliste teilen" />
             <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="UpdatePersonAsync"
                            aria-label="Person bearbeiten" />
             <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" OnClick="DeletePersonAsync"

@@ -1,6 +1,6 @@
-﻿using System.Security.Cryptography;
-using GiftBase.Core.Interfaces;
+﻿using GiftBase.Core.Interfaces;
 using GiftBase.Data;
+using GiftBase.Shared;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +27,7 @@ NavigationManager navigationManager) : IAuthService
         if (await dbContext.Users.AnyAsync(u => u.Email == email))
             return false;
 
-        string token = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+        string token = TokenGenerator.Generate();
 
         var user = new Core.Entities.User(email, token, DateTime.UtcNow.AddHours(24));
 

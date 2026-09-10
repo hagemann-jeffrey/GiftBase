@@ -1,0 +1,77 @@
+<MudDialog>
+    <TitleContent>
+        <MudStack Spacing="0">
+            <MudText Typo="Typo.h6">Geschenkliste teilen</MudText>
+            <MudText Typo="Typo.body2">@DialogSubtitle</MudText>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        <MudStack Spacing="4">
+            <MudAlert Severity="Severity.Info" Dense="true">
+                Wer den Link kennt, sieht die Geschenkideen ohne Anmeldung. Sichtbar sind nur Titel, Notiz,
+                Preis und Produktlink von Ideen, die noch nicht gekauft wurden. Jeder Link ist 30 Tage gültig.
+            </MudAlert>
+
+            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                <MudSelect T="int?" @bind-Value="SelectedOccasionId" Label="Umfang" Variant="Variant.Outlined"
+                           Clearable="false" Class="flex-grow-1">
+                    <MudSelectItem T="int?" Value="@((int?)null)">Alle Geschenkideen</MudSelectItem>
+                    @foreach (var occasion in Occasions)
+                    {
+                        <MudSelectItem T="int?" Value="@((int?)occasion.Id)">
+                            @Translations.GetOccasionDisplayTitle(occasion)
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+                <MudButton OnClick="CreateShareLinkAsync" Variant="Variant.Filled" Color="Color.Primary">
+                    <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-2" />
+                    Link erstellen
+                </MudButton>
+            </MudStack>
+
+            @if (IsLoading)
+            {
+                <MudProgressCircular Indeterminate="true" Color="Color.Primary" Class="mx-auto d-flex" />
+            }
+            else if (ShareLinks.Count == 0)
+            {
+                <MudText Typo="Typo.body2">Es wurde noch kein Link erstellt.</MudText>
+            }
+            else
+            {
+                @foreach (var shareLink in ShareLinks)
+                {
+                    <MudCard Outlined="true">
+                        <MudCardContent Class="pa-3">
+                            <MudStack Spacing="2">
+                                <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                                    <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary">
+                                        @GetScopeText(shareLink)
+                                    </MudChip>
+                                    <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined"
+                                             Color="@(IsExpired(shareLink) ? Color.Default : Color.Success)">
+                                        @GetValidityText(shareLink)
+                                    </MudChip>
+                                    <MudSpacer />
+                                    <MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Color="Color.Primary"
+                                                   Disabled="@IsExpired(shareLink)"
+                                                   OnClick="@(() => CopyShareUrlAsync(shareLink))"
+                                                   aria-label="Link kopieren" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary"
+                                                   OnClick="@(() => DeleteShareLinkAsync(shareLink))"
+                                                   aria-label="Link löschen" />
+                                </MudStack>
+
+                                <MudTextField T="string" Value="@BuildShareUrl(shareLink)" ReadOnly="true"
+                                              Variant="Variant.Outlined" Margin="Margin.Dense" Label="Link" />
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                }
+            }
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close">Schließen</MudButton>
+    </DialogActions>
+</MudDialog>

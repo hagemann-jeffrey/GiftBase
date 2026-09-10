@@ -3,6 +3,7 @@ using GiftBase.Core.Enums;
 using GiftBase.Core.Interfaces;
 using GiftBase.Features.Gifts;
 using GiftBase.Features.Occasions;
+using GiftBase.Features.Sharing;
 using GiftBase.Shared;
 using GiftBase.Shared.Components;
 using GiftBase.Shared.Services;
@@ -137,6 +138,18 @@ public partial class Detail(
                 Gifts.Remove(gift);
             }
         });
+    }
+
+    private async Task ShareAsync()
+    {
+        var parameters = new DialogParameters<ShareDialog>
+        {
+            { x => x.PersonId, PersonId },
+            { x => x.PersonName, PersonFullName },
+            { x => x.Occasions, Occasions }
+        };
+
+        await DialogService.ShowAsync<ShareDialog>(null, parameters, DefaultDialogOptions);
     }
 
     private async Task UpdatePersonAsync()
