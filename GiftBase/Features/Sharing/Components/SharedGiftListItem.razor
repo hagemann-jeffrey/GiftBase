@@ -1,0 +1,27 @@
+<MudCard>
+    <MudCardHeader Class="pa-3">
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Gift.Title</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent Class="pa-3">
+        <MudStack Spacing="2" AlignItems="AlignItems.Start">
+            @if (Gift.Price.HasValue)
+            {
+                <MudText Typo="Typo.body1">Preis: @PriceText</MudText>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Gift.Note))
+            {
+                <MudText Typo="Typo.body2">@Gift.Note</MudText>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Gift.Link))
+            {
+                <MudLink Href="@Gift.Link" Target="_blank" rel="noopener noreferrer" Typo="Typo.body2">
+                    Zum Angebot
+                </MudLink>
+            }
+        </MudStack>
+    </MudCardContent>
+</MudCard>

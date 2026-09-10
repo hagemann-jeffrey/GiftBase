@@ -1,0 +1,36 @@
+@using GiftBase.Features.Sharing.Components
+
+@page "/geteilt/{Token}"
+
+@if (IsLoading)
+{
+    <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" Class="mt-8 mx-auto d-flex" />
+}
+else if (GiftList is null)
+{
+    <EmptyState Title="Link ist nicht mehr gültig"
+                Description="Dieser Link existiert nicht, wurde gelöscht oder ist abgelaufen. Geteilte Listen sind 30 Tage lang erreichbar — frage die Person, die den Link geteilt hat, nach einem neuen."
+                Icon="@Icons.Material.Filled.LinkOff" />
+}
+else
+{
+    <PageHeader Title="@HeaderTitle" Description="Diese Geschenkideen wurden mit dir geteilt." />
+
+    @if (GiftList.Gifts.Count == 0)
+    {
+        <EmptyState Title="Noch keine Geschenkideen"
+                    Description="Für diese Liste wurden noch keine Ideen gesammelt. Schau später noch einmal vorbei."
+                    Icon="@Icons.Material.Filled.CardGiftcard" />
+    }
+    else
+    {
+        <MudGrid Spacing="3">
+            @foreach (var gift in GiftList.Gifts)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <SharedGiftListItem Gift="gift" />
+                </MudItem>
+            }
+        </MudGrid>
+    }
+}
