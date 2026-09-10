@@ -1,11 +1,10 @@
-using System.Buffers.Text;
-using System.Security.Cryptography;
 using GiftBase.Core.Dtos;
 using GiftBase.Core.Entities;
 using GiftBase.Core.Enums;
 using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
 using GiftBase.Data;
+using GiftBase.Shared;
 using Microsoft.EntityFrameworkCore;
 using Translations = GiftBase.Shared.Translations.Translations;
 
@@ -61,7 +60,7 @@ public class ShareLinkService(IDbContextFactory<GiftBaseDbContext> dbContextFact
         }
 
         var shareLink = new ShareLink(
-            GenerateToken(),
+            TokenGenerator.Generate(),
             currentUserId,
             shareLinkAddDto.PersonId,
             shareLinkAddDto.OccasionId,
@@ -140,6 +139,4 @@ public class ShareLinkService(IDbContextFactory<GiftBaseDbContext> dbContextFact
             Gifts = gifts
         };
     }
-
-    private static string GenerateToken() => Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(32));
 }
