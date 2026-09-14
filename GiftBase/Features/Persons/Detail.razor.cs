@@ -166,7 +166,8 @@ public partial class Detail(
                 FirstName = Person.FirstName,
                 LastName = Person.LastName,
                 DateOfBirth = Person.DateOfBirth.HasValue ? Person.DateOfBirth.Value.ToDateTime(new TimeOnly(0, 0)) : null,
-                Relation = Person.Relation
+                Relation = Person.Relation,
+                Interests = Person.Interests
             }
             },
             { x => x.ExistingPersonId, Person.Id }

@@ -12,5 +12,7 @@ namespace GiftBase.Features.Persons
         public string LastName { get; set; } = null!;
         public DateTime? DateOfBirth { get; set; }
         public Core.Enums.Relation Relation { get; set; }
+        [MaxLength(200, ErrorMessage = "Interessen dürfen maximal 200 Zeichen lang sein.")]
+        public string? Interests { get; set; }
     }
 }

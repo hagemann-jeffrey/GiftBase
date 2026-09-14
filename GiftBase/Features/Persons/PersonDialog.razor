@@ -23,7 +23,7 @@
                                   FullWidth="true" />
                 </MudItem>
                 <MudItem xs="12" sm="6">
-                    <MudDatePicker @bind-Date="PersonInput.DateOfBirth" Label="Geburtsdatum (optional)"
+                    <MudDatePicker @bind-Date="PersonInput.DateOfBirth" Label="Geburtsdatum"
                                    DateFormat="dd.MM.yyyy" Culture="@GermanCulture" Editable="true"
                                    Mask="@(new DateMask("dd.MM.yyyy"))" Placeholder="dd.mm.yyyy" Variant="Variant.Outlined" />
                 </MudItem>
@@ -35,6 +35,11 @@
                             <MudSelectItem Value="relation">@Translations.GetRelationDisplayText(relation)</MudSelectItem>
                         }
                     </MudSelect>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Immediate @bind-Value="PersonInput.Interests" For="(() => PersonInput.Interests)"
+                                  Label="Interessen" HelperText="Kommagetrennt, z. B. Bücher, Pflanzen, Kochen"
+                                  Variant="Variant.Outlined" FullWidth="true" />
                 </MudItem>
             </MudGrid>
         </DialogContent>
