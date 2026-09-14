@@ -2,6 +2,7 @@ using GiftBase.Core.Entities;
 using GiftBase.Core.Enums;
 using GiftBase.Core.Interfaces;
 using GiftBase.Features.Gifts;
+using GiftBase.Features.GiftSuggestions;
 using GiftBase.Features.Occasions;
 using GiftBase.Features.Sharing;
 using GiftBase.Shared;
@@ -138,6 +139,38 @@ public partial class Detail(
                 Gifts.Remove(gift);
             }
         });
+    }
+
+    private async Task GenerateGiftIdeasAsync()
+    {
+        if (Person is null)
+        {
+            return;
+        }
+
+        var parameters = new DialogParameters<GiftSuggestionDialog>
+        {
+            { x => x.Person, Person },
+            { x => x.Occasions, Occasions },
+            { x => x.ExistingGifts, Gifts }
+        };
+
+        var dialogOptions = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true,
+            CloseOnEscapeKey = true
+        };
+
+        var dialog = await DialogService.ShowAsync<GiftSuggestionDialog>(null, parameters, dialogOptions);
+
+        var result = await dialog.Result;
+
+        if (result is { Canceled: false, Data: List<Gift> addedGifts })
+        {
+            Gifts.AddRange(addedGifts);
+        }
     }
 
     private async Task ShareAsync()

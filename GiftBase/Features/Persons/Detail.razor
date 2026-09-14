@@ -1,5 +1,6 @@
 @using GiftBase.Features.Gifts
 @using GiftBase.Features.Gifts.Components
+@using GiftBase.Features.GiftSuggestions
 @using GiftBase.Features.Occasions
 @using GiftBase.Features.Occasions.Components
 @using GiftBase.Features.Sharing
@@ -32,6 +33,10 @@ else
             <MudButton OnClick="AddGiftAsync" Variant="Variant.Filled" Color="Color.Primary">
                 <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-2" />
                 Geschenkidee hinzufügen
+            </MudButton>
+            <MudButton OnClick="GenerateGiftIdeasAsync" Variant="Variant.Outlined" Color="Color.Primary">
+                <MudIcon Icon="@Icons.Material.Filled.AutoAwesome" Class="mr-2" />
+                Ideen mit KI generieren
             </MudButton>
             <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" OnClick="ShareAsync"
                            aria-label="Geschenkliste teilen" />
