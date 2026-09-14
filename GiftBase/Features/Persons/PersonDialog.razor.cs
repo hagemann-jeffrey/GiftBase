@@ -38,7 +38,8 @@ namespace GiftBase.Features.Persons
                         FirstName = PersonInput.FirstName.NormalizeRequired(),
                         LastName = PersonInput.LastName.NormalizeRequired(),
                         DateOfBirth = PersonInput.DateOfBirth.HasValue ? DateOnly.FromDateTime(PersonInput.DateOfBirth.Value) : null,
-                        Relation = PersonInput.Relation
+                        Relation = PersonInput.Relation,
+                        Interests = PersonInput.Interests.NormalizeOptional()
                     });
 
                     MudDialog.Close(DialogResult.Ok(updatedPerson));
@@ -51,7 +52,8 @@ namespace GiftBase.Features.Persons
                         LastName = PersonInput.LastName.NormalizeRequired(),
                         DateOfBirth = PersonInput.DateOfBirth.HasValue ? DateOnly.FromDateTime(PersonInput.DateOfBirth.Value) : null,
                         Relation = PersonInput.Relation,
-                        UserId = userId
+                        UserId = userId,
+                        Interests = PersonInput.Interests.NormalizeOptional()
                     };
 
                     var addedPerson = await personService.AddPersonAsync(newPerson);

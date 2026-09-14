@@ -9,11 +9,13 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using GiftBase.Features.User.Login;
 using GiftBase;
 using GiftBase.Features.Gifts;
+using GiftBase.Features.GiftSuggestions;
 using GiftBase.Features.Occasions;
 using GiftBase.Features.Persons;
 using GiftBase.Features.Sharing;
 using GiftBase.Shared;
 using GiftBase.Shared.Services;
+using Google.GenAI;
 using MudBlazor;
 using System.Globalization;
 
@@ -50,6 +52,12 @@ builder.Services.AddScoped<IOccasionService, OccasionService>();
 builder.Services.AddScoped<IShareLinkService, ShareLinkService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<UserActionHelper>();
+
+var geminiApiKey = builder.Configuration["Gemini:ApiKey"]
+    ?? throw new InvalidOperationException("Gemini:ApiKey ist nicht konfiguriert.");
+builder.Services.AddSingleton(new Client(apiKey: geminiApiKey));
+builder.Services.AddScoped<IGeminiClient, GeminiClient>();
+builder.Services.AddScoped<IGiftSuggestionService, GiftSuggestionService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

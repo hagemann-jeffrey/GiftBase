@@ -36,7 +36,8 @@ public class PersonService(IDbContextFactory<GiftBaseDbContext> dbContextFactory
             personAddDto.LastName,
             personAddDto.DateOfBirth,
             personAddDto.Relation,
-            personAddDto.UserId
+            personAddDto.UserId,
+            personAddDto.Interests
         );
 
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();

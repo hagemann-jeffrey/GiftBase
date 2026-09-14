@@ -1,5 +1,6 @@
 @using GiftBase.Features.Gifts
 @using GiftBase.Features.Gifts.Components
+@using GiftBase.Features.GiftSuggestions
 @using GiftBase.Features.Occasions
 @using GiftBase.Features.Occasions.Components
 @using GiftBase.Features.Sharing
@@ -33,6 +34,10 @@ else
                 <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-2" />
                 Geschenkidee hinzufügen
             </MudButton>
+            <MudButton OnClick="GenerateGiftIdeasAsync" Variant="Variant.Outlined" Color="Color.Primary">
+                <MudIcon Icon="@Icons.Material.Filled.AutoAwesome" Class="mr-2" />
+                Ideen mit KI generieren
+            </MudButton>
             <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" OnClick="ShareAsync"
                            aria-label="Geschenkliste teilen" />
             <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="UpdatePersonAsync"
@@ -53,6 +58,10 @@ else
                 <MudText Typo="Typo.body1">Geburtsdatum: Nicht angegeben</MudText>
             }
             <MudText Typo="Typo.body1">Beziehung: @Translations.GetRelationDisplayText(Person.Relation)</MudText>
+            @if (!string.IsNullOrWhiteSpace(Person.Interests))
+            {
+                <MudText Typo="Typo.body1">Interessen: @Person.Interests</MudText>
+            }
             <MudText Typo="Typo.body1">Nächster Anlass: @NextOccasionText</MudText>
         </MudCardContent>
     </MudCard>

@@ -28,6 +28,10 @@ public class UserActionHelper(ICurrentUserService currentUserService, ISnackbar 
         {
             snackbar.Add($"Nicht gefunden: {ex.Message}", Severity.Warning);
         }
+        catch (ExternalServiceException ex)
+        {
+            snackbar.Add(ex.Message, Severity.Error);
+        }
         catch (Exception ex)
         {
             snackbar.Add($"Ein Fehler ist aufgetreten: {ex.Message}", Severity.Error);

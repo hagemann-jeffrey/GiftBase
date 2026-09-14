@@ -21,6 +21,10 @@ public class PersonConfiguration : IEntityTypeConfiguration<Person>
               builder.Property(p => p.DateOfBirth)
                      .IsRequired(false);
 
+              builder.Property(p => p.Interests)
+                     .IsRequired(false)
+                     .HasMaxLength(200);
+
               builder.Property(p => p.Relation)
                      .IsRequired()
                      .HasConversion<string>()

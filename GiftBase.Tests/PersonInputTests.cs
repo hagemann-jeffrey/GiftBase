@@ -100,4 +100,23 @@ public class PersonInputTests
         result.ShouldContain(r => r.MemberNames.Contains(nameof(PersonInput.LastName)));
         result.ShouldContain(r => r.ErrorMessage == "Nachname darf maximal 100 Zeichen lang sein.");
     }
+
+    [Fact]
+    public void PersonInput_Validate_Should_Fail_WhenInterestsAreTooLong()
+    {
+        // Arrange
+        var personInput = new PersonInput
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Interests = new string('C', 201)
+        };
+
+        // Act
+        var result = ValidationHelper.Validate(personInput);
+
+        // Assert
+        result.ShouldContain(r => r.MemberNames.Contains(nameof(PersonInput.Interests)));
+        result.ShouldContain(r => r.ErrorMessage == "Interessen dürfen maximal 200 Zeichen lang sein.");
+    }
 }

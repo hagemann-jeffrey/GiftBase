@@ -35,4 +35,12 @@ public static class Translations
 
     public static string GetOccasionDisplayTitle(Occasion occasion) =>
         occasion.Type == OccasionType.Custom ? occasion.Title ?? string.Empty : GetOccasionTypeDisplayText(occasion.Type);
+
+    public static string GetGiftSuggestionTypeDisplayText(GiftSuggestionType giftSuggestionType) => giftSuggestionType switch
+    {
+        GiftSuggestionType.Product => "Produkt",
+        GiftSuggestionType.Service => "Dienstleistung",
+        GiftSuggestionType.Money => "Geld",
+        _ => throw new ArgumentOutOfRangeException(nameof(giftSuggestionType), giftSuggestionType, null)
+    };
 }

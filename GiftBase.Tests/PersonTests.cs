@@ -1,4 +1,4 @@
-﻿using GiftBase.Core.Entities;
+using GiftBase.Core.Entities;
 using GiftBase.Core.Enums;
 using Shouldly;
 
@@ -10,7 +10,7 @@ public class PersonTests
     public void Person_ShouldBeCreated()
     {
         // Act
-        var person = new Person("John", "Doe", DateOnly.Parse("1990-01-01"), Relation.Friend, 1);
+        var person = new Person("John", "Doe", DateOnly.Parse("1990-01-01"), Relation.Friend, 1, "Bücher, Pflanzen");
 
         // Assert
         person.FirstName.ShouldBe("John");
@@ -18,19 +18,21 @@ public class PersonTests
         person.DateOfBirth.ShouldBe(DateOnly.Parse("1990-01-01"));
         person.Relation.ShouldBe(Relation.Friend);
         person.UserId.ShouldBe(1);
+        person.Interests.ShouldBe("Bücher, Pflanzen");
     }
 
     [Fact]
     public void Person_ShouldBeUpdated()
     {
         // Arrange
-        var person = new Person("John", "Doe", DateOnly.Parse("1990-01-01"), Relation.Friend, 1);
+        var person = new Person("John", "Doe", DateOnly.Parse("1990-01-01"), Relation.Friend, 1, "Bücher");
         var updateDto = new Core.Dtos.PersonUpdateDto
         {
             FirstName = "Jane",
             LastName = "Smith",
             DateOfBirth = DateOnly.Parse("1992-02-02"),
-            Relation = Relation.Family
+            Relation = Relation.Family,
+            Interests = "Pflanzen, Kochen"
         };
 
         // Act
@@ -41,5 +43,58 @@ public class PersonTests
         person.LastName.ShouldBe("Smith");
         person.DateOfBirth.ShouldBe(DateOnly.Parse("1992-02-02"));
         person.Relation.ShouldBe(Relation.Family);
+        person.Interests.ShouldBe("Pflanzen, Kochen");
+    }
+
+    [Fact]
+    public void GetAge_ShouldReturnCompletedYears_WhenBirthdayHasAlreadyOccurredThisYear()
+    {
+        // Arrange
+        var person = new Person("John", "Doe", new DateOnly(1992, 1, 1), Relation.Friend, 1);
+
+        // Act
+        var age = person.GetAge(new DateOnly(2026, 9, 13));
+
+        // Assert
+        age.ShouldBe(34);
+    }
+
+    [Fact]
+    public void GetAge_ShouldNotCountThisYear_WhenBirthdayHasNotOccurredYet()
+    {
+        // Arrange
+        var person = new Person("John", "Doe", new DateOnly(1992, 12, 24), Relation.Friend, 1);
+
+        // Act
+        var age = person.GetAge(new DateOnly(2026, 9, 13));
+
+        // Assert
+        age.ShouldBe(33);
+    }
+
+    [Fact]
+    public void GetAge_ShouldCountBirthday_WhenTodayIsTheBirthday()
+    {
+        // Arrange
+        var person = new Person("John", "Doe", new DateOnly(1992, 9, 13), Relation.Friend, 1);
+
+        // Act
+        var age = person.GetAge(new DateOnly(2026, 9, 13));
+
+        // Assert
+        age.ShouldBe(34);
+    }
+
+    [Fact]
+    public void GetAge_ShouldReturnNull_WhenDateOfBirthIsNotSet()
+    {
+        // Arrange
+        var person = new Person("John", "Doe", null, Relation.Friend, 1);
+
+        // Act
+        var age = person.GetAge(new DateOnly(2026, 9, 13));
+
+        // Assert
+        age.ShouldBeNull();
     }
 }

@@ -2,6 +2,7 @@ using GiftBase.Core.Entities;
 using GiftBase.Core.Enums;
 using GiftBase.Core.Interfaces;
 using GiftBase.Features.Gifts;
+using GiftBase.Features.GiftSuggestions;
 using GiftBase.Features.Occasions;
 using GiftBase.Features.Sharing;
 using GiftBase.Shared;
@@ -140,6 +141,38 @@ public partial class Detail(
         });
     }
 
+    private async Task GenerateGiftIdeasAsync()
+    {
+        if (Person is null)
+        {
+            return;
+        }
+
+        var parameters = new DialogParameters<GiftSuggestionDialog>
+        {
+            { x => x.Person, Person },
+            { x => x.Occasions, Occasions },
+            { x => x.ExistingGifts, Gifts }
+        };
+
+        var dialogOptions = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true,
+            CloseOnEscapeKey = true
+        };
+
+        var dialog = await DialogService.ShowAsync<GiftSuggestionDialog>(null, parameters, dialogOptions);
+
+        var result = await dialog.Result;
+
+        if (result is { Canceled: false, Data: List<Gift> addedGifts })
+        {
+            Gifts.AddRange(addedGifts);
+        }
+    }
+
     private async Task ShareAsync()
     {
         var parameters = new DialogParameters<ShareDialog>
@@ -166,7 +199,8 @@ public partial class Detail(
                 FirstName = Person.FirstName,
                 LastName = Person.LastName,
                 DateOfBirth = Person.DateOfBirth.HasValue ? Person.DateOfBirth.Value.ToDateTime(new TimeOnly(0, 0)) : null,
-                Relation = Person.Relation
+                Relation = Person.Relation,
+                Interests = Person.Interests
             }
             },
             { x => x.ExistingPersonId, Person.Id }

@@ -121,7 +121,8 @@ public class PersonServiceTests
             LastName = "Doe",
             DateOfBirth = DateOnly.Parse("1990-01-01"),
             Relation = Core.Enums.Relation.Friend,
-            UserId = 1
+            UserId = 1,
+            Interests = "Bücher, Pflanzen"
         };
 
         // Act
@@ -134,6 +135,7 @@ public class PersonServiceTests
         addedPerson.DateOfBirth.ShouldBe(DateOnly.Parse("1990-01-01"));
         addedPerson.Relation.ShouldBe(Core.Enums.Relation.Friend);
         addedPerson.UserId.ShouldBe(1);
+        addedPerson.Interests.ShouldBe("Bücher, Pflanzen");
 
         await using var dbContext = _dbContextFactory.CreateDbContext();
         var personInDb = await dbContext.Persons.SingleOrDefaultAsync(p => p.Id == addedPerson.Id);
@@ -145,7 +147,7 @@ public class PersonServiceTests
     {
         // Arrange
         await using var dbContext = _dbContextFactory.CreateDbContext();
-        var person = new Person("John", "Doe", DateOnly.Parse("1990-01-01"), Core.Enums.Relation.Friend, 1);
+        var person = new Person("John", "Doe", DateOnly.Parse("1990-01-01"), Core.Enums.Relation.Friend, 1, "Bücher");
         dbContext.Persons.Add(person);
         await dbContext.SaveChangesAsync();
 
@@ -154,7 +156,8 @@ public class PersonServiceTests
             FirstName = "Jane",
             LastName = "Smith",
             DateOfBirth = DateOnly.Parse("1992-02-02"),
-            Relation = Core.Enums.Relation.Family
+            Relation = Core.Enums.Relation.Family,
+            Interests = "Pflanzen, Kochen"
         };
 
         // Act
@@ -165,6 +168,7 @@ public class PersonServiceTests
         updatedPerson.LastName.ShouldBe("Smith");
         updatedPerson.DateOfBirth.ShouldBe(DateOnly.Parse("1992-02-02"));
         updatedPerson.Relation.ShouldBe(Core.Enums.Relation.Family);
+        updatedPerson.Interests.ShouldBe("Pflanzen, Kochen");
     }
 
     [Fact]

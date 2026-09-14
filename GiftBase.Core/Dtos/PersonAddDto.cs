@@ -7,4 +7,5 @@ public class PersonAddDto
     public DateOnly? DateOfBirth { get; set; }
     public Enums.Relation Relation { get; set; }
     public int UserId { get; set; }
+    public string? Interests { get; set; }
 }
