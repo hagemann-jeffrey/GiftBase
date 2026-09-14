@@ -6,4 +6,5 @@ public class PersonUpdateDto
     public string LastName { get; set; } = null!;
     public DateOnly? DateOfBirth { get; set; }
     public Enums.Relation Relation { get; set; }
+    public string? Interests { get; set; }
 }
