@@ -4,6 +4,7 @@ using GiftBase.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GiftBase.Data.Migrations
 {
     [DbContext(typeof(GiftBaseDbContext))]
-    partial class GiftBaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260913175516_AddPersonInterests")]
+    partial class AddPersonInterests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,22 +75,6 @@ namespace GiftBase.Data.Migrations
                     b.HasIndex("PersonId");
 
                     b.ToTable("Gifts");
-                });
-
-            modelBuilder.Entity("GiftBase.Core.Entities.GiftSuggestionQuota", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RequestCount")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("WindowStartedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("GiftSuggestionQuotas");
                 });
 
             modelBuilder.Entity("GiftBase.Core.Entities.Occasion", b =>
@@ -250,15 +237,6 @@ namespace GiftBase.Data.Migrations
                     b.Navigation("Occasion");
 
                     b.Navigation("Person");
-                });
-
-            modelBuilder.Entity("GiftBase.Core.Entities.GiftSuggestionQuota", b =>
-                {
-                    b.HasOne("GiftBase.Core.Entities.User", null)
-                        .WithOne()
-                        .HasForeignKey("GiftBase.Core.Entities.GiftSuggestionQuota", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("GiftBase.Core.Entities.Occasion", b =>
