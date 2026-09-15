@@ -6,38 +6,38 @@ namespace GiftBase.Data.Configurations;
 
 public class PersonConfiguration : IEntityTypeConfiguration<Person>
 {
-       public void Configure(EntityTypeBuilder<Person> builder)
-       {
-              builder.HasKey(p => p.Id);
+    public void Configure(EntityTypeBuilder<Person> builder)
+    {
+        builder.HasKey(p => p.Id);
 
-              builder.Property(p => p.FirstName)
-                     .IsRequired()
-                     .HasMaxLength(100);
+        builder.Property(p => p.FirstName)
+               .IsRequired()
+               .HasMaxLength(100);
 
-              builder.Property(p => p.LastName)
-                     .IsRequired()
-                     .HasMaxLength(100);
+        builder.Property(p => p.LastName)
+               .IsRequired()
+               .HasMaxLength(100);
 
-              builder.Property(p => p.DateOfBirth)
-                     .IsRequired(false);
+        builder.Property(p => p.DateOfBirth)
+               .IsRequired(false);
 
-              builder.Property(p => p.Interests)
-                     .IsRequired(false)
-                     .HasMaxLength(200);
+        builder.Property(p => p.Interests)
+               .IsRequired(false)
+               .HasMaxLength(200);
 
-              builder.Property(p => p.Relation)
-                     .IsRequired()
-                     .HasConversion<string>()
-                     .HasMaxLength(20);
+        builder.Property(p => p.Relation)
+               .IsRequired()
+               .HasConversion<string>()
+               .HasMaxLength(20);
 
-              builder.HasMany(p => p.Gifts)
-                     .WithOne(g => g.Person)
-                     .HasForeignKey(g => g.PersonId)
-                     .OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(p => p.Gifts)
+               .WithOne(g => g.Person)
+               .HasForeignKey(g => g.PersonId)
+               .OnDelete(DeleteBehavior.Cascade);
 
-              builder.HasMany(p => p.Occasions)
-                     .WithOne(o => o.Person)
-                     .HasForeignKey(o => o.PersonId)
-                     .OnDelete(DeleteBehavior.Cascade);
-       }
+        builder.HasMany(p => p.Occasions)
+               .WithOne(o => o.Person)
+               .HasForeignKey(o => o.PersonId)
+               .OnDelete(DeleteBehavior.Cascade);
+    }
 }
