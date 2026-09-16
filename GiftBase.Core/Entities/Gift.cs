@@ -28,6 +28,7 @@ public class Gift
     public int? OccasionId { get; private set; }
     public string? OccasionLabel { get; private set; }
     public int? OccasionYear { get; private set; }
+    public Guid? ImageVersion { get; private set; }
 
     public Person Person { get; private set; } = null!;
     public Occasion? Occasion { get; private set; }
@@ -54,4 +55,8 @@ public class Gift
         OccasionLabel = occasionLabel;
         OccasionYear = occasionYear;
     }
+
+    public void AttachImage() => ImageVersion = Guid.NewGuid();
+
+    public void DetachImage() => ImageVersion = null;
 }
