@@ -37,5 +37,8 @@ public class GiftConfiguration : IEntityTypeConfiguration<Gift>
 
         builder.Property(g => g.OccasionYear)
                .IsRequired(false);
+
+        builder.Property(g => g.ImageVersion)
+               .IsRequired(false);
     }
 }
