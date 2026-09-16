@@ -1,4 +1,8 @@
 <MudCard>
+    @if (ImageUrl is not null)
+    {
+        <MudCardMedia Image="@ImageUrl" Height="160" Title="@Gift.Title" />
+    }
     <MudCardHeader Class="pa-3">
         <CardHeaderContent>
             <MudText Typo="Typo.h6">@Gift.Title</MudText>

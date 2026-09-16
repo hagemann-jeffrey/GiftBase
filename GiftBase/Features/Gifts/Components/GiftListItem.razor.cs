@@ -1,3 +1,4 @@
+using GiftBase.Features.Gifts;
 using Microsoft.AspNetCore.Components;
 
 namespace GiftBase.Features.Gifts.Components;
@@ -12,4 +13,8 @@ public partial class GiftListItem
     public string? OccasionText { get; set; }
 
     private string PriceText => $"{Gift.Price!.Value:N2} €";
+
+    private string? ImageUrl => Gift.ImageVersion.HasValue
+        ? GiftImageLinkBuilder.Build(Gift.Id, Gift.ImageVersion.Value)
+        : null;
 }
