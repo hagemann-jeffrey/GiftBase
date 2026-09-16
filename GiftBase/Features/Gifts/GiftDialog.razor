@@ -31,6 +31,38 @@
             <MudTextField Immediate @bind-Value="GiftInput.Link" For="(() => GiftInput.Link)" Label="Link"
                           Placeholder="https://..." HelperText="Produktseite oder Inspirationsquelle" Adornment="Adornment.Start"
                           AdornmentIcon="@Icons.Material.Filled.Link" Variant="Variant.Outlined" FullWidth="true" />
+            <MudStack Spacing="2" Class="mt-3">
+                <MudText Typo="Typo.subtitle2">Bild</MudText>
+                @if (PreviewImageUrl is not null)
+                {
+                    <MudImage Src="@PreviewImageUrl" Alt="Vorschau des Bildes" Height="160" Fluid="true"
+                              ObjectFit="ObjectFit.Cover" Class="rounded" />
+                }
+                <MudStack Row="true" Wrap="Wrap.Wrap" Spacing="2" AlignItems="AlignItems.Center">
+                    <MudFileUpload T="IBrowserFile" FilesChanged="OnImageSelectedAsync"
+                                   Accept="image/jpeg,image/png" MaxFileSize="@Core.Entities.GiftImage.MaxContentLength">
+                        <CustomContent Context="fileUpload">
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.AddPhotoAlternate"
+                                       OnClick="@(() => fileUpload.OpenFilePickerAsync())">
+                                @(PreviewImageUrl is null ? "Bild auswählen" : "Bild ändern")
+                            </MudButton>
+                        </CustomContent>
+                    </MudFileUpload>
+                    @if (PreviewImageUrl is not null)
+                    {
+                        <MudButton OnClick="RemoveImage" Variant="Variant.Text" Color="Color.Error"
+                                   StartIcon="@Icons.Material.Filled.Delete">
+                            Bild entfernen
+                        </MudButton>
+                    }
+                </MudStack>
+                @if (ImageError is not null)
+                {
+                    <MudText Typo="Typo.caption" Color="Color.Error">@ImageError</MudText>
+                }
+                <MudText Typo="Typo.caption">JPG oder PNG, maximal 5 MB.</MudText>
+            </MudStack>
             @if (HasDeletedOccasionSnapshot)
             {
                 <MudAlert Severity="Severity.Info" Dense="true" Class="mt-3">
