@@ -64,6 +64,8 @@ public class GiftServiceTests
         return occasion;
     }
 
+    private static byte[] ImageBytes() => [0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10];
+
     [Fact]
     public async Task GetGiftsAsync_ShouldReturnGiftsForPerson()
     {
@@ -78,6 +80,7 @@ public class GiftServiceTests
         // Assert
         gifts.Count.ShouldBe(2);
         gifts.All(g => g.PersonId == person.Id).ShouldBeTrue();
+        gifts.All(g => g.ImageVersion == null).ShouldBeTrue();
     }
 
     [Fact]
@@ -430,5 +433,333 @@ public class GiftServiceTests
         updatedGift.OccasionId.ShouldBeNull();
         updatedGift.OccasionLabel.ShouldBe("Hochzeit");
         updatedGift.OccasionYear.ShouldBe(2027);
+    }
+
+    [Fact]
+    public async Task AddGiftAsync_ShouldAddImage()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var giftAddDto = new GiftAddDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea,
+            PersonId = person.Id,
+            ImageContent = ImageBytes(),
+            ImageContentType = GiftImage.JpegContentType
+        };
+
+        // Act
+        var addedGift = await _giftService.AddGiftAsync(giftAddDto, OwnerUserId);
+
+        // Assert
+        addedGift.ImageVersion.ShouldNotBeNull();
+
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var giftImage = await dbContext.GiftImages.SingleOrDefaultAsync(i => i.GiftId == addedGift.Id);
+        giftImage.ShouldNotBeNull();
+        giftImage.ContentType.ShouldBe(GiftImage.JpegContentType);
+        giftImage.Content.ShouldBe(ImageBytes());
+    }
+
+    [Fact]
+    public async Task AddGiftAsync_ShouldNotAddImage_WhenNoImageIsProvided()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var giftAddDto = new GiftAddDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea,
+            PersonId = person.Id
+        };
+
+        // Act
+        var addedGift = await _giftService.AddGiftAsync(giftAddDto, OwnerUserId);
+
+        // Assert
+        addedGift.ImageVersion.ShouldBeNull();
+
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var giftImage = await dbContext.GiftImages.SingleOrDefaultAsync(i => i.GiftId == addedGift.Id);
+        giftImage.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task AddGiftAsync_ShouldThrowConflictException_WhenImageIsTooLarge()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var giftAddDto = new GiftAddDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea,
+            PersonId = person.Id,
+            ImageContent = new byte[GiftImage.MaxContentLength + 1],
+            ImageContentType = GiftImage.JpegContentType
+        };
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<ConflictException>(async () =>
+            await _giftService.AddGiftAsync(giftAddDto, OwnerUserId));
+
+        exception.Message.ShouldBe("Das Bild darf maximal 5 MB groß sein.");
+    }
+
+    [Fact]
+    public async Task AddGiftAsync_ShouldThrowConflictException_WhenImageContentTypeIsNotSupported()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var giftAddDto = new GiftAddDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea,
+            PersonId = person.Id,
+            ImageContent = ImageBytes(),
+            ImageContentType = "application/pdf"
+        };
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<ConflictException>(async () =>
+            await _giftService.AddGiftAsync(giftAddDto, OwnerUserId));
+
+        exception.Message.ShouldBe("Nur JPG- und PNG-Bilder werden unterstützt.");
+    }
+
+    [Fact]
+    public async Task UpdateGiftAsync_ShouldAddImage_WhenGiftHasNoImageYet()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var gift = await AddGiftAsync(person.Id);
+
+        // Act
+        var updatedGift = await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea,
+            ImageContent = ImageBytes(),
+            ImageContentType = GiftImage.JpegContentType
+        });
+
+        // Assert
+        updatedGift.ImageVersion.ShouldNotBeNull();
+
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var giftImage = await dbContext.GiftImages.SingleOrDefaultAsync(i => i.GiftId == gift.Id);
+        giftImage.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task UpdateGiftAsync_ShouldReplaceImage()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var gift = await AddGiftAsync(person.Id);
+        var addedGift = await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea,
+            ImageContent = ImageBytes(),
+            ImageContentType = GiftImage.JpegContentType
+        });
+        var firstImageVersion = addedGift.ImageVersion;
+        byte[] newImageContent = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+
+        // Act
+        var updatedGift = await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea,
+            ImageContent = newImageContent,
+            ImageContentType = GiftImage.PngContentType
+        });
+
+        // Assert
+        updatedGift.ImageVersion.ShouldNotBe(firstImageVersion);
+
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var giftImages = await dbContext.GiftImages.Where(i => i.GiftId == gift.Id).ToListAsync();
+        giftImages.Count.ShouldBe(1);
+        giftImages[0].ContentType.ShouldBe(GiftImage.PngContentType);
+        giftImages[0].Content.ShouldBe(newImageContent);
+    }
+
+    [Fact]
+    public async Task UpdateGiftAsync_ShouldKeepImage_WhenImageVersionIsProvidedWithoutNewContent()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var gift = await AddGiftAsync(person.Id);
+        var giftWithImage = await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea,
+            ImageContent = ImageBytes(),
+            ImageContentType = GiftImage.JpegContentType
+        });
+        var imageVersion = giftWithImage.ImageVersion;
+
+        // Act
+        var updatedGift = await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
+        {
+            Title = "Espressomaschine",
+            Status = GiftStatus.Idea,
+            ImageVersion = imageVersion
+        });
+
+        // Assert
+        updatedGift.Title.ShouldBe("Espressomaschine");
+        updatedGift.ImageVersion.ShouldBe(imageVersion);
+
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var giftImage = await dbContext.GiftImages.SingleOrDefaultAsync(i => i.GiftId == gift.Id);
+        giftImage.ShouldNotBeNull();
+        giftImage.Content.ShouldBe(ImageBytes());
+    }
+
+    [Fact]
+    public async Task UpdateGiftAsync_ShouldRemoveImage_WhenNeitherContentNorVersionIsProvided()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var gift = await AddGiftAsync(person.Id);
+        await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea,
+            ImageContent = ImageBytes(),
+            ImageContentType = GiftImage.JpegContentType
+        });
+
+        // Act
+        var updatedGift = await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea
+        });
+
+        // Assert
+        updatedGift.ImageVersion.ShouldBeNull();
+
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var giftImage = await dbContext.GiftImages.SingleOrDefaultAsync(i => i.GiftId == gift.Id);
+        giftImage.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task UpdateGiftAsync_ShouldNotThrow_WhenRemovingImageFromGiftWithoutImage()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var gift = await AddGiftAsync(person.Id);
+
+        // Act
+        var updatedGift = await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea
+        });
+
+        // Assert
+        updatedGift.ImageVersion.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task UpdateGiftAsync_ShouldThrowConflictException_WhenImageIsTooLarge()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var gift = await AddGiftAsync(person.Id);
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<ConflictException>(async () =>
+            await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
+            {
+                Title = "Kaffeemaschine",
+                Status = GiftStatus.Idea,
+                ImageContent = new byte[GiftImage.MaxContentLength + 1],
+                ImageContentType = GiftImage.JpegContentType
+            }));
+
+        exception.Message.ShouldBe("Das Bild darf maximal 5 MB groß sein.");
+    }
+
+    [Fact]
+    public async Task UpdateGiftAsync_ShouldThrowConflictException_WhenImageContentTypeIsNotSupported()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var gift = await AddGiftAsync(person.Id);
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<ConflictException>(async () =>
+            await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
+            {
+                Title = "Kaffeemaschine",
+                Status = GiftStatus.Idea,
+                ImageContent = ImageBytes(),
+                ImageContentType = "application/pdf"
+            }));
+
+        exception.Message.ShouldBe("Nur JPG- und PNG-Bilder werden unterstützt.");
+    }
+
+    [Fact]
+    public async Task GetGiftImageAsync_ShouldReturnImage()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var gift = await AddGiftAsync(person.Id);
+        await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea,
+            ImageContent = ImageBytes(),
+            ImageContentType = GiftImage.JpegContentType
+        });
+
+        // Act
+        var giftImage = await _giftService.GetGiftImageAsync(gift.Id, OwnerUserId);
+
+        // Assert
+        giftImage.ContentType.ShouldBe(GiftImage.JpegContentType);
+        giftImage.Content.ShouldBe(ImageBytes());
+    }
+
+    [Fact]
+    public async Task GetGiftImageAsync_ShouldThrowNotFoundException_WhenGiftHasNoImage()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var gift = await AddGiftAsync(person.Id);
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
+            await _giftService.GetGiftImageAsync(gift.Id, OwnerUserId));
+
+        exception.Message.ShouldBe($"Bild konnte nicht gefunden werden: {gift.Id}");
+    }
+
+    [Fact]
+    public async Task GetGiftImageAsync_ShouldThrowNotFoundException_WhenGiftBelongsToAnotherUser()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OwnerUserId);
+        var gift = await AddGiftAsync(person.Id);
+        await _giftService.UpdateGiftAsync(gift.Id, OwnerUserId, new GiftUpdateDto
+        {
+            Title = "Kaffeemaschine",
+            Status = GiftStatus.Idea,
+            ImageContent = ImageBytes(),
+            ImageContentType = GiftImage.JpegContentType
+        });
+
+        // Act & Assert
+        var exception = await Should.ThrowAsync<NotFoundException>(async () =>
+            await _giftService.GetGiftImageAsync(gift.Id, OtherUserId));
+
+        exception.Message.ShouldBe($"Bild konnte nicht gefunden werden: {gift.Id}");
     }
 }

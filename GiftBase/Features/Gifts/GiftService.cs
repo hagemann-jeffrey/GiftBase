@@ -44,6 +44,16 @@ public class GiftService(IDbContextFactory<GiftBaseDbContext> dbContextFactory) 
         dbContext.Gifts.Add(gift);
         await dbContext.SaveChangesAsync();
 
+        if (giftAddDto.ImageContent is not null)
+        {
+            EnsureImageIsValid(giftAddDto.ImageContent, giftAddDto.ImageContentType);
+
+            dbContext.GiftImages.Add(new GiftImage(gift.Id, giftAddDto.ImageContentType!, giftAddDto.ImageContent));
+            gift.AttachImage();
+
+            await dbContext.SaveChangesAsync();
+        }
+
         return gift;
     }
 
@@ -59,6 +69,35 @@ public class GiftService(IDbContextFactory<GiftBaseDbContext> dbContextFactory) 
         await EnsureOccasionBelongsToPersonAsync(dbContext, giftUpdateDto.OccasionId, gift.PersonId);
 
         gift.Update(giftUpdateDto);
+
+        if (giftUpdateDto.ImageContent is not null)
+        {
+            EnsureImageIsValid(giftUpdateDto.ImageContent, giftUpdateDto.ImageContentType);
+
+            var giftImage = await dbContext.GiftImages.SingleOrDefaultAsync(i => i.GiftId == gift.Id);
+
+            if (giftImage is null)
+            {
+                dbContext.GiftImages.Add(new GiftImage(gift.Id, giftUpdateDto.ImageContentType!, giftUpdateDto.ImageContent));
+            }
+            else
+            {
+                giftImage.Replace(giftUpdateDto.ImageContentType!, giftUpdateDto.ImageContent);
+            }
+
+            gift.AttachImage();
+        }
+        else if (!giftUpdateDto.ImageVersion.HasValue)
+        {
+            var giftImage = await dbContext.GiftImages.SingleOrDefaultAsync(i => i.GiftId == gift.Id);
+
+            if (giftImage is not null)
+            {
+                dbContext.GiftImages.Remove(giftImage);
+            }
+
+            gift.DetachImage();
+        }
 
         await dbContext.SaveChangesAsync();
 
@@ -86,6 +125,33 @@ public class GiftService(IDbContextFactory<GiftBaseDbContext> dbContextFactory) 
             .Where(p => p.UserId == currentUserId)
             .Select(p => new { p.Id, GiftCount = p.Gifts.Count })
             .ToDictionaryAsync(x => x.Id, x => x.GiftCount);
+    }
+
+    public async Task<GiftImage> GetGiftImageAsync(int giftId, int currentUserId)
+    {
+        await using var dbContext = await dbContextFactory.CreateDbContextAsync();
+
+        var giftExists = await dbContext.Gifts
+            .AnyAsync(g => g.Id == giftId && g.Person.UserId == currentUserId);
+
+        var giftImage = giftExists
+            ? await dbContext.GiftImages.SingleOrDefaultAsync(i => i.GiftId == giftId)
+            : null;
+
+        return giftImage ?? throw new NotFoundException($"Bild konnte nicht gefunden werden: {giftId}");
+    }
+
+    private static void EnsureImageIsValid(byte[] content, string? contentType)
+    {
+        if (content.LongLength > GiftImage.MaxContentLength)
+        {
+            throw new ConflictException("Das Bild darf maximal 5 MB groß sein.");
+        }
+
+        if (!GiftImage.IsSupportedContentType(contentType))
+        {
+            throw new ConflictException("Nur JPG- und PNG-Bilder werden unterstützt.");
+        }
     }
 
     private static async Task EnsureOccasionBelongsToPersonAsync(GiftBaseDbContext dbContext, int? occasionId, int personId)

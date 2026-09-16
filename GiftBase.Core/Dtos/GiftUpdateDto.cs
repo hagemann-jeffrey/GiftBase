@@ -8,4 +8,7 @@ public class GiftUpdateDto
     public decimal? Price { get; set; }
     public Enums.GiftStatus Status { get; set; }
     public int? OccasionId { get; set; }
+    public byte[]? ImageContent { get; set; }
+    public string? ImageContentType { get; set; }
+    public Guid? ImageVersion { get; set; }
 }
