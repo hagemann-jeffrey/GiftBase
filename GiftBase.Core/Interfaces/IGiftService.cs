@@ -10,4 +10,5 @@ public interface IGiftService
     Task<Gift> UpdateGiftAsync(int giftId, int currentUserId, GiftUpdateDto giftUpdateDto);
     Task DeleteGiftAsync(int giftId, int currentUserId);
     Task<Dictionary<int, int>> GetGiftCountsByPersonAsync(int currentUserId);
+    Task<GiftImage> GetGiftImageAsync(int giftId, int currentUserId);
 }

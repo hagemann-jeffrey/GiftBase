@@ -9,4 +9,6 @@ public class GiftAddDto
     public Enums.GiftStatus Status { get; set; }
     public int PersonId { get; set; }
     public int? OccasionId { get; set; }
+    public byte[]? ImageContent { get; set; }
+    public string? ImageContentType { get; set; }
 }

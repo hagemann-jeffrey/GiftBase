@@ -19,5 +19,8 @@ namespace GiftBase.Features.Gifts
         public int? OccasionId { get; set; }
         public string? OccasionLabel { get; set; }
         public int? OccasionYear { get; set; }
+        public Guid? ImageVersion { get; set; }
+        public byte[]? ImageContent { get; set; }
+        public string? ImageContentType { get; set; }
     }
 }

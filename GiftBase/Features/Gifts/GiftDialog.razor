@@ -11,10 +11,42 @@
         </TitleContent>
         <DialogContent>
             <DataAnnotationsValidator />
+            <MudStack Spacing="2">
+                <MudText Typo="Typo.subtitle2">Bild</MudText>
+                @if (PreviewImageUrl is not null)
+                {
+                    <MudImage Src="@PreviewImageUrl" Alt="Vorschau des Bildes" Width="200" Height="200"
+                              ObjectFit="ObjectFit.Contain" Class="rounded" />
+                }
+                <MudStack Row="true" Wrap="Wrap.Wrap" Spacing="2" AlignItems="AlignItems.Center">
+                    <MudFileUpload T="IBrowserFile" FilesChanged="OnImageSelectedAsync" Accept="image/jpeg,image/png">
+                        <CustomContent Context="fileUpload">
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.AddPhotoAlternate"
+                                       OnClick="@(() => fileUpload.OpenFilePickerAsync())">
+                                @(PreviewImageUrl is null ? "Bild auswählen" : "Bild ändern")
+                            </MudButton>
+                        </CustomContent>
+                        <SelectedTemplate Context="selectedFile"></SelectedTemplate>
+                    </MudFileUpload>
+                    @if (PreviewImageUrl is not null)
+                    {
+                        <MudButton OnClick="RemoveImage" Variant="Variant.Text" Color="Color.Error"
+                                   StartIcon="@Icons.Material.Filled.Delete">
+                            Bild entfernen
+                        </MudButton>
+                    }
+                </MudStack>
+                @if (ImageError is not null)
+                {
+                    <MudText Typo="Typo.caption" Color="Color.Error">@ImageError</MudText>
+                }
+                <MudText Typo="Typo.caption">JPG oder PNG, maximal 5 MB.</MudText>
+            </MudStack>
             @if (ExistingGiftId.HasValue)
             {
                 <MudSelect Immediate Required @bind-Value="GiftInput.Status" For="(() => GiftInput.Status)" Label="Status"
-                           Variant="Variant.Outlined" FullWidth="true">
+                           Variant="Variant.Outlined" FullWidth="true" Class="mt-3">
                     @foreach (var status in Enum.GetValues<Core.Enums.GiftStatus>())
                     {
                         <MudSelectItem Value="status">@Translations.GetGiftStatusDisplayText(status)</MudSelectItem>
@@ -22,7 +54,7 @@
                 </MudSelect>
             }
             <MudTextField Immediate Required @bind-Value="GiftInput.Title" For="(() => GiftInput.Title)" Label="Titel"
-                          Variant="Variant.Outlined" FullWidth="true" />
+                          Variant="Variant.Outlined" FullWidth="true" Class="@(ExistingGiftId.HasValue ? null : "mt-3")" />
             <MudTextField Immediate @bind-Value="GiftInput.Note" For="(() => GiftInput.Note)" Label="Notiz" Lines="3"
                           Variant="Variant.Outlined" FullWidth="true" />
             <MudNumericField T="decimal?" Immediate @bind-Value="GiftInput.Price" For="(() => GiftInput.Price)"

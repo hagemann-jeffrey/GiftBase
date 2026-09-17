@@ -97,7 +97,8 @@ public partial class Detail(
                 Status = gift.Status,
                 OccasionId = gift.OccasionId,
                 OccasionLabel = gift.OccasionLabel,
-                OccasionYear = gift.OccasionYear
+                OccasionYear = gift.OccasionYear,
+                ImageVersion = gift.ImageVersion
             }
             },
             { x => x.PersonId, PersonId },

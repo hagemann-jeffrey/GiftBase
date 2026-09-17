@@ -32,6 +32,7 @@ public class GiftTests
         gift.Note.ShouldBeNull();
         gift.Link.ShouldBeNull();
         gift.Price.ShouldBeNull();
+        gift.ImageVersion.ShouldBeNull();
     }
 
     [Fact]
@@ -153,5 +154,66 @@ public class GiftTests
         gift.OccasionId.ShouldBe(99);
         gift.OccasionLabel.ShouldBeNull();
         gift.OccasionYear.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Gift_ShouldAttachImage()
+    {
+        // Arrange
+        var gift = new Gift("Kaffeemaschine", null, null, null, 1);
+
+        // Act
+        gift.AttachImage();
+
+        // Assert
+        gift.ImageVersion.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void Gift_ShouldChangeImageVersion_WhenImageIsAttachedAgain()
+    {
+        // Arrange
+        var gift = new Gift("Kaffeemaschine", null, null, null, 1);
+        gift.AttachImage();
+        var firstVersion = gift.ImageVersion;
+
+        // Act
+        gift.AttachImage();
+
+        // Assert
+        gift.ImageVersion.ShouldNotBe(firstVersion);
+    }
+
+    [Fact]
+    public void Gift_ShouldDetachImage()
+    {
+        // Arrange
+        var gift = new Gift("Kaffeemaschine", null, null, null, 1);
+        gift.AttachImage();
+
+        // Act
+        gift.DetachImage();
+
+        // Assert
+        gift.ImageVersion.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Gift_ShouldKeepImage_WhenUpdated()
+    {
+        // Arrange
+        var gift = new Gift("Kaffeemaschine", null, null, null, 1);
+        gift.AttachImage();
+        var imageVersion = gift.ImageVersion;
+
+        // Act
+        gift.Update(new Core.Dtos.GiftUpdateDto
+        {
+            Title = "Espressomaschine",
+            Status = GiftStatus.Bought
+        });
+
+        // Assert
+        gift.ImageVersion.ShouldBe(imageVersion);
     }
 }

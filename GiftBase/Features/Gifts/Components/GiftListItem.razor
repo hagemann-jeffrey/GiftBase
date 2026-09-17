@@ -1,4 +1,14 @@
-<MudCard>
+<MudCard Style="height:100%;">
+    @if (ImageUrl is not null)
+    {
+        <MudImage Src="@ImageUrl" Alt="@Gift.Title" ObjectFit="ObjectFit.Contain" Height="100" Class="mt-2" />
+    }
+    else
+    {
+        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mt-2" Style="height:100px;">
+            <MudIcon Icon="@Icons.Material.Filled.CardGiftcard" Size="Size.Large" Color="Color.Tertiary" />
+        </MudStack>
+    }
     <MudCardHeader Class="pa-3">
         <CardHeaderContent>
             <MudText Typo="Typo.h6">@Gift.Title</MudText>

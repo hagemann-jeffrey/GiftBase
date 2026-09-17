@@ -120,5 +120,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.MapLoginEndpoints();
+app.MapGiftImageEndpoints();
 
 app.Run();
