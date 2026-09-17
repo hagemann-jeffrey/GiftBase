@@ -22,6 +22,22 @@ public class OccasionService(IDbContextFactory<GiftBaseDbContext> dbContextFacto
         return occasions.SortByNextOccurrence(DateOnly.FromDateTime(DateTime.Today));
     }
 
+    public async Task<Dictionary<int, Occasion>> GetNextOccasionsByPersonAsync(int currentUserId)
+    {
+        await using var dbContext = await dbContextFactory.CreateDbContextAsync();
+
+        var occasions = await dbContext.Occasions
+            .Where(o => o.Person.UserId == currentUserId)
+            .ToListAsync();
+
+        var today = DateOnly.FromDateTime(DateTime.Today);
+
+        return occasions
+            .Where(o => !o.IsPast(today))
+            .GroupBy(o => o.PersonId)
+            .ToDictionary(g => g.Key, g => g.SortByNextOccurrence(today).First());
+    }
+
     public async Task<Occasion> AddOccasionAsync(OccasionAddDto occasionAddDto, int currentUserId)
     {
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();
