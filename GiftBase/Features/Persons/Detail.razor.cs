@@ -5,7 +5,6 @@ using GiftBase.Features.Gifts;
 using GiftBase.Features.GiftSuggestions;
 using GiftBase.Features.Occasions;
 using GiftBase.Features.Sharing;
-using GiftBase.Shared;
 using GiftBase.Shared.Components;
 using GiftBase.Shared.Services;
 using Microsoft.AspNetCore.Components;
@@ -256,17 +255,8 @@ public partial class Detail(
                 return "Kein Anlass hinterlegt";
             }
 
-            var nextOccurrence = nextOccasion.GetNextOccurrence(Today);
-            var daysUntilNextOccurrence = nextOccurrence.DayNumber - Today.DayNumber;
-            var countdown = daysUntilNextOccurrence switch
-            {
-                0 => "heute",
-                1 => "morgen",
-                _ => $"in {daysUntilNextOccurrence} Tagen"
-            };
-
             return $"{Translations.GetOccasionDisplayTitle(nextOccasion)} · "
-                + $"{nextOccurrence.ToString("dd. MMMM yyyy", AppCulture.German)} · {countdown}";
+                + $"{nextOccasion.FormatNextOccurrence(Today)} · {nextOccasion.FormatCountdown(Today)}";
         }
     }
 

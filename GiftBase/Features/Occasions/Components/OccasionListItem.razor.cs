@@ -1,7 +1,5 @@
-using GiftBase.Core.Enums;
-using GiftBase.Shared;
+using GiftBase.Features.Occasions;
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
 
 namespace GiftBase.Features.Occasions.Components;
 
@@ -16,33 +14,13 @@ public partial class OccasionListItem
 
     private static DateOnly Today => DateOnly.FromDateTime(DateTime.Today);
 
-    private string OccasionIcon => Occasion.Type switch
-    {
-        OccasionType.Birthday => Icons.Material.Filled.Cake,
-        OccasionType.Christmas => Icons.Material.Filled.Park,
-        _ => Icons.Material.Filled.Event
-    };
+    private string OccasionIcon => Occasion.GetIcon();
 
-    private string NextOccurrenceText =>
-        Occasion.GetNextOccurrence(Today).ToString("dd. MMMM yyyy", AppCulture.German);
+    private string NextOccurrenceText => Occasion.FormatNextOccurrence(Today);
 
     private string RecurrenceText => Occasion.IsRecurring ? "jährlich" : "einmalig";
 
     private string GiftCountText => GiftCount == 1 ? "1 Geschenkidee" : $"{GiftCount} Geschenkideen";
 
-    private string CountdownText
-    {
-        get
-        {
-            var daysUntilNextOccurrence = Occasion.GetNextOccurrence(Today).DayNumber - Today.DayNumber;
-
-            return daysUntilNextOccurrence switch
-            {
-                < 0 => "vergangen",
-                0 => "heute",
-                1 => "morgen",
-                _ => $"in {daysUntilNextOccurrence} Tagen"
-            };
-        }
-    }
+    private string CountdownText => Occasion.FormatCountdown(Today);
 }
