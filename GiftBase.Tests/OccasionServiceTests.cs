@@ -88,6 +88,65 @@ public class OccasionServiceTests
     }
 
     [Fact]
+    public async Task GetNextOccasionsByPersonAsync_ShouldReturnNearestUpcomingOccasionPerPerson()
+    {
+        // Arrange
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var person = await AddPersonAsync(OwnerUserId);
+        var soon = await AddOccasionAsync(person.Id, OccasionType.Custom, "Bald", today.AddDays(5), false);
+        await AddOccasionAsync(person.Id, OccasionType.Custom, "Später", today.AddMonths(2), false);
+
+        // Act
+        var nextOccasions = await _occasionService.GetNextOccasionsByPersonAsync(OwnerUserId);
+
+        // Assert
+        nextOccasions.Count.ShouldBe(1);
+        nextOccasions[person.Id].Id.ShouldBe(soon.Id);
+    }
+
+    [Fact]
+    public async Task GetNextOccasionsByPersonAsync_ShouldSkipPerson_WhenOnlyOccasionIsPast()
+    {
+        // Arrange
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var person = await AddPersonAsync(OwnerUserId);
+        await AddOccasionAsync(person.Id, OccasionType.Custom, "Vorbei", today.AddDays(-5), false);
+
+        // Act
+        var nextOccasions = await _occasionService.GetNextOccasionsByPersonAsync(OwnerUserId);
+
+        // Assert
+        nextOccasions.ShouldNotContainKey(person.Id);
+    }
+
+    [Fact]
+    public async Task GetNextOccasionsByPersonAsync_ShouldNotIncludeOccasions_WhenPersonBelongsToAnotherUser()
+    {
+        // Arrange
+        var person = await AddPersonAsync(OtherUserId);
+        await AddOccasionAsync(person.Id, OccasionType.Christmas, null, new DateOnly(2026, 12, 24), true);
+
+        // Act
+        var nextOccasions = await _occasionService.GetNextOccasionsByPersonAsync(OwnerUserId);
+
+        // Assert
+        nextOccasions.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task GetNextOccasionsByPersonAsync_ShouldReturnEmptyDictionary_WhenUserHasNoOccasions()
+    {
+        // Arrange
+        await AddPersonAsync(OwnerUserId);
+
+        // Act
+        var nextOccasions = await _occasionService.GetNextOccasionsByPersonAsync(OwnerUserId);
+
+        // Assert
+        nextOccasions.ShouldBeEmpty();
+    }
+
+    [Fact]
     public async Task AddOccasionAsync_ShouldAddChristmasOnDecember24th()
     {
         // Arrange

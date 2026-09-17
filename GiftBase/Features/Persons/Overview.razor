@@ -5,7 +5,7 @@
 @page "/persons"
 
 <PageHeader Title="Personen"
-            Description="Verwalte hier deine Freunde und Familie, um nie wieder ein Geschenk zu vergessen. Öffne die Details einer Person, um ihre Geschenkideen zu pflegen, sie zu bearbeiten oder zu löschen.">
+            Description="Verwalte hier deine Freunde und Familie, um nie wieder ein Geschenk zu vergessen. Die Personen sind nach ihrem nächsten Anlass sortiert. Öffne die Details einer Person, um ihre Geschenkideen zu pflegen, sie zu bearbeiten oder zu löschen.">
     <ActionContent>
         <MudButton OnClick="AddPersonAsync" Variant="Variant.Filled" Color="Color.Primary">
             <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-2" />
@@ -27,8 +27,8 @@ else
     <MudGrid Spacing="3">
         @foreach (var person in Persons)
         {
-            <MudItem xs="12" sm="6" md="4" lg="3">
-                <PersonListItem Person="person" GiftCount="@GetGiftCount(person.Id)" />
+            <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex">
+                <PersonListItem Person="person" GiftCount="@GetGiftCount(person.Id)" NextOccasion="@GetNextOccasion(person.Id)" />
             </MudItem>
         }
     </MudGrid>
