@@ -11,36 +11,16 @@
         </TitleContent>
         <DialogContent>
             <DataAnnotationsValidator />
-            @if (ExistingGiftId.HasValue)
-            {
-                <MudSelect Immediate Required @bind-Value="GiftInput.Status" For="(() => GiftInput.Status)" Label="Status"
-                           Variant="Variant.Outlined" FullWidth="true">
-                    @foreach (var status in Enum.GetValues<Core.Enums.GiftStatus>())
-                    {
-                        <MudSelectItem Value="status">@Translations.GetGiftStatusDisplayText(status)</MudSelectItem>
-                    }
-                </MudSelect>
-            }
-            <MudTextField Immediate Required @bind-Value="GiftInput.Title" For="(() => GiftInput.Title)" Label="Titel"
-                          Variant="Variant.Outlined" FullWidth="true" />
-            <MudTextField Immediate @bind-Value="GiftInput.Note" For="(() => GiftInput.Note)" Label="Notiz" Lines="3"
-                          Variant="Variant.Outlined" FullWidth="true" />
-            <MudNumericField T="decimal?" Immediate @bind-Value="GiftInput.Price" For="(() => GiftInput.Price)"
-                             Label="Preis" Min="0" Format="0.00" Culture="@GermanCulture" HideSpinButtons="true"
-                             Adornment="Adornment.End" AdornmentText="€" Variant="Variant.Outlined" FullWidth="true" />
-            <MudTextField Immediate @bind-Value="GiftInput.Link" For="(() => GiftInput.Link)" Label="Link"
-                          Placeholder="https://..." HelperText="Produktseite oder Inspirationsquelle" Adornment="Adornment.Start"
-                          AdornmentIcon="@Icons.Material.Filled.Link" Variant="Variant.Outlined" FullWidth="true" />
-            <MudStack Spacing="2" Class="mt-3">
+            <MudStack Spacing="2">
                 <MudText Typo="Typo.subtitle2">Bild</MudText>
                 @if (PreviewImageUrl is not null)
                 {
-                    <MudImage Src="@PreviewImageUrl" Alt="Vorschau des Bildes" Height="160" Fluid="true"
-                              ObjectFit="ObjectFit.Cover" Class="rounded" />
+                    <MudImage Src="@PreviewImageUrl" Alt="Vorschau des Bildes" Width="200" Height="200"
+                              ObjectFit="ObjectFit.Contain" Class="rounded" />
                 }
                 <MudStack Row="true" Wrap="Wrap.Wrap" Spacing="2" AlignItems="AlignItems.Center">
-                    <MudFileUpload T="IBrowserFile" FilesChanged="OnImageSelectedAsync"
-                                   Accept="image/jpeg,image/png" MaxFileSize="@Core.Entities.GiftImage.MaxContentLength">
+                    <MudFileUpload T="IBrowserFile" FilesChanged="OnImageSelectedAsync" Accept="image/jpeg,image/png"
+                                   MaxFileSize="@Core.Entities.GiftImage.MaxContentLength">
                         <CustomContent Context="fileUpload">
                             <MudButton Variant="Variant.Outlined" Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.AddPhotoAlternate"
@@ -48,6 +28,7 @@
                                 @(PreviewImageUrl is null ? "Bild auswählen" : "Bild ändern")
                             </MudButton>
                         </CustomContent>
+                        <SelectedTemplate Context="selectedFile"></SelectedTemplate>
                     </MudFileUpload>
                     @if (PreviewImageUrl is not null)
                     {
@@ -63,6 +44,26 @@
                 }
                 <MudText Typo="Typo.caption">JPG oder PNG, maximal 5 MB.</MudText>
             </MudStack>
+            @if (ExistingGiftId.HasValue)
+            {
+                <MudSelect Immediate Required @bind-Value="GiftInput.Status" For="(() => GiftInput.Status)" Label="Status"
+                           Variant="Variant.Outlined" FullWidth="true" Class="mt-3">
+                    @foreach (var status in Enum.GetValues<Core.Enums.GiftStatus>())
+                    {
+                        <MudSelectItem Value="status">@Translations.GetGiftStatusDisplayText(status)</MudSelectItem>
+                    }
+                </MudSelect>
+            }
+            <MudTextField Immediate Required @bind-Value="GiftInput.Title" For="(() => GiftInput.Title)" Label="Titel"
+                          Variant="Variant.Outlined" FullWidth="true" Class="@(ExistingGiftId.HasValue ? null : "mt-3")" />
+            <MudTextField Immediate @bind-Value="GiftInput.Note" For="(() => GiftInput.Note)" Label="Notiz" Lines="3"
+                          Variant="Variant.Outlined" FullWidth="true" />
+            <MudNumericField T="decimal?" Immediate @bind-Value="GiftInput.Price" For="(() => GiftInput.Price)"
+                             Label="Preis" Min="0" Format="0.00" Culture="@GermanCulture" HideSpinButtons="true"
+                             Adornment="Adornment.End" AdornmentText="€" Variant="Variant.Outlined" FullWidth="true" />
+            <MudTextField Immediate @bind-Value="GiftInput.Link" For="(() => GiftInput.Link)" Label="Link"
+                          Placeholder="https://..." HelperText="Produktseite oder Inspirationsquelle" Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Link" Variant="Variant.Outlined" FullWidth="true" />
             @if (HasDeletedOccasionSnapshot)
             {
                 <MudAlert Severity="Severity.Info" Dense="true" Class="mt-3">
