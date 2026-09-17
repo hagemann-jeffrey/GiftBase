@@ -5,11 +5,19 @@ using MudBlazor;
 
 namespace GiftBase.Features.Persons;
 
-public partial class Overview(IPersonService PersonService, IGiftService GiftService, IDialogService DialogService, UserActionHelper userActionHelper)
+public partial class Overview(
+    IPersonService PersonService,
+    IGiftService GiftService,
+    IOccasionService OccasionService,
+    IDialogService DialogService,
+    UserActionHelper userActionHelper)
 {
     private List<Person> Persons = [];
     private Dictionary<int, int> GiftCounts = [];
+    private Dictionary<int, Occasion> NextOccasions = [];
     private bool IsLoading = true;
+
+    private static DateOnly Today => DateOnly.FromDateTime(DateTime.Today);
 
     override protected async Task OnInitializedAsync()
     {
@@ -17,14 +25,18 @@ public partial class Overview(IPersonService PersonService, IGiftService GiftSer
 
         await userActionHelper.ExecuteIfLoggedInAsync(async (userId) =>
         {
-            Persons = await PersonService.GetPersonsAsync(userId);
+            var persons = await PersonService.GetPersonsAsync(userId);
             GiftCounts = await GiftService.GetGiftCountsByPersonAsync(userId);
+            NextOccasions = await OccasionService.GetNextOccasionsByPersonAsync(userId);
+            Persons = persons.SortByNextOccasion(NextOccasions, Today);
         });
 
         IsLoading = false;
     }
 
     private int GetGiftCount(int personId) => GiftCounts.TryGetValue(personId, out var giftCount) ? giftCount : 0;
+
+    private Occasion? GetNextOccasion(int personId) => NextOccasions.GetValueOrDefault(personId);
 
     private async Task AddPersonAsync()
     {
@@ -43,6 +55,7 @@ public partial class Overview(IPersonService PersonService, IGiftService GiftSer
         {
             Persons.Add(addedPerson);
             GiftCounts[addedPerson.Id] = 0;
+            Persons = Persons.SortByNextOccasion(NextOccasions, Today);
         }
     }
 }
