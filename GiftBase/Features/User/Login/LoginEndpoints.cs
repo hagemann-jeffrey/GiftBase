@@ -52,7 +52,7 @@ public static class LoginEndpoints
                 ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30)
             });
 
-        var targetUrl = string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl;
+        var targetUrl = string.IsNullOrWhiteSpace(returnUrl) ? "/persons" : returnUrl;
 
         if (!targetUrl.StartsWith("/"))
         {
