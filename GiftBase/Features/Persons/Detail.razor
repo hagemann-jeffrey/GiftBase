@@ -24,7 +24,7 @@ else if (Person is null)
 }
 else
 {
-    <PageHeader Title="@PersonFullName" Description="Sammle hier alle Geschenkideen für diese Person.">
+    <PageHeader Title="@PersonFullName" Description="Sammle hier alle Geschenkideen für diese Person." BackHref="/persons">
         <ActionContent>
             <MudButton OnClick="AddOccasionAsync" Variant="Variant.Outlined" Color="Color.Primary">
                 <MudIcon Icon="@Icons.Material.Filled.EditCalendar" Class="mr-2" />
