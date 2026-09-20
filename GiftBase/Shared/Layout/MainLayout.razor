@@ -7,9 +7,7 @@
 <MudSnackbarProvider />
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
-                       OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">GiftBase</MudText>
+        <MudLink Href="/" Typo="Typo.h5" Color="Color.Inherit" Underline="Underline.None">GiftBase</MudLink>
         <MudSpacer />
 
         <AuthorizeView>
@@ -37,9 +35,6 @@
                    ThumbIconColor="@(_isDarkMode ? Color.Dark : Color.Warning)">
         </MudSwitch>
     </MudAppBar>
-    <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu />
-    </MudDrawer>
     <MudMainContent Class="pt-16 pa-4 mt-4">
         @Body
     </MudMainContent>
@@ -53,7 +48,6 @@
 </div>
 
 @code {
-    private bool _drawerOpen = true;
     private bool _isDarkMode = false;
     private MudTheme? _theme = null;
     private MudThemeProvider? _mudThemeProvider = null;
@@ -77,16 +71,6 @@
             _isDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
             StateHasChanged();
         }
-    }
-
-    private void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-
-    private void DarkModeToggle()
-    {
-        _isDarkMode = !_isDarkMode;
     }
 
     private readonly PaletteLight _lightPalette = new()
@@ -138,12 +122,6 @@
         TableLines = "#514451",
         Divider = "#514451",
         OverlayLight = "#211B2280",
-    };
-
-    public string DarkLightModeButtonIcon => _isDarkMode switch
-    {
-        true => Icons.Material.Rounded.LightMode,
-        false => Icons.Material.Outlined.DarkMode,
     };
 }
 
