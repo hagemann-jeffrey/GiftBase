@@ -25,6 +25,10 @@ public class PersonConfiguration : IEntityTypeConfiguration<Person>
                .IsRequired(false)
                .HasMaxLength(200);
 
+        builder.Property(p => p.NotificationsEnabled)
+               .IsRequired()
+               .HasDefaultValue(true);
+
         builder.Property(p => p.Relation)
                .IsRequired()
                .HasConversion<string>()

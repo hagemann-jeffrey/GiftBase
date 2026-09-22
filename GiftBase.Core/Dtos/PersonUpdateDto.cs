@@ -7,4 +7,5 @@ public class PersonUpdateDto
     public DateOnly? DateOfBirth { get; set; }
     public Enums.Relation Relation { get; set; }
     public string? Interests { get; set; }
+    public bool NotificationsEnabled { get; set; } = true;
 }

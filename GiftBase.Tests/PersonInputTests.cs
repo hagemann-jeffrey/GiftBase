@@ -15,7 +15,8 @@ public class PersonInputTests
             FirstName = "John",
             LastName = "Doe",
             DateOfBirth = DateTime.Parse("1990-01-01"),
-            Relation = Core.Enums.Relation.Friend
+            Relation = Core.Enums.Relation.Friend,
+            NotificationsEnabled = false
         };
 
         // Assert
@@ -23,6 +24,22 @@ public class PersonInputTests
         personInput.LastName.ShouldBe("Doe");
         personInput.DateOfBirth.ShouldBe(DateTime.Parse("1990-01-01"));
         personInput.Relation.ShouldBe(Core.Enums.Relation.Friend);
+        personInput.NotificationsEnabled.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void PersonInput_ShouldDefaultNotificationsEnabledToTrue()
+    {
+        // Arrange
+        var personInput = new PersonInput
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Relation = Core.Enums.Relation.Friend
+        };
+
+        // Assert
+        personInput.NotificationsEnabled.ShouldBeTrue();
     }
 
     [Fact]

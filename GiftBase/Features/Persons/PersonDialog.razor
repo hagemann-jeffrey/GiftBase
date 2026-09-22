@@ -41,6 +41,10 @@
                                   Label="Interessen" HelperText="Kommagetrennt, z. B. Bücher, Pflanzen, Kochen"
                                   Variant="Variant.Outlined" FullWidth="true" />
                 </MudItem>
+                <MudItem xs="12">
+                    <MudSwitch @bind-Value="PersonInput.NotificationsEnabled" Color="Color.Primary"
+                               Label="Benachrichtigungen für diese Person" />
+                </MudItem>
             </MudGrid>
         </DialogContent>
         <DialogActions>

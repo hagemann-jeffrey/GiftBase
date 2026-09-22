@@ -200,7 +200,8 @@ public partial class Detail(
                 LastName = Person.LastName,
                 DateOfBirth = Person.DateOfBirth.HasValue ? Person.DateOfBirth.Value.ToDateTime(new TimeOnly(0, 0)) : null,
                 Relation = Person.Relation,
-                Interests = Person.Interests
+                Interests = Person.Interests,
+                NotificationsEnabled = Person.NotificationsEnabled
             }
             },
             { x => x.ExistingPersonId, Person.Id }
