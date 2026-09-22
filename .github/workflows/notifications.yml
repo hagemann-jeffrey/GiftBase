@@ -1,0 +1,22 @@
+name: Send occasion notifications
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      dryRun:
+        type: boolean
+        default: true
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger dispatch
+        run: |
+          curl --fail-with-body --silent --show-error \
+               --max-time 180 --retry 2 --retry-all-errors \
+               -X POST \
+               -H "X-GiftBase-Notification-Secret: ${{ secrets.NOTIFICATION_TRIGGER_SECRET }}" \
+               "https://giftbase.azurewebsites.net/api/notifications/dispatch?dryRun=${{ inputs.dryRun || 'false' }}"
