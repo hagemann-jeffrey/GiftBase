@@ -14,9 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger dispatch
+        env:
+          NOTIFICATION_SECRET: ${{ secrets.NOTIFICATION_TRIGGER_SECRET }}
         run: |
           curl --fail-with-body --silent --show-error \
                --max-time 180 --retry 2 --retry-all-errors \
                -X POST \
-               -H "X-GiftBase-Notification-Secret: ${{ secrets.NOTIFICATION_TRIGGER_SECRET }}" \
+               -H "X-GiftBase-Notification-Secret: $NOTIFICATION_SECRET" \
                "https://giftbase-gjb2hnbdg6ctadfu.germanywestcentral-01.azurewebsites.net/api/notifications/dispatch?dryRun=${{ inputs.dryRun || 'false' }}"
