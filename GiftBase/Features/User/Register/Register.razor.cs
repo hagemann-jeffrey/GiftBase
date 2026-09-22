@@ -15,16 +15,24 @@ public partial class Register(IAuthService authService)
         ErrorMessage = null;
         IsLoading = true;
 
-        var success = await authService.RegisterUserAsync(RegisterInput.Email, RegisterInput.Password);
+        try
+        {
+            var success = await authService.RegisterUserAsync(RegisterInput.Email, RegisterInput.Password);
 
-        if (success)
-        {
-            Success = true;
+            if (success)
+            {
+                Success = true;
+            }
+            else
+            {
+                ErrorMessage = "E-Mail ist bereits registriert oder es ist ein anderer Fehler aufgetreten.";
+            }
         }
-        else
+        catch (Exception)
         {
-            ErrorMessage = "E-Mail ist bereits registriert oder es ist ein anderer Fehler aufgetreten.";
+            ErrorMessage = "Die Bestätigungs-E-Mail konnte nicht versendet werden. Bitte versuche es später erneut.";
         }
+
         IsLoading = false;
     }
 }

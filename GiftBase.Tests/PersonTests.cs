@@ -19,6 +19,7 @@ public class PersonTests
         person.Relation.ShouldBe(Relation.Friend);
         person.UserId.ShouldBe(1);
         person.Interests.ShouldBe("Bücher, Pflanzen");
+        person.NotificationsEnabled.ShouldBeTrue();
     }
 
     [Fact]
@@ -32,7 +33,8 @@ public class PersonTests
             LastName = "Smith",
             DateOfBirth = DateOnly.Parse("1992-02-02"),
             Relation = Relation.Family,
-            Interests = "Pflanzen, Kochen"
+            Interests = "Pflanzen, Kochen",
+            NotificationsEnabled = false
         };
 
         // Act
@@ -44,6 +46,7 @@ public class PersonTests
         person.DateOfBirth.ShouldBe(DateOnly.Parse("1992-02-02"));
         person.Relation.ShouldBe(Relation.Family);
         person.Interests.ShouldBe("Pflanzen, Kochen");
+        person.NotificationsEnabled.ShouldBeFalse();
     }
 
     [Fact]

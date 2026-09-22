@@ -4,6 +4,7 @@ using GiftBase.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GiftBase.Data.Migrations
 {
     [DbContext(typeof(GiftBaseDbContext))]
-    partial class GiftBaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260920160833_AddPersonNotificationsEnabled")]
+    partial class AddPersonNotificationsEnabled
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,38 +113,6 @@ namespace GiftBase.Data.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("GiftSuggestionQuotas");
-                });
-
-            modelBuilder.Entity("GiftBase.Core.Entities.NotificationLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Kind")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("PeriodKey")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<DateTime>("SentAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId", "Kind", "PeriodKey")
-                        .IsUnique();
-
-                    b.ToTable("NotificationLogs");
                 });
 
             modelBuilder.Entity("GiftBase.Core.Entities.Occasion", b =>
@@ -325,15 +296,6 @@ namespace GiftBase.Data.Migrations
                     b.HasOne("GiftBase.Core.Entities.User", null)
                         .WithOne()
                         .HasForeignKey("GiftBase.Core.Entities.GiftSuggestionQuota", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("GiftBase.Core.Entities.NotificationLog", b =>
-                {
-                    b.HasOne("GiftBase.Core.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

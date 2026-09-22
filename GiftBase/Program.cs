@@ -10,6 +10,7 @@ using GiftBase.Features.User.Login;
 using GiftBase;
 using GiftBase.Features.Gifts;
 using GiftBase.Features.GiftSuggestions;
+using GiftBase.Features.Notifications;
 using GiftBase.Features.Occasions;
 using GiftBase.Features.Persons;
 using GiftBase.Features.Sharing;
@@ -51,7 +52,11 @@ builder.Services.AddScoped<IGiftService, GiftService>();
 builder.Services.AddScoped<IOccasionService, OccasionService>();
 builder.Services.AddScoped<IShareLinkService, ShareLinkService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<UserActionHelper>();
+
+_ = builder.Configuration["Notifications:TriggerSecret"]
+    ?? throw new InvalidOperationException("Notifications:TriggerSecret ist nicht konfiguriert.");
 
 var geminiApiKey = builder.Configuration["Gemini:ApiKey"]
     ?? throw new InvalidOperationException("Gemini:ApiKey ist nicht konfiguriert.");
@@ -121,5 +126,6 @@ app.MapRazorComponents<App>()
 
 app.MapLoginEndpoints();
 app.MapGiftImageEndpoints();
+app.MapNotificationEndpoints();
 
 app.Run();

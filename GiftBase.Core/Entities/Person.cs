@@ -7,7 +7,7 @@ public class Person
 {
     private Person() { }
 
-    public Person(string firstName, string lastName, DateOnly? dateOfBirth, Relation relation, int userId, string? interests = null)
+    public Person(string firstName, string lastName, DateOnly? dateOfBirth, Relation relation, int userId, string? interests = null, bool notificationsEnabled = true)
     {
         FirstName = firstName;
         LastName = lastName;
@@ -15,6 +15,7 @@ public class Person
         Relation = relation;
         UserId = userId;
         Interests = interests;
+        NotificationsEnabled = notificationsEnabled;
     }
 
     public int Id { get; private set; }
@@ -24,6 +25,7 @@ public class Person
     public Relation Relation { get; private set; }
     public int UserId { get; private set; }
     public string? Interests { get; private set; }
+    public bool NotificationsEnabled { get; private set; }
 
     public List<Gift> Gifts { get; private set; } = [];
     public List<Occasion> Occasions { get; private set; } = [];
@@ -35,6 +37,7 @@ public class Person
         DateOfBirth = personUpdateDto.DateOfBirth;
         Relation = personUpdateDto.Relation;
         Interests = personUpdateDto.Interests;
+        NotificationsEnabled = personUpdateDto.NotificationsEnabled;
     }
 
     public int? GetAge(DateOnly today)

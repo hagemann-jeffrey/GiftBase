@@ -8,4 +8,5 @@ public class PersonAddDto
     public Enums.Relation Relation { get; set; }
     public int UserId { get; set; }
     public string? Interests { get; set; }
+    public bool NotificationsEnabled { get; set; } = true;
 }
