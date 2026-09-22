@@ -5,12 +5,23 @@ using MimeKit;
 
 namespace GiftBase.Features.User;
 
-public class EmailService(IConfiguration configuration, ILogger<EmailService> logger) : IEmailService
+public class EmailService(IConfiguration configuration) : IEmailService
 {
     public async Task SendEmailAsync(string to, string subject, string body)
     {
+        var smtpServer = RequireSetting(configuration, "EmailSettings:SmtpServer");
+        var smtpPortSetting = RequireSetting(configuration, "EmailSettings:SmtpPort");
+        var smtpUsername = RequireSetting(configuration, "EmailSettings:SmtpUsername");
+        var smtpPassword = RequireSetting(configuration, "EmailSettings:SmtpPassword");
+        var senderEmail = RequireSetting(configuration, "EmailSettings:SenderEmail");
+
+        if (!int.TryParse(smtpPortSetting, out var smtpPort))
+        {
+            throw new InvalidOperationException("EmailSettings:SmtpPort ist keine gültige Zahl.");
+        }
+
         var email = new MimeMessage();
-        email.From.Add(new MailboxAddress(configuration["EmailSettings:SenderName"], configuration["EmailSettings:SenderEmail"]));
+        email.From.Add(new MailboxAddress(configuration["EmailSettings:SenderName"], senderEmail));
 
         email.To.Add(MailboxAddress.Parse(to));
 
@@ -23,17 +34,20 @@ public class EmailService(IConfiguration configuration, ILogger<EmailService> lo
 
         try
         {
-            smtp.Connect(configuration["EmailSettings:SmtpServer"], int.Parse(configuration["EmailSettings:SmtpPort"]), SecureSocketOptions.StartTls);
-            smtp.Authenticate(configuration["EmailSettings:SmtpUsername"], configuration["EmailSettings:SmtpPassword"]);
+            await smtp.ConnectAsync(smtpServer, smtpPort, SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(smtpUsername, smtpPassword);
             await smtp.SendAsync(email);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to send email.");
         }
         finally
         {
-            smtp.Disconnect(true);
+            await smtp.DisconnectAsync(true);
         }
+    }
+
+    private static string RequireSetting(IConfiguration configuration, string key)
+    {
+        var value = configuration[key];
+
+        return !string.IsNullOrWhiteSpace(value) ? value : throw new InvalidOperationException($"{key} ist nicht konfiguriert.");
     }
 }
