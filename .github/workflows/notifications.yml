@@ -19,4 +19,4 @@ jobs:
                --max-time 180 --retry 2 --retry-all-errors \
                -X POST \
                -H "X-GiftBase-Notification-Secret: ${{ secrets.NOTIFICATION_TRIGGER_SECRET }}" \
-               "https://giftbase.azurewebsites.net/api/notifications/dispatch?dryRun=${{ inputs.dryRun || 'false' }}"
+               "https://giftbase-gjb2hnbdg6ctadfu.germanywestcentral-01.azurewebsites.net/api/notifications/dispatch?dryRun=${{ inputs.dryRun || 'false' }}"
