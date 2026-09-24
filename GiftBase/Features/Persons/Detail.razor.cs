@@ -14,10 +14,10 @@ using Translations = GiftBase.Shared.Translations.Translations;
 namespace GiftBase.Features.Persons;
 
 public partial class Detail(
-    IPersonService PersonService,
-    IGiftService GiftService,
-    IOccasionService OccasionService,
-    IDialogService DialogService,
+    IPersonService personService,
+    IGiftService giftService,
+    IOccasionService occasionService,
+    IDialogService dialogService,
     UserActionHelper userActionHelper,
     NavigationManager navigationManager)
 {
@@ -46,9 +46,9 @@ public partial class Detail(
 
         await userActionHelper.ExecuteIfLoggedInAsync(async (userId) =>
         {
-            Person = await PersonService.GetPersonAsync(PersonId, userId);
-            Occasions = await OccasionService.GetOccasionsAsync(PersonId, userId);
-            Gifts = await GiftService.GetGiftsAsync(PersonId, userId);
+            Person = await personService.GetPersonAsync(PersonId, userId);
+            Occasions = await occasionService.GetOccasionsAsync(PersonId, userId);
+            Gifts = await giftService.GetGiftsAsync(PersonId, userId);
         });
 
         IsLoading = false;
@@ -73,7 +73,7 @@ public partial class Detail(
             { x => x.Occasions, Occasions }
         };
 
-        var dialog = await DialogService.ShowAsync<GiftDialog>(null, parameters, DefaultDialogOptions);
+        var dialog = await dialogService.ShowAsync<GiftDialog>(null, parameters, DefaultDialogOptions);
 
         var result = await dialog.Result;
 
@@ -106,7 +106,7 @@ public partial class Detail(
             { x => x.ExistingGiftId, gift.Id }
         };
 
-        var dialog = await DialogService.ShowAsync<GiftDialog>(null, parameters, DefaultDialogOptions);
+        var dialog = await dialogService.ShowAsync<GiftDialog>(null, parameters, DefaultDialogOptions);
 
         var result = await dialog.Result;
 
@@ -129,13 +129,13 @@ public partial class Detail(
                 { x => x.Message, $"Möchten Sie die Geschenkidee \"{gift.Title}\" wirklich löschen?" }
             };
 
-            var dialog = await DialogService.ShowAsync<DeleteDialog>(null, parameters, DefaultDialogOptions);
+            var dialog = await dialogService.ShowAsync<DeleteDialog>(null, parameters, DefaultDialogOptions);
 
             var result = await dialog.Result;
 
             if (result is { Canceled: false, Data: true })
             {
-                await GiftService.DeleteGiftAsync(gift.Id, userId);
+                await giftService.DeleteGiftAsync(gift.Id, userId);
                 Gifts.Remove(gift);
             }
         });
@@ -163,7 +163,7 @@ public partial class Detail(
             CloseOnEscapeKey = true
         };
 
-        var dialog = await DialogService.ShowAsync<GiftSuggestionDialog>(null, parameters, dialogOptions);
+        var dialog = await dialogService.ShowAsync<GiftSuggestionDialog>(null, parameters, dialogOptions);
 
         var result = await dialog.Result;
 
@@ -182,7 +182,7 @@ public partial class Detail(
             { x => x.Occasions, Occasions }
         };
 
-        await DialogService.ShowAsync<ShareDialog>(null, parameters, DefaultDialogOptions);
+        await dialogService.ShowAsync<ShareDialog>(null, parameters, DefaultDialogOptions);
     }
 
     private async Task UpdatePersonAsync()
@@ -207,7 +207,7 @@ public partial class Detail(
             { x => x.ExistingPersonId, Person.Id }
         };
 
-        var dialog = await DialogService.ShowAsync<PersonDialog>(null, parameters, DefaultDialogOptions);
+        var dialog = await dialogService.ShowAsync<PersonDialog>(null, parameters, DefaultDialogOptions);
 
         var result = await dialog.Result;
 
@@ -231,13 +231,13 @@ public partial class Detail(
                 { x => x.Message, $"Möchten Sie {Person.FirstName} {Person.LastName} wirklich löschen?" }
             };
 
-            var dialog = await DialogService.ShowAsync<DeleteDialog>(null, parameters, DefaultDialogOptions);
+            var dialog = await dialogService.ShowAsync<DeleteDialog>(null, parameters, DefaultDialogOptions);
 
             var result = await dialog.Result;
 
             if (result is { Canceled: false, Data: true })
             {
-                await PersonService.DeletePersonAsync(Person.Id, userId);
+                await personService.DeletePersonAsync(Person.Id, userId);
                 navigationManager.NavigateTo("/persons");
             }
         });
@@ -290,7 +290,7 @@ public partial class Detail(
             { x => x.ExistingTypes, ExistingOccasionTypes }
         };
 
-        var dialog = await DialogService.ShowAsync<OccasionDialog>(null, parameters, DefaultDialogOptions);
+        var dialog = await dialogService.ShowAsync<OccasionDialog>(null, parameters, DefaultDialogOptions);
 
         var result = await dialog.Result;
 
@@ -325,7 +325,7 @@ public partial class Detail(
             { x => x.ExistingOccasionId, occasion.Id }
         };
 
-        var dialog = await DialogService.ShowAsync<OccasionDialog>(null, parameters, DefaultDialogOptions);
+        var dialog = await dialogService.ShowAsync<OccasionDialog>(null, parameters, DefaultDialogOptions);
 
         var result = await dialog.Result;
 
@@ -353,15 +353,15 @@ public partial class Detail(
                     + "Zugeordnete Geschenkideen bleiben erhalten." }
             };
 
-            var dialog = await DialogService.ShowAsync<DeleteDialog>(null, parameters, DefaultDialogOptions);
+            var dialog = await dialogService.ShowAsync<DeleteDialog>(null, parameters, DefaultDialogOptions);
 
             var result = await dialog.Result;
 
             if (result is { Canceled: false, Data: true })
             {
-                await OccasionService.DeleteOccasionAsync(occasion.Id, userId);
+                await occasionService.DeleteOccasionAsync(occasion.Id, userId);
                 Occasions.Remove(occasion);
-                Gifts = await GiftService.GetGiftsAsync(PersonId, userId);
+                Gifts = await giftService.GetGiftsAsync(PersonId, userId);
             }
         });
     }
