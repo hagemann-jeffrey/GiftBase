@@ -66,7 +66,7 @@ public class NotificationServiceTests
 
         if (status != GiftStatus.Idea)
         {
-            gift.Update(new Core.Dtos.GiftUpdateDto { Title = title, Status = status, OccasionId = occasionId });
+            gift.Update(new Core.Dtos.Gifts.GiftUpdateDto { Title = title, Status = status, OccasionId = occasionId });
         }
 
         dbContext.Gifts.Add(gift);
@@ -80,7 +80,7 @@ public class NotificationServiceTests
     }
 
     // Subject/Body sind nur im Dry-Run befüllt - der Aufrufer belegt damit zugleich, dass er einen erwartet.
-    private static string DryRunBody(Core.Dtos.NotificationDispatchResultDto result) =>
+    private static string DryRunBody(Core.Dtos.Notifications.NotificationDispatchResultDto result) =>
         result.Dispatches[0].Body.ShouldNotBeNull();
 
     [Fact]

@@ -1,4 +1,4 @@
-using GiftBase.Core.Dtos;
+using GiftBase.Core.Dtos.Occasions;
 using GiftBase.Core.Entities;
 using GiftBase.Core.Enums;
 using Shouldly;

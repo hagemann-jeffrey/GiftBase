@@ -1,4 +1,4 @@
-using GiftBase.Core.Dtos;
+using GiftBase.Core.Dtos.Notifications;
 using GiftBase.Core.Entities;
 using GiftBase.Core.Enums;
 using GiftBase.Core.Interfaces;

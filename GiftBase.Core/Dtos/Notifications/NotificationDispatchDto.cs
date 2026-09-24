@@ -1,6 +1,6 @@
 using GiftBase.Core.Enums;
 
-namespace GiftBase.Core.Dtos;
+namespace GiftBase.Core.Dtos.Notifications;
 
 public class NotificationDispatchDto
 {

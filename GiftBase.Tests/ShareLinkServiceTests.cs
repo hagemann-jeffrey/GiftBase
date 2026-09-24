@@ -1,4 +1,5 @@
-using GiftBase.Core.Dtos;
+using GiftBase.Core.Dtos.Gifts;
+using GiftBase.Core.Dtos.Sharing;
 using GiftBase.Core.Entities;
 using GiftBase.Core.Enums;
 using GiftBase.Core.Exceptions;

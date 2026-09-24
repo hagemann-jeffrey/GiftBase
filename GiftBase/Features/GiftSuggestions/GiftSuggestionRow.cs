@@ -1,4 +1,4 @@
-using GiftBase.Core.Dtos;
+using GiftBase.Core.Dtos.GiftSuggestions;
 
 namespace GiftBase.Features.GiftSuggestions;
 

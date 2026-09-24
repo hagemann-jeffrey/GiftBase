@@ -40,7 +40,7 @@ public class GiftTests
     {
         // Arrange
         var gift = new Gift("Kaffeemaschine", "Am liebsten in Schwarz", "https://example.com/kaffee", 129.99m, 1);
-        var updateDto = new Core.Dtos.GiftUpdateDto
+        var updateDto = new Core.Dtos.Gifts.GiftUpdateDto
         {
             Title = "Espressomaschine",
             Note = null,
@@ -67,7 +67,7 @@ public class GiftTests
         var gift = new Gift("Kaffeemaschine", null, null, null, 7);
 
         // Act
-        gift.Update(new Core.Dtos.GiftUpdateDto
+        gift.Update(new Core.Dtos.Gifts.GiftUpdateDto
         {
             Title = "Espressomaschine",
             Status = GiftStatus.Given
@@ -122,7 +122,7 @@ public class GiftTests
         gift.DetachFromOccasion("Geburtstag", 2027);
 
         // Act
-        gift.Update(new Core.Dtos.GiftUpdateDto
+        gift.Update(new Core.Dtos.Gifts.GiftUpdateDto
         {
             Title = "Espressomaschine",
             Status = GiftStatus.Bought,
@@ -143,7 +143,7 @@ public class GiftTests
         gift.DetachFromOccasion("Geburtstag", 2027);
 
         // Act
-        gift.Update(new Core.Dtos.GiftUpdateDto
+        gift.Update(new Core.Dtos.Gifts.GiftUpdateDto
         {
             Title = "Espressomaschine",
             Status = GiftStatus.Bought,
@@ -207,7 +207,7 @@ public class GiftTests
         var imageVersion = gift.ImageVersion;
 
         // Act
-        gift.Update(new Core.Dtos.GiftUpdateDto
+        gift.Update(new Core.Dtos.Gifts.GiftUpdateDto
         {
             Title = "Espressomaschine",
             Status = GiftStatus.Bought

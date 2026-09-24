@@ -1,4 +1,4 @@
-using GiftBase.Core.Dtos;
+using GiftBase.Core.Dtos.Sharing;
 using Microsoft.AspNetCore.Components;
 
 namespace GiftBase.Features.Sharing.Components;

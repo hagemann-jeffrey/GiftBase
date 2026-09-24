@@ -1,4 +1,4 @@
-namespace GiftBase.Core.Dtos;
+namespace GiftBase.Core.Dtos.Occasions;
 
 public class OccasionUpdateDto
 {

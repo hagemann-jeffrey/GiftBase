@@ -27,7 +27,7 @@ public class PersonTests
     {
         // Arrange
         var person = new Person("John", "Doe", DateOnly.Parse("1990-01-01"), Relation.Friend, 1, "Bücher");
-        var updateDto = new Core.Dtos.PersonUpdateDto
+        var updateDto = new Core.Dtos.Persons.PersonUpdateDto
         {
             FirstName = "Jane",
             LastName = "Smith",

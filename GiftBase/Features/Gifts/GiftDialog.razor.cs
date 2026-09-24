@@ -1,5 +1,5 @@
 using System.Globalization;
-using GiftBase.Core.Dtos;
+using GiftBase.Core.Dtos.Gifts;
 using GiftBase.Core.Entities;
 using GiftBase.Core.Interfaces;
 using GiftBase.Shared.Common;

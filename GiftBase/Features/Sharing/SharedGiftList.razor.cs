@@ -1,4 +1,4 @@
-using GiftBase.Core.Dtos;
+using GiftBase.Core.Dtos.Sharing;
 using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
 using Microsoft.AspNetCore.Components;

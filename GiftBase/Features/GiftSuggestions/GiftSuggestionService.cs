@@ -1,6 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using GiftBase.Core.Dtos;
+using GiftBase.Core.Dtos.GiftSuggestions;
 using GiftBase.Core.Entities;
 using GiftBase.Core.Enums;
 using GiftBase.Core.Exceptions;

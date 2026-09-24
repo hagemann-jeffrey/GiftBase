@@ -1,5 +1,5 @@
 using System.Globalization;
-using GiftBase.Core.Dtos;
+using GiftBase.Core.Dtos.Persons;
 using GiftBase.Core.Interfaces;
 using GiftBase.Shared.Common;
 using GiftBase.Shared.Services;
@@ -33,7 +33,7 @@ public partial class PersonDialog(IPersonService personService, UserActionHelper
         {
             if (ExistingPersonId.HasValue)
             {
-                var updatedPerson = await personService.UpdatePersonAsync(ExistingPersonId.Value, userId, new Core.Dtos.PersonUpdateDto
+                var updatedPerson = await personService.UpdatePersonAsync(ExistingPersonId.Value, userId, new PersonUpdateDto
                 {
                     FirstName = PersonInput.FirstName.NormalizeRequired(),
                     LastName = PersonInput.LastName.NormalizeRequired(),
