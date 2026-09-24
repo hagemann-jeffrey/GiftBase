@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using GiftBase.Core.Interfaces;
-using GiftBase.Shared;
+using GiftBase.Shared.Common;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GiftBase.Features.Notifications;

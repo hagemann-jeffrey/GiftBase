@@ -5,11 +5,10 @@ using GiftBase.Core.Enums;
 using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
 using GiftBase.Features.GiftSuggestions.Components;
-using GiftBase.Shared;
+using GiftBase.Shared.Common;
 using GiftBase.Shared.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Translations = GiftBase.Shared.Translations.Translations;
 
 namespace GiftBase.Features.GiftSuggestions;
 

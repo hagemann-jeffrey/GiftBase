@@ -2,7 +2,7 @@ using System.Globalization;
 using GiftBase.Core.Dtos;
 using GiftBase.Core.Entities;
 using GiftBase.Core.Interfaces;
-using GiftBase.Shared;
+using GiftBase.Shared.Common;
 using GiftBase.Shared.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;

@@ -2,8 +2,7 @@ using System.Globalization;
 using System.Text;
 using GiftBase.Core.Enums;
 using GiftBase.Features.Occasions;
-using GiftBase.Shared;
-using Translations = GiftBase.Shared.Translations.Translations;
+using GiftBase.Shared.Common;
 
 namespace GiftBase.Features.Notifications;
 

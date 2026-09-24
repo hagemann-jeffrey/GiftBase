@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace GiftBase.Shared;
+namespace GiftBase.Shared.Common;
 
 public static class AppCulture
 {

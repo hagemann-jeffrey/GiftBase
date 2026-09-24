@@ -1,7 +1,7 @@
 using System.Buffers.Text;
 using System.Security.Cryptography;
 
-namespace GiftBase.Shared;
+namespace GiftBase.Shared.Common;
 
 public static class TokenGenerator
 {

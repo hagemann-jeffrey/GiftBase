@@ -5,11 +5,11 @@ using GiftBase.Features.Gifts;
 using GiftBase.Features.GiftSuggestions;
 using GiftBase.Features.Occasions;
 using GiftBase.Features.Sharing;
+using GiftBase.Shared.Common;
 using GiftBase.Shared.Components;
 using GiftBase.Shared.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Translations = GiftBase.Shared.Translations.Translations;
 
 namespace GiftBase.Features.Persons;
 

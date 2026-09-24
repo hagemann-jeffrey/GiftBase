@@ -1,7 +1,7 @@
 using GiftBase.Core.Entities;
 using GiftBase.Core.Enums;
 
-namespace GiftBase.Shared.Translations;
+namespace GiftBase.Shared.Common;
 
 public static class Translations
 {

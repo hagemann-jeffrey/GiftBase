@@ -2,11 +2,10 @@ using System.Globalization;
 using GiftBase.Core.Dtos;
 using GiftBase.Core.Enums;
 using GiftBase.Core.Interfaces;
-using GiftBase.Shared;
+using GiftBase.Shared.Common;
 using GiftBase.Shared.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Translations = GiftBase.Shared.Translations.Translations;
 
 namespace GiftBase.Features.Occasions;
 

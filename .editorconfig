@@ -21,9 +21,9 @@ csharp_indent_switch_labels = true
 
 # Namespace-Stil (file-scoped, Ordner muss zum Namespace passen)
 csharp_style_namespace_declarations = file_scoped:error
-dotnet_style_namespace_match_folder = true:warning
+dotnet_style_namespace_match_folder = true:error
 dotnet_diagnostic.IDE0161.severity = error
-dotnet_diagnostic.IDE0130.severity = warning
+dotnet_diagnostic.IDE0130.severity = error
 
 # Immer geschweifte Klammern
 csharp_prefer_braces = true:error

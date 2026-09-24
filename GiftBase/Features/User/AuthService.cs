@@ -1,6 +1,6 @@
 ﻿using GiftBase.Core.Interfaces;
 using GiftBase.Data;
-using GiftBase.Shared;
+using GiftBase.Shared.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

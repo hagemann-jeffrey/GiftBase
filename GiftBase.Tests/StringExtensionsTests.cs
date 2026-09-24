@@ -1,4 +1,4 @@
-using GiftBase.Shared;
+using GiftBase.Shared.Common;
 using Shouldly;
 
 namespace GiftBase.Tests;

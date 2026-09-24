@@ -14,7 +14,7 @@ using GiftBase.Features.Notifications;
 using GiftBase.Features.Occasions;
 using GiftBase.Features.Persons;
 using GiftBase.Features.Sharing;
-using GiftBase.Shared;
+using GiftBase.Shared.Common;
 using GiftBase.Shared.Services;
 using Google.GenAI;
 using MudBlazor;

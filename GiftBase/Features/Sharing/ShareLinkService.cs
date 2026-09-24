@@ -4,9 +4,8 @@ using GiftBase.Core.Enums;
 using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
 using GiftBase.Data;
-using GiftBase.Shared;
+using GiftBase.Shared.Common;
 using Microsoft.EntityFrameworkCore;
-using Translations = GiftBase.Shared.Translations.Translations;
 
 namespace GiftBase.Features.Sharing;
 
