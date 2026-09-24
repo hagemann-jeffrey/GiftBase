@@ -2,6 +2,7 @@
 using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
 using GiftBase.Data;
+using GiftBase.Features.Users.Register;
 using GiftBase.Shared.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
@@ -39,24 +40,9 @@ NavigationManager navigationManager) : IAuthService
         await dbContext.SaveChangesAsync();
 
         var confirmationLink = $"{navigationManager.BaseUri}confirmemail?Token={token}";
+        var (subject, body) = RegistrationEmailBuilder.Build(confirmationLink);
 
-        var emailBody = $@"
-                <div style='font-family: Arial, sans-serif; padding: 20px;'>
-                    <h2>Willkommen bei GiftBase!</h2>
-                    <p>Schön, dass du dabei bist. Bitte bestätige deine E-Mail-Adresse, um deinen Account zu aktivieren.</p>
-                    <p style='margin-top: 20px;'>
-                        <a href='{confirmationLink}' 
-                           style='background-color: #594AE2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>
-                           E-Mail bestätigen
-                        </a>
-                    </p>
-                    <p style='margin-top: 30px; font-size: 12px; color: #888;'>
-                        Falls der Button nicht funktioniert, kopiere diesen Link in deinen Browser:<br/>
-                        {confirmationLink}
-                    </p>
-                </div>";
-
-        await emailService.SendEmailAsync(email, "Willkommen bei GiftBase! Bitte bestätige deine E-Mail-Adresse", emailBody);
+        await emailService.SendEmailAsync(email, subject, body);
     }
 
     public async Task ConfirmEmailAsync(string token)
