@@ -1,4 +1,4 @@
-using GiftBase.Features.Users;
+using GiftBase.Shared.Services;
 using Microsoft.Extensions.Configuration;
 using NSubstitute;
 using Shouldly;
