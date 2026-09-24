@@ -1,7 +1,7 @@
 using GiftBase.Core.Interfaces;
 using Microsoft.AspNetCore.Components;
 
-namespace GiftBase.Shared.Pages;
+namespace GiftBase.Features.Home;
 
 public partial class Home(ICurrentUserService currentUserService, NavigationManager navigationManager)
 {
