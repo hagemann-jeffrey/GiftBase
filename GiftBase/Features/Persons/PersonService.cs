@@ -25,8 +25,7 @@ public class PersonService(IDbContextFactory<GiftBaseDbContext> dbContextFactory
 
         return await dbContext.Persons
             .Where(p => p.Id == personId && p.UserId == currentUserId)
-            .SingleOrDefaultAsync()
-                ?? throw new NotFoundException($"Person konnte nicht gefunden werden: {personId}");
+            .SingleOrNotFoundAsync($"Person konnte nicht gefunden werden: {personId}");
     }
 
     public async Task<Person> AddPersonAsync(PersonAddDto personAddDto)
@@ -56,8 +55,7 @@ public class PersonService(IDbContextFactory<GiftBaseDbContext> dbContextFactory
         var person = await dbContext.Persons
             .Where(p => p.Id == personId && p.UserId == currentUserId)
             .Include(p => p.Occasions)
-            .SingleOrDefaultAsync()
-                ?? throw new NotFoundException($"Person konnte nicht gefunden werden: {personId}");
+            .SingleOrNotFoundAsync($"Person konnte nicht gefunden werden: {personId}");
 
         var birthday = person.Occasions.SingleOrDefault(o => o.Type == OccasionType.Birthday);
 
@@ -86,8 +84,7 @@ public class PersonService(IDbContextFactory<GiftBaseDbContext> dbContextFactory
             .Where(p => p.Id == personId && p.UserId == currentUserId)
             .Include(p => p.Gifts)
             .Include(p => p.Occasions)
-            .SingleOrDefaultAsync()
-                ?? throw new NotFoundException($"Person konnte nicht gefunden werden: {personId}");
+            .SingleOrNotFoundAsync($"Person konnte nicht gefunden werden: {personId}");
 
         dbContext.Persons.Remove(person);
         await dbContext.SaveChangesAsync();

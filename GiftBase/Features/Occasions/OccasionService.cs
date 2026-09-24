@@ -44,8 +44,7 @@ public class OccasionService(IDbContextFactory<GiftBaseDbContext> dbContextFacto
 
         var person = await dbContext.Persons
             .Where(p => p.Id == occasionAddDto.PersonId && p.UserId == currentUserId)
-            .SingleOrDefaultAsync()
-                ?? throw new NotFoundException($"Person konnte nicht gefunden werden: {occasionAddDto.PersonId}");
+            .SingleOrNotFoundAsync($"Person konnte nicht gefunden werden: {occasionAddDto.PersonId}");
 
         if (occasionAddDto.Type != OccasionType.Custom)
         {
@@ -106,8 +105,7 @@ public class OccasionService(IDbContextFactory<GiftBaseDbContext> dbContextFacto
 
         var occasion = await dbContext.Occasions
             .Where(o => o.Id == occasionId && o.Person.UserId == currentUserId)
-            .SingleOrDefaultAsync()
-                ?? throw new NotFoundException($"Anlass konnte nicht gefunden werden: {occasionId}");
+            .SingleOrNotFoundAsync($"Anlass konnte nicht gefunden werden: {occasionId}");
 
         if (occasion.Type != OccasionType.Custom)
         {
@@ -138,8 +136,7 @@ public class OccasionService(IDbContextFactory<GiftBaseDbContext> dbContextFacto
         var occasion = await dbContext.Occasions
             .Where(o => o.Id == occasionId && o.Person.UserId == currentUserId)
             .Include(o => o.Gifts)
-            .SingleOrDefaultAsync()
-                ?? throw new NotFoundException($"Anlass konnte nicht gefunden werden: {occasionId}");
+            .SingleOrNotFoundAsync($"Anlass konnte nicht gefunden werden: {occasionId}");
 
         var occasionLabel = Translations.GetOccasionDisplayTitle(occasion);
         var occasionYear = occasion.GetNextOccurrence(DateOnly.FromDateTime(DateTime.Today)).Year;

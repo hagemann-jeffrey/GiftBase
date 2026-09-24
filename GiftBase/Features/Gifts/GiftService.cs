@@ -63,8 +63,7 @@ public class GiftService(IDbContextFactory<GiftBaseDbContext> dbContextFactory) 
 
         var gift = await dbContext.Gifts
             .Where(g => g.Id == giftId && g.Person.UserId == currentUserId)
-            .SingleOrDefaultAsync()
-                ?? throw new NotFoundException($"Geschenkidee konnte nicht gefunden werden: {giftId}");
+            .SingleOrNotFoundAsync($"Geschenkidee konnte nicht gefunden werden: {giftId}");
 
         await EnsureOccasionBelongsToPersonAsync(dbContext, giftUpdateDto.OccasionId, gift.PersonId);
 
@@ -110,8 +109,7 @@ public class GiftService(IDbContextFactory<GiftBaseDbContext> dbContextFactory) 
 
         var gift = await dbContext.Gifts
             .Where(g => g.Id == giftId && g.Person.UserId == currentUserId)
-            .SingleOrDefaultAsync()
-                ?? throw new NotFoundException($"Geschenkidee konnte nicht gefunden werden: {giftId}");
+            .SingleOrNotFoundAsync($"Geschenkidee konnte nicht gefunden werden: {giftId}");
 
         dbContext.Gifts.Remove(gift);
         await dbContext.SaveChangesAsync();
