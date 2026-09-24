@@ -122,7 +122,8 @@ public class PersonServiceTests
             DateOfBirth = DateOnly.Parse("1990-01-01"),
             Relation = Core.Enums.Relation.Friend,
             UserId = 1,
-            Interests = "Bücher, Pflanzen"
+            Interests = "Bücher, Pflanzen",
+            NotificationsEnabled = false
         };
 
         // Act
@@ -136,6 +137,7 @@ public class PersonServiceTests
         addedPerson.Relation.ShouldBe(Core.Enums.Relation.Friend);
         addedPerson.UserId.ShouldBe(1);
         addedPerson.Interests.ShouldBe("Bücher, Pflanzen");
+        addedPerson.NotificationsEnabled.ShouldBeFalse();
 
         await using var dbContext = _dbContextFactory.CreateDbContext();
         var personInDb = await dbContext.Persons.SingleOrDefaultAsync(p => p.Id == addedPerson.Id);
