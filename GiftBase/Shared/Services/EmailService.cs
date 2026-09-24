@@ -1,27 +1,20 @@
 using GiftBase.Core.Interfaces;
+using GiftBase.Options;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.Extensions.Options;
 using MimeKit;
 
 namespace GiftBase.Shared.Services;
 
-public class EmailService(IConfiguration configuration) : IEmailService
+public class EmailService(IOptions<EmailOptions> options) : IEmailService
 {
     public async Task SendEmailAsync(string to, string subject, string body)
     {
-        var smtpServer = RequireSetting(configuration, "EmailSettings:SmtpServer");
-        var smtpPortSetting = RequireSetting(configuration, "EmailSettings:SmtpPort");
-        var smtpUsername = RequireSetting(configuration, "EmailSettings:SmtpUsername");
-        var smtpPassword = RequireSetting(configuration, "EmailSettings:SmtpPassword");
-        var senderEmail = RequireSetting(configuration, "EmailSettings:SenderEmail");
-
-        if (!int.TryParse(smtpPortSetting, out var smtpPort))
-        {
-            throw new InvalidOperationException("EmailSettings:SmtpPort ist keine gültige Zahl.");
-        }
+        var settings = options.Value;
 
         var email = new MimeMessage();
-        email.From.Add(new MailboxAddress(configuration["EmailSettings:SenderName"], senderEmail));
+        email.From.Add(new MailboxAddress(settings.SenderName, settings.SenderEmail));
 
         email.To.Add(MailboxAddress.Parse(to));
 
@@ -34,20 +27,13 @@ public class EmailService(IConfiguration configuration) : IEmailService
 
         try
         {
-            await smtp.ConnectAsync(smtpServer, smtpPort, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync(smtpUsername, smtpPassword);
+            await smtp.ConnectAsync(settings.SmtpServer, settings.SmtpPort, SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(settings.SmtpUsername, settings.SmtpPassword);
             await smtp.SendAsync(email);
         }
         finally
         {
             await smtp.DisconnectAsync(true);
         }
-    }
-
-    private static string RequireSetting(IConfiguration configuration, string key)
-    {
-        var value = configuration[key];
-
-        return !string.IsNullOrWhiteSpace(value) ? value : throw new InvalidOperationException($"{key} ist nicht konfiguriert.");
     }
 }

@@ -7,7 +7,6 @@ using GiftBase;
 using GiftBase.Features.Gifts;
 using GiftBase.Features.Notifications;
 using GiftBase.Shared.Common;
-using Google.GenAI;
 using MudBlazor;
 using System.Globalization;
 
@@ -28,16 +27,10 @@ builder.Services.AddMudServices(opt =>
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddGiftBaseOptions(builder.Configuration);
 builder.Services.AddGiftBaseData(builder.Configuration);
 builder.Services.AddGiftBaseServices();
 builder.Services.AddGiftBaseAuthentication();
-
-_ = builder.Configuration["Notifications:TriggerSecret"]
-    ?? throw new InvalidOperationException("Notifications:TriggerSecret ist nicht konfiguriert.");
-
-var geminiApiKey = builder.Configuration["Gemini:ApiKey"]
-    ?? throw new InvalidOperationException("Gemini:ApiKey ist nicht konfiguriert.");
-builder.Services.AddSingleton(new Client(apiKey: geminiApiKey));
 
 var app = builder.Build();
 
