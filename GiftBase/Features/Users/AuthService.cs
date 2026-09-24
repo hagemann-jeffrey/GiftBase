@@ -1,4 +1,5 @@
 ﻿using GiftBase.Core.Entities;
+using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
 using GiftBase.Data;
 using GiftBase.Shared.Common;
@@ -12,19 +13,20 @@ public class AuthService(IDbContextFactory<GiftBaseDbContext> dbContextFactory, 
 IPasswordHasher<User> passwordHasher, IEmailService emailService,
 NavigationManager navigationManager) : IAuthService
 {
-    public async Task<bool> RegisterUserAsync(string email, string password)
+    public async Task RegisterUserAsync(string email, string password)
     {
         if (!RegistrationDomains.IsAllowed(email))
         {
             logger.LogWarning("Attempted registration with non-IU email: {Email}", email);
-            return false;
+
+            throw new ConflictException("Bitte registriere dich mit deiner offiziellen Hochschul-E-Mail-Adresse.");
         }
 
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();
 
         if (await dbContext.Users.AnyAsync(u => u.Email == email))
         {
-            return false;
+            throw new ConflictException("Diese E-Mail-Adresse ist bereits registriert.");
         }
 
         string token = TokenGenerator.Generate();
@@ -55,31 +57,23 @@ NavigationManager navigationManager) : IAuthService
                 </div>";
 
         await emailService.SendEmailAsync(email, "Willkommen bei GiftBase! Bitte bestätige deine E-Mail-Adresse", emailBody);
-
-        return true;
     }
 
-    public async Task<bool> ConfirmEmailAsync(string token)
+    public async Task ConfirmEmailAsync(string token)
     {
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();
 
-        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.VerificationToken == token);
-
-        if (user is null)
-        {
-            return false;
-        }
+        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.VerificationToken == token)
+            ?? throw new NotFoundException("Der Bestätigungslink ist ungültig.");
 
         if (user.TokenExpiresAt < DateTime.UtcNow)
         {
-            return false;
+            throw new ConflictException("Der Bestätigungslink ist abgelaufen.");
         }
 
         user.ConfirmEmail();
 
         await dbContext.SaveChangesAsync();
-
-        return true;
     }
 
     public async Task<int?> LoginUserAsync(string email, string password)

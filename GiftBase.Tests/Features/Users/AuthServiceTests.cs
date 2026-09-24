@@ -1,9 +1,11 @@
 using GiftBase.Core.Entities;
+using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
 using GiftBase.Data;
 using GiftBase.Features.Users;
 using GiftBase.Tests.Helper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Shouldly;
@@ -30,17 +32,17 @@ public class AuthServiceTests
     // RegisterUserAsync
 
     [Fact]
-    public async Task RegisterUserAsync_ShouldReturnFalse_WhenEmailIsNotIU()
+    public async Task RegisterUserAsync_ShouldThrowConflict_WhenEmailIsNotIU()
     {
         // Act
-        var result = await _authService.RegisterUserAsync("test@gmail.com", "Password123!");
+        var action = () => _authService.RegisterUserAsync("test@gmail.com", "Password123!");
 
         // Assert
-        result.ShouldBeFalse();
+        await Should.ThrowAsync<ConflictException>(action);
     }
 
     [Fact]
-    public async Task RegisterUserAsync_ShouldReturnFalse_WhenEmailAlreadyExists()
+    public async Task RegisterUserAsync_ShouldThrowConflict_WhenEmailAlreadyExists()
     {
         // Arrange
         await using var dbContext = _dbContextFactory.CreateDbContext();
@@ -50,30 +52,34 @@ public class AuthServiceTests
         await dbContext.SaveChangesAsync();
 
         // Act
-        var result = await _authService.RegisterUserAsync("user@iu-study.org", "Password123!");
+        var action = () => _authService.RegisterUserAsync("user@iu-study.org", "Password123!");
 
         // Assert
-        result.ShouldBeFalse();
+        await Should.ThrowAsync<ConflictException>(action);
     }
 
     [Fact]
-    public async Task RegisterUserAsync_ShouldReturnTrue_WithIuStudyEmail()
+    public async Task RegisterUserAsync_ShouldCreateUser_WithIuStudyEmail()
     {
         // Act
-        var result = await _authService.RegisterUserAsync("user@iu-study.org", "Password123!");
+        await _authService.RegisterUserAsync("user@iu-study.org", "Password123!");
 
         // Assert
-        result.ShouldBeTrue();
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var user = await dbContext.Users.SingleOrDefaultAsync(u => u.Email == "user@iu-study.org");
+        user.ShouldNotBeNull();
     }
 
     [Fact]
-    public async Task RegisterUserAsync_ShouldReturnTrue_WithIuOrgEmail()
+    public async Task RegisterUserAsync_ShouldCreateUser_WithIuOrgEmail()
     {
         // Act
-        var result = await _authService.RegisterUserAsync("user@iu.org", "Password123!");
+        await _authService.RegisterUserAsync("user@iu.org", "Password123!");
 
         // Assert
-        result.ShouldBeTrue();
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var user = await dbContext.Users.SingleOrDefaultAsync(u => u.Email == "user@iu.org");
+        user.ShouldNotBeNull();
     }
 
     [Fact]
@@ -105,17 +111,17 @@ public class AuthServiceTests
     // ConfirmEmailAsync
 
     [Fact]
-    public async Task ConfirmEmailAsync_ShouldReturnFalse_WhenTokenNotFound()
+    public async Task ConfirmEmailAsync_ShouldThrowNotFound_WhenTokenNotFound()
     {
         // Act
-        var result = await _authService.ConfirmEmailAsync("nonexistent-token");
+        var action = () => _authService.ConfirmEmailAsync("nonexistent-token");
 
         // Assert
-        result.ShouldBeFalse();
+        await Should.ThrowAsync<NotFoundException>(action);
     }
 
     [Fact]
-    public async Task ConfirmEmailAsync_ShouldReturnFalse_WhenTokenExpired()
+    public async Task ConfirmEmailAsync_ShouldThrowConflict_WhenTokenExpired()
     {
         // Arrange
         await using var dbContext = _dbContextFactory.CreateDbContext();
@@ -125,14 +131,14 @@ public class AuthServiceTests
         await dbContext.SaveChangesAsync();
 
         // Act
-        var result = await _authService.ConfirmEmailAsync("expired-token");
+        var action = () => _authService.ConfirmEmailAsync("expired-token");
 
         // Assert
-        result.ShouldBeFalse();
+        await Should.ThrowAsync<ConflictException>(action);
     }
 
     [Fact]
-    public async Task ConfirmEmailAsync_ShouldReturnTrue_WhenValidToken()
+    public async Task ConfirmEmailAsync_ShouldConfirm_WhenValidToken()
     {
         // Arrange
         await using var dbContext = _dbContextFactory.CreateDbContext();
@@ -142,12 +148,9 @@ public class AuthServiceTests
         await dbContext.SaveChangesAsync();
 
         // Act
-        var result = await _authService.ConfirmEmailAsync("valid-token");
+        await _authService.ConfirmEmailAsync("valid-token");
 
         // Assert
-        result.ShouldBeTrue();
-
-        // Verify user was confirmed
         await using var verifyContext = _dbContextFactory.CreateDbContext();
         var confirmedUser = await verifyContext.Users.FindAsync(user.Id);
         confirmedUser.ShouldNotBeNull();

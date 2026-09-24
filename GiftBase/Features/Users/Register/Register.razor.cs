@@ -1,3 +1,4 @@
+using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
 
 namespace GiftBase.Features.Users.Register;
@@ -17,16 +18,13 @@ public partial class Register(IAuthService authService)
 
         try
         {
-            var success = await authService.RegisterUserAsync(RegisterInput.Email, RegisterInput.Password);
+            await authService.RegisterUserAsync(RegisterInput.Email, RegisterInput.Password);
 
-            if (success)
-            {
-                Success = true;
-            }
-            else
-            {
-                ErrorMessage = "E-Mail ist bereits registriert oder es ist ein anderer Fehler aufgetreten.";
-            }
+            Success = true;
+        }
+        catch (ConflictException)
+        {
+            ErrorMessage = "E-Mail ist bereits registriert oder es ist ein anderer Fehler aufgetreten.";
         }
         catch (Exception)
         {

@@ -1,3 +1,4 @@
+using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
 using Microsoft.AspNetCore.Components;
 
@@ -22,11 +23,20 @@ public partial class ConfirmEmail(IAuthService authService)
 
         ErrorMessage = null;
         IsLoading = true;
-        IsSuccess = await authService.ConfirmEmailAsync(Token);
 
-        if (!IsSuccess)
+        try
+        {
+            await authService.ConfirmEmailAsync(Token);
+
+            IsSuccess = true;
+        }
+        catch (NotFoundException)
         {
             ErrorMessage = "Die E-Mail-Bestätigung ist fehlgeschlagen. Bitte überprüfe den Bestätigungslink oder kontaktiere den Support.";
+        }
+        catch (ConflictException)
+        {
+            ErrorMessage = "Der Bestätigungslink ist abgelaufen. Bitte registriere dich erneut.";
         }
 
         IsLoading = false;

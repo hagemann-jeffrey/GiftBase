@@ -1,8 +1,8 @@
-﻿namespace GiftBase.Core.Interfaces;
+namespace GiftBase.Core.Interfaces;
 
 public interface IAuthService
 {
-    Task<bool> RegisterUserAsync(string email, string password);
-    Task<bool> ConfirmEmailAsync(string token);
+    Task RegisterUserAsync(string email, string password);
+    Task ConfirmEmailAsync(string token);
     Task<int?> LoginUserAsync(string email, string password);
 }
