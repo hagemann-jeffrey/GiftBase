@@ -1,12 +1,11 @@
-using GiftBase.Core.Dtos;
+using GiftBase.Core.Dtos.Sharing;
 using GiftBase.Core.Entities;
 using GiftBase.Core.Enums;
 using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
 using GiftBase.Data;
-using GiftBase.Shared;
+using GiftBase.Shared.Common;
 using Microsoft.EntityFrameworkCore;
-using Translations = GiftBase.Shared.Translations.Translations;
 
 namespace GiftBase.Features.Sharing;
 
@@ -78,8 +77,7 @@ public class ShareLinkService(IDbContextFactory<GiftBaseDbContext> dbContextFact
 
         var shareLink = await dbContext.ShareLinks
             .Where(s => s.Id == shareLinkId && s.UserId == currentUserId)
-            .SingleOrDefaultAsync()
-                ?? throw new NotFoundException($"Link konnte nicht gefunden werden: {shareLinkId}");
+            .SingleOrNotFoundAsync($"Link konnte nicht gefunden werden: {shareLinkId}");
 
         dbContext.ShareLinks.Remove(shareLink);
         await dbContext.SaveChangesAsync();
@@ -90,8 +88,8 @@ public class ShareLinkService(IDbContextFactory<GiftBaseDbContext> dbContextFact
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();
 
         var shareLink = await dbContext.ShareLinks
-            .SingleOrDefaultAsync(s => s.Token == token)
-                ?? throw new NotFoundException("Link konnte nicht gefunden werden.");
+            .Where(s => s.Token == token)
+            .SingleOrNotFoundAsync("Link konnte nicht gefunden werden.");
 
         if (shareLink.IsExpired(DateTime.UtcNow))
         {
@@ -99,16 +97,16 @@ public class ShareLinkService(IDbContextFactory<GiftBaseDbContext> dbContextFact
         }
 
         var person = await dbContext.Persons
-            .SingleOrDefaultAsync(p => p.Id == shareLink.PersonId && p.UserId == shareLink.UserId)
-                ?? throw new NotFoundException("Link konnte nicht gefunden werden.");
+            .Where(p => p.Id == shareLink.PersonId && p.UserId == shareLink.UserId)
+            .SingleOrNotFoundAsync("Link konnte nicht gefunden werden.");
 
         string? occasionTitle = null;
 
         if (shareLink.OccasionId.HasValue)
         {
             var occasion = await dbContext.Occasions
-                .SingleOrDefaultAsync(o => o.Id == shareLink.OccasionId.Value && o.PersonId == person.Id)
-                    ?? throw new NotFoundException("Link konnte nicht gefunden werden.");
+                .Where(o => o.Id == shareLink.OccasionId.Value && o.PersonId == person.Id)
+                .SingleOrNotFoundAsync("Link konnte nicht gefunden werden.");
 
             occasionTitle = Translations.GetOccasionDisplayTitle(occasion);
         }

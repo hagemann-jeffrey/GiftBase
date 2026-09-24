@@ -1,4 +1,4 @@
-using GiftBase.Core.Dtos;
+using GiftBase.Core.Dtos.Gifts;
 using GiftBase.Core.Entities;
 
 namespace GiftBase.Core.Interfaces;

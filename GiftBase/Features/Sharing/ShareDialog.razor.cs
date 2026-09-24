@@ -1,12 +1,12 @@
-using GiftBase.Core.Dtos;
+using GiftBase.Core.Dtos.Sharing;
 using GiftBase.Core.Entities;
 using GiftBase.Core.Interfaces;
+using GiftBase.Shared.Common;
 using GiftBase.Shared.Components;
 using GiftBase.Shared.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
-using Translations = GiftBase.Shared.Translations.Translations;
 
 namespace GiftBase.Features.Sharing;
 

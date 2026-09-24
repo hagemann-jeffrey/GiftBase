@@ -1,8 +1,10 @@
 using System.Security.Cryptography;
 using System.Text;
 using GiftBase.Core.Interfaces;
-using GiftBase.Shared;
+using GiftBase.Options;
+using GiftBase.Shared.Common;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace GiftBase.Features.Notifications;
 
@@ -22,11 +24,11 @@ public static class NotificationEndpoints
 
     private static async Task<IResult> HandleDispatchAsync(
         HttpContext httpContext,
-        IConfiguration configuration,
+        IOptions<NotificationOptions> options,
         INotificationService notificationService,
         bool? dryRun)
     {
-        var expectedSecret = configuration["Notifications:TriggerSecret"];
+        var expectedSecret = options.Value.TriggerSecret;
         var providedSecret = httpContext.Request.Headers[SecretHeaderName].ToString();
 
         if (string.IsNullOrEmpty(expectedSecret) || !IsMatchingSecret(expectedSecret, providedSecret))

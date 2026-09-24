@@ -3,17 +3,18 @@ using Google.GenAI;
 using Google.GenAI.Types;
 using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
+using GiftBase.Options;
+using Microsoft.Extensions.Options;
 
 namespace GiftBase.Features.GiftSuggestions;
 
-public class GeminiClient(Client client, IConfiguration configuration) : IGeminiClient
+public class GeminiClient(Client client, IOptions<GeminiOptions> options) : IGeminiClient
 {
     private const string ErrorMessage = "Die KI-Vorschläge konnten nicht abgerufen werden. Bitte versuche es später erneut.";
 
     public async Task<string> GenerateJsonAsync(string systemInstruction, string input, string responseSchema, CancellationToken cancellationToken)
     {
-        var model = configuration["Gemini:Model"]
-            ?? throw new InvalidOperationException("Gemini:Model ist nicht konfiguriert.");
+        var model = options.Value.Model;
 
         var config = new GenerateContentConfig
         {

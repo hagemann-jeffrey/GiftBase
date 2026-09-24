@@ -1,12 +1,12 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using GiftBase.Core.Dtos;
+using GiftBase.Core.Dtos.GiftSuggestions;
 using GiftBase.Core.Entities;
 using GiftBase.Core.Enums;
 using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
 using GiftBase.Data;
-using GiftBase.Shared;
+using GiftBase.Shared.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace GiftBase.Features.GiftSuggestions;
@@ -21,12 +21,11 @@ public class GiftSuggestionService(IDbContextFactory<GiftBaseDbContext> dbContex
 
         var person = await dbContext.Persons
             .Where(p => p.Id == giftSuggestionGenerateDto.PersonId && p.UserId == currentUserId)
-            .SingleOrDefaultAsync()
-                ?? throw new NotFoundException($"Person konnte nicht gefunden werden: {giftSuggestionGenerateDto.PersonId}");
+            .SingleOrNotFoundAsync($"Person konnte nicht gefunden werden: {giftSuggestionGenerateDto.PersonId}");
 
         var occasion = await dbContext.Occasions
-            .SingleOrDefaultAsync(o => o.Id == giftSuggestionGenerateDto.OccasionId && o.PersonId == person.Id)
-                ?? throw new NotFoundException($"Anlass konnte nicht gefunden werden: {giftSuggestionGenerateDto.OccasionId}");
+            .Where(o => o.Id == giftSuggestionGenerateDto.OccasionId && o.PersonId == person.Id)
+            .SingleOrNotFoundAsync($"Anlass konnte nicht gefunden werden: {giftSuggestionGenerateDto.OccasionId}");
 
         var utcNow = DateTime.UtcNow;
 

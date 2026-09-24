@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using GiftBase.Core.Entities;
-using Translations = GiftBase.Shared.Translations.Translations;
+using GiftBase.Shared.Common;
 
 namespace GiftBase.Features.GiftSuggestions;
 

@@ -1,15 +1,15 @@
 using System.Globalization;
-using GiftBase.Core.Dtos;
+using GiftBase.Core.Dtos.Gifts;
+using GiftBase.Core.Dtos.GiftSuggestions;
 using GiftBase.Core.Entities;
 using GiftBase.Core.Enums;
 using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
 using GiftBase.Features.GiftSuggestions.Components;
-using GiftBase.Shared;
+using GiftBase.Shared.Common;
 using GiftBase.Shared.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Translations = GiftBase.Shared.Translations.Translations;
 
 namespace GiftBase.Features.GiftSuggestions;
 
@@ -128,7 +128,6 @@ public partial class GiftSuggestionDialog(IGiftSuggestionService giftSuggestionS
                     Note = suggestion.Reason,
                     Link = GiftSuggestionLinkBuilder.Build(suggestion.Type, suggestion.SearchTerm),
                     Price = suggestion.Price,
-                    Status = GiftStatus.Idea,
                     PersonId = Person.Id,
                     OccasionId = GiftSuggestionInput.OccasionId
                 }, userId);

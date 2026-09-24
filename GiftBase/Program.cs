@@ -2,21 +2,11 @@ using MudBlazor.Services;
 using Microsoft.EntityFrameworkCore;
 using GiftBase.Data;
 using GiftBase.Core.Interfaces;
-using GiftBase.Features.User;
-using Microsoft.AspNetCore.Identity;
-using GiftBase.Core.Entities;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using GiftBase.Features.User.Login;
+using GiftBase.Features.Users.Login;
 using GiftBase;
 using GiftBase.Features.Gifts;
-using GiftBase.Features.GiftSuggestions;
 using GiftBase.Features.Notifications;
-using GiftBase.Features.Occasions;
-using GiftBase.Features.Persons;
-using GiftBase.Features.Sharing;
-using GiftBase.Shared;
-using GiftBase.Shared.Services;
-using Google.GenAI;
+using GiftBase.Shared.Common;
 using MudBlazor;
 using System.Globalization;
 
@@ -37,49 +27,10 @@ builder.Services.AddMudServices(opt =>
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddDbContextFactory<GiftBaseDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("GiftBase"),
-        sqlOptions => sqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 6,
-            maxRetryDelay: TimeSpan.FromSeconds(15),
-            errorNumbersToAdd: null)));
-
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
-builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<IPersonService, PersonService>();
-builder.Services.AddScoped<IGiftService, GiftService>();
-builder.Services.AddScoped<IOccasionService, OccasionService>();
-builder.Services.AddScoped<IShareLinkService, ShareLinkService>();
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<UserActionHelper>();
-
-_ = builder.Configuration["Notifications:TriggerSecret"]
-    ?? throw new InvalidOperationException("Notifications:TriggerSecret ist nicht konfiguriert.");
-
-var geminiApiKey = builder.Configuration["Gemini:ApiKey"]
-    ?? throw new InvalidOperationException("Gemini:ApiKey ist nicht konfiguriert.");
-builder.Services.AddSingleton(new Client(apiKey: geminiApiKey));
-builder.Services.AddScoped<IGeminiClient, GeminiClient>();
-builder.Services.AddScoped<IGiftSuggestionService, GiftSuggestionService>();
-
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.Cookie.Name = "GiftBase.Auth";
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SameSite = SameSiteMode.Lax;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.IsEssential = true;
-        options.LoginPath = "/login";
-        options.AccessDeniedPath = "/login";
-        options.ExpireTimeSpan = TimeSpan.FromDays(30);
-        options.SlidingExpiration = true;
-    });
-
-builder.Services.AddAuthorization();
-builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddGiftBaseOptions(builder.Configuration);
+builder.Services.AddGiftBaseData(builder.Configuration);
+builder.Services.AddGiftBaseServices();
+builder.Services.AddGiftBaseAuthentication();
 
 var app = builder.Build();
 

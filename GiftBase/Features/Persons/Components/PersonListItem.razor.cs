@@ -1,7 +1,7 @@
 using GiftBase.Core.Entities;
 using GiftBase.Features.Occasions;
+using GiftBase.Shared.Common;
 using Microsoft.AspNetCore.Components;
-using Translations = GiftBase.Shared.Translations.Translations;
 
 namespace GiftBase.Features.Persons.Components;
 

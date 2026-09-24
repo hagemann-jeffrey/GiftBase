@@ -1,6 +1,6 @@
 using GiftBase.Core.Entities;
 using GiftBase.Core.Enums;
-using GiftBase.Shared;
+using GiftBase.Shared.Common;
 using MudBlazor;
 
 namespace GiftBase.Features.Occasions;

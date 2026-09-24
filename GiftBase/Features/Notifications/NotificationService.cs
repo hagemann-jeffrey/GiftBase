@@ -1,4 +1,4 @@
-using GiftBase.Core.Dtos;
+using GiftBase.Core.Dtos.Notifications;
 using GiftBase.Core.Entities;
 using GiftBase.Core.Enums;
 using GiftBase.Core.Interfaces;
@@ -64,7 +64,7 @@ public class NotificationService(IDbContextFactory<GiftBaseDbContext> dbContextF
     }
 
     private async Task DispatchMonthlyOverviewAsync(
-        GiftBaseDbContext dbContext, Core.Entities.User user, DateOnly today, string baseUrl, bool dryRun, string periodKey, List<NotificationDispatchDto> dispatches)
+        GiftBaseDbContext dbContext, User user, DateOnly today, string baseUrl, bool dryRun, string periodKey, List<NotificationDispatchDto> dispatches)
     {
         var entries = BuildEntries(user, o =>
             (o.Type == OccasionType.Birthday || o.Type == OccasionType.Custom)
@@ -82,7 +82,7 @@ public class NotificationService(IDbContextFactory<GiftBaseDbContext> dbContextF
     }
 
     private async Task DispatchChristmasReminderAsync(
-        GiftBaseDbContext dbContext, Core.Entities.User user, DateOnly today, string baseUrl, bool dryRun, string periodKey, List<NotificationDispatchDto> dispatches)
+        GiftBaseDbContext dbContext, User user, DateOnly today, string baseUrl, bool dryRun, string periodKey, List<NotificationDispatchDto> dispatches)
     {
         var entries = BuildEntries(user, o => o.Type == OccasionType.Christmas);
 
@@ -96,7 +96,7 @@ public class NotificationService(IDbContextFactory<GiftBaseDbContext> dbContextF
         dispatches.Add(await SendAsync(dbContext, user, NotificationKind.ChristmasReminder, periodKey, subject, body, dryRun));
     }
 
-    private static List<NotificationEntry> BuildEntries(Core.Entities.User user, Func<Occasion, bool> isRelevant) =>
+    private static List<NotificationEntry> BuildEntries(User user, Func<Occasion, bool> isRelevant) =>
         [.. user.Persons.SelectMany(p => p.Occasions
             .Where(isRelevant)
             .Select(o => new NotificationEntry
@@ -110,7 +110,7 @@ public class NotificationService(IDbContextFactory<GiftBaseDbContext> dbContextF
             }))];
 
     private async Task<NotificationDispatchDto> SendAsync(
-        GiftBaseDbContext dbContext, Core.Entities.User user, NotificationKind kind, string periodKey, string subject, string body, bool dryRun)
+        GiftBaseDbContext dbContext, User user, NotificationKind kind, string periodKey, string subject, string body, bool dryRun)
     {
         var dispatch = new NotificationDispatchDto
         {

@@ -1,0 +1,14 @@
+using GiftBase.Core.Enums;
+
+namespace GiftBase.Core.Dtos.Persons;
+
+public class PersonAddDto
+{
+    public string FirstName { get; set; } = null!;
+    public string LastName { get; set; } = null!;
+    public DateOnly? DateOfBirth { get; set; }
+    public Relation Relation { get; set; }
+    public int UserId { get; set; }
+    public string? Interests { get; set; }
+    public bool NotificationsEnabled { get; set; } = true;
+}
