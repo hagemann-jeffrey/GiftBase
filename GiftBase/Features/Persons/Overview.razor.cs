@@ -1,5 +1,6 @@
 using GiftBase.Core.Entities;
 using GiftBase.Core.Interfaces;
+using GiftBase.Shared.Common;
 using GiftBase.Shared.Services;
 using MudBlazor;
 
@@ -40,14 +41,7 @@ public partial class Overview(
 
     private async Task AddPersonAsync()
     {
-        var dialogOptions = new DialogOptions
-        {
-            CloseButton = true,
-            MaxWidth = MaxWidth.Small,
-            FullWidth = true
-        };
-
-        var dialog = await DialogService.ShowAsync<PersonDialog>(title: null, options: dialogOptions);
+        var dialog = await DialogService.ShowAsync<PersonDialog>(title: null, options: AppDialogOptions.Default);
 
         var result = await dialog.Result;
 

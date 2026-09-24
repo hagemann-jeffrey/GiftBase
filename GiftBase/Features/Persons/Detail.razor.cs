@@ -56,14 +56,6 @@ public partial class Detail(
 
     private string PersonFullName => Person is null ? string.Empty : $"{Person.FirstName} {Person.LastName}";
 
-    private static DialogOptions DefaultDialogOptions => new()
-    {
-        CloseButton = true,
-        MaxWidth = MaxWidth.Small,
-        FullWidth = true,
-        CloseOnEscapeKey = true
-    };
-
     private async Task AddGiftAsync()
     {
         var parameters = new DialogParameters<GiftDialog>
@@ -73,7 +65,7 @@ public partial class Detail(
             { x => x.Occasions, Occasions }
         };
 
-        var dialog = await dialogService.ShowAsync<GiftDialog>(null, parameters, DefaultDialogOptions);
+        var dialog = await dialogService.ShowAsync<GiftDialog>(null, parameters, AppDialogOptions.Default);
 
         var result = await dialog.Result;
 
@@ -106,7 +98,7 @@ public partial class Detail(
             { x => x.ExistingGiftId, gift.Id }
         };
 
-        var dialog = await dialogService.ShowAsync<GiftDialog>(null, parameters, DefaultDialogOptions);
+        var dialog = await dialogService.ShowAsync<GiftDialog>(null, parameters, AppDialogOptions.Default);
 
         var result = await dialog.Result;
 
@@ -129,7 +121,7 @@ public partial class Detail(
                 { x => x.Message, $"Möchten Sie die Geschenkidee \"{gift.Title}\" wirklich löschen?" }
             };
 
-            var dialog = await dialogService.ShowAsync<DeleteDialog>(null, parameters, DefaultDialogOptions);
+            var dialog = await dialogService.ShowAsync<DeleteDialog>(null, parameters, AppDialogOptions.Default);
 
             var result = await dialog.Result;
 
@@ -155,15 +147,7 @@ public partial class Detail(
             { x => x.ExistingGifts, Gifts }
         };
 
-        var dialogOptions = new DialogOptions
-        {
-            CloseButton = true,
-            MaxWidth = MaxWidth.Medium,
-            FullWidth = true,
-            CloseOnEscapeKey = true
-        };
-
-        var dialog = await dialogService.ShowAsync<GiftSuggestionDialog>(null, parameters, dialogOptions);
+        var dialog = await dialogService.ShowAsync<GiftSuggestionDialog>(null, parameters, AppDialogOptions.Medium);
 
         var result = await dialog.Result;
 
@@ -182,7 +166,7 @@ public partial class Detail(
             { x => x.Occasions, Occasions }
         };
 
-        await dialogService.ShowAsync<ShareDialog>(null, parameters, DefaultDialogOptions);
+        await dialogService.ShowAsync<ShareDialog>(null, parameters, AppDialogOptions.Default);
     }
 
     private async Task UpdatePersonAsync()
@@ -207,7 +191,7 @@ public partial class Detail(
             { x => x.ExistingPersonId, Person.Id }
         };
 
-        var dialog = await dialogService.ShowAsync<PersonDialog>(null, parameters, DefaultDialogOptions);
+        var dialog = await dialogService.ShowAsync<PersonDialog>(null, parameters, AppDialogOptions.Default);
 
         var result = await dialog.Result;
 
@@ -231,7 +215,7 @@ public partial class Detail(
                 { x => x.Message, $"Möchten Sie {Person.FirstName} {Person.LastName} wirklich löschen?" }
             };
 
-            var dialog = await dialogService.ShowAsync<DeleteDialog>(null, parameters, DefaultDialogOptions);
+            var dialog = await dialogService.ShowAsync<DeleteDialog>(null, parameters, AppDialogOptions.Default);
 
             var result = await dialog.Result;
 
@@ -290,7 +274,7 @@ public partial class Detail(
             { x => x.ExistingTypes, ExistingOccasionTypes }
         };
 
-        var dialog = await dialogService.ShowAsync<OccasionDialog>(null, parameters, DefaultDialogOptions);
+        var dialog = await dialogService.ShowAsync<OccasionDialog>(null, parameters, AppDialogOptions.Default);
 
         var result = await dialog.Result;
 
@@ -325,7 +309,7 @@ public partial class Detail(
             { x => x.ExistingOccasionId, occasion.Id }
         };
 
-        var dialog = await dialogService.ShowAsync<OccasionDialog>(null, parameters, DefaultDialogOptions);
+        var dialog = await dialogService.ShowAsync<OccasionDialog>(null, parameters, AppDialogOptions.Default);
 
         var result = await dialog.Result;
 
@@ -353,7 +337,7 @@ public partial class Detail(
                     + "Zugeordnete Geschenkideen bleiben erhalten." }
             };
 
-            var dialog = await dialogService.ShowAsync<DeleteDialog>(null, parameters, DefaultDialogOptions);
+            var dialog = await dialogService.ShowAsync<DeleteDialog>(null, parameters, AppDialogOptions.Default);
 
             var result = await dialog.Result;
 
