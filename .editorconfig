@@ -20,18 +20,18 @@ csharp_indent_case_contents = true
 csharp_indent_switch_labels = true
 
 # Namespace-Stil (file-scoped, Ordner muss zum Namespace passen)
-csharp_style_namespace_declarations = file_scoped:warning
+csharp_style_namespace_declarations = file_scoped:error
 dotnet_style_namespace_match_folder = true:warning
-dotnet_diagnostic.IDE0161.severity = warning
+dotnet_diagnostic.IDE0161.severity = error
 dotnet_diagnostic.IDE0130.severity = warning
 
 # Immer geschweifte Klammern
-csharp_prefer_braces = true:warning
-dotnet_diagnostic.IDE0011.severity = warning
+csharp_prefer_braces = true:error
+dotnet_diagnostic.IDE0011.severity = error
 
 # is null statt == null
-csharp_style_prefer_is_null_check_over_reference_equality_method = true:warning
-dotnet_diagnostic.IDE0041.severity = warning
+csharp_style_prefer_is_null_check_over_reference_equality_method = true:error
+dotnet_diagnostic.IDE0041.severity = error
 
 # Generierte Migrations sind von den Stilregeln ausgenommen
 [*/Migrations/*.cs]

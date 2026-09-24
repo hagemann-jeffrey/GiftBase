@@ -25,7 +25,9 @@ NavigationManager navigationManager) : IAuthService
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();
 
         if (await dbContext.Users.AnyAsync(u => u.Email == email))
+        {
             return false;
+        }
 
         string token = TokenGenerator.Generate();
 
@@ -65,11 +67,15 @@ NavigationManager navigationManager) : IAuthService
 
         var user = await dbContext.Users.FirstOrDefaultAsync(u => u.VerificationToken == token);
 
-        if (user == null)
+        if (user is null)
+        {
             return false;
+        }
 
         if (user.TokenExpiresAt < DateTime.UtcNow)
+        {
             return false;
+        }
 
         user.ConfirmEmail();
 
@@ -84,8 +90,10 @@ NavigationManager navigationManager) : IAuthService
 
         var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
 
-        if (user == null || !user.IsEmailVerified)
+        if (user is null || !user.IsEmailVerified)
+        {
             return null;
+        }
 
         var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
 
