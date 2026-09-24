@@ -14,10 +14,7 @@ NavigationManager navigationManager) : IAuthService
 {
     public async Task<bool> RegisterUserAsync(string email, string password)
     {
-        var isStudentOrLecturer = email.EndsWith("@iu-study.org", StringComparison.OrdinalIgnoreCase) ||
-                                email.EndsWith("@iu.org", StringComparison.OrdinalIgnoreCase);
-
-        if (!isStudentOrLecturer)
+        if (!RegistrationDomains.IsAllowed(email))
         {
             logger.LogWarning("Attempted registration with non-IU email: {Email}", email);
             return false;

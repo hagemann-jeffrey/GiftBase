@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using GiftBase.Shared.Common;
 
 namespace GiftBase.Shared.Validation;
 
 public class IuEmailAttribute : ValidationAttribute
 {
-    private readonly string[] _allowedDomains = { "iu-study.org", "iu.org" };
-
     public IuEmailAttribute()
     {
         ErrorMessage = "Bitte registriere dich mit deiner offiziellen Hochschul-E-Mail-Adresse.";
@@ -13,12 +12,9 @@ public class IuEmailAttribute : ValidationAttribute
 
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
-        if (value is string email)
+        if (value is string email && RegistrationDomains.IsAllowed(email))
         {
-            if (_allowedDomains.Any(domain => email.EndsWith($"@{domain}", StringComparison.OrdinalIgnoreCase)))
-            {
-                return ValidationResult.Success;
-            }
+            return ValidationResult.Success;
         }
 
         return new ValidationResult(
