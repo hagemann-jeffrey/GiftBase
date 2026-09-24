@@ -3,7 +3,7 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 
-namespace GiftBase.Features.User;
+namespace GiftBase.Features.Users;
 
 public class EmailService(IConfiguration configuration) : IEmailService
 {

@@ -1,7 +1,7 @@
 using GiftBase.Core.Interfaces;
 using Microsoft.AspNetCore.Components;
 
-namespace GiftBase.Features.User.ConfirmEmail;
+namespace GiftBase.Features.Users.ConfirmEmail;
 
 public partial class ConfirmEmail(IAuthService authService)
 {

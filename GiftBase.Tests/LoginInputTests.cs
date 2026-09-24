@@ -1,4 +1,4 @@
-﻿using GiftBase.Features.User.Login;
+﻿using GiftBase.Features.Users.Login;
 using GiftBase.Tests.Helper;
 using Shouldly;
 

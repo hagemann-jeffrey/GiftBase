@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GiftBase.Features.User.Login;
+namespace GiftBase.Features.Users.Login;
 
 public class LoginInput
 {

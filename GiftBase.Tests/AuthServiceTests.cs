@@ -1,7 +1,7 @@
 using GiftBase.Core.Entities;
 using GiftBase.Core.Interfaces;
 using GiftBase.Data;
-using GiftBase.Features.User;
+using GiftBase.Features.Users;
 using GiftBase.Tests.Helper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;

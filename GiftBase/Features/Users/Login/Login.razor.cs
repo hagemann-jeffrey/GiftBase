@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace GiftBase.Features.User.Login;
+namespace GiftBase.Features.Users.Login;
 
 public partial class Login
 {

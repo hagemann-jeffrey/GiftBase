@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using GiftBase.Shared.Validation;
 
-namespace GiftBase.Features.User.Register;
+namespace GiftBase.Features.Users.Register;
 
 public class RegisterInput
 {

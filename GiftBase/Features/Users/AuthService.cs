@@ -1,14 +1,15 @@
-﻿using GiftBase.Core.Interfaces;
+﻿using GiftBase.Core.Entities;
+using GiftBase.Core.Interfaces;
 using GiftBase.Data;
 using GiftBase.Shared.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace GiftBase.Features.User;
+namespace GiftBase.Features.Users;
 
 public class AuthService(IDbContextFactory<GiftBaseDbContext> dbContextFactory, ILogger<AuthService> logger,
-IPasswordHasher<Core.Entities.User> passwordHasher, IEmailService emailService,
+IPasswordHasher<User> passwordHasher, IEmailService emailService,
 NavigationManager navigationManager) : IAuthService
 {
     public async Task<bool> RegisterUserAsync(string email, string password)
@@ -31,7 +32,7 @@ NavigationManager navigationManager) : IAuthService
 
         string token = TokenGenerator.Generate();
 
-        var user = new Core.Entities.User(email, token, DateTime.UtcNow.AddHours(24));
+        var user = new User(email, token, DateTime.UtcNow.AddHours(24));
 
         user.SetPasswordHash(passwordHasher.HashPassword(user, password));
 

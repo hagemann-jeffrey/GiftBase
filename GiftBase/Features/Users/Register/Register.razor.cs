@@ -1,6 +1,6 @@
 using GiftBase.Core.Interfaces;
 
-namespace GiftBase.Features.User.Register;
+namespace GiftBase.Features.Users.Register;
 
 public partial class Register(IAuthService authService)
 {
