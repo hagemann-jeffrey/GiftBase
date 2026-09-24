@@ -121,7 +121,6 @@ public class GiftServiceTests
             Note = "Am liebsten in Schwarz",
             Link = "https://example.com/kaffee",
             Price = 129.99m,
-            Status = GiftStatus.Idea,
             PersonId = person.Id
         };
 
@@ -150,7 +149,6 @@ public class GiftServiceTests
         var giftAddDto = new GiftAddDto
         {
             Title = "Kaffeemaschine",
-            Status = GiftStatus.Idea,
             PersonId = person.Id
         };
 
@@ -168,7 +166,6 @@ public class GiftServiceTests
         var giftAddDto = new GiftAddDto
         {
             Title = "Kaffeemaschine",
-            Status = GiftStatus.Idea,
             PersonId = 999
         };
 
@@ -338,7 +335,6 @@ public class GiftServiceTests
         var giftAddDto = new GiftAddDto
         {
             Title = "Kaffeemaschine",
-            Status = GiftStatus.Idea,
             PersonId = person.Id,
             OccasionId = occasion.Id
         };
@@ -360,7 +356,6 @@ public class GiftServiceTests
         var giftAddDto = new GiftAddDto
         {
             Title = "Kaffeemaschine",
-            Status = GiftStatus.Idea,
             PersonId = person.Id,
             OccasionId = occasion.Id
         };
@@ -443,7 +438,6 @@ public class GiftServiceTests
         var giftAddDto = new GiftAddDto
         {
             Title = "Kaffeemaschine",
-            Status = GiftStatus.Idea,
             PersonId = person.Id,
             ImageContent = ImageBytes(),
             ImageContentType = GiftImage.JpegContentType
@@ -470,7 +464,6 @@ public class GiftServiceTests
         var giftAddDto = new GiftAddDto
         {
             Title = "Kaffeemaschine",
-            Status = GiftStatus.Idea,
             PersonId = person.Id
         };
 
@@ -493,7 +486,6 @@ public class GiftServiceTests
         var giftAddDto = new GiftAddDto
         {
             Title = "Kaffeemaschine",
-            Status = GiftStatus.Idea,
             PersonId = person.Id,
             ImageContent = new byte[GiftImage.MaxContentLength + 1],
             ImageContentType = GiftImage.JpegContentType
@@ -514,7 +506,6 @@ public class GiftServiceTests
         var giftAddDto = new GiftAddDto
         {
             Title = "Kaffeemaschine",
-            Status = GiftStatus.Idea,
             PersonId = person.Id,
             ImageContent = ImageBytes(),
             ImageContentType = "application/pdf"

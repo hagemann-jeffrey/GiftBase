@@ -117,7 +117,6 @@ namespace GiftBase.Features.Gifts
                         Note = GiftInput.Note.NormalizeOptional(),
                         Link = GiftInput.Link.NormalizeOptional(),
                         Price = GiftInput.Price,
-                        Status = GiftInput.Status,
                         PersonId = PersonId,
                         OccasionId = GiftInput.OccasionId,
                         ImageContent = GiftInput.ImageContent,

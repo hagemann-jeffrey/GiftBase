@@ -128,7 +128,6 @@ public partial class GiftSuggestionDialog(IGiftSuggestionService giftSuggestionS
                     Note = suggestion.Reason,
                     Link = GiftSuggestionLinkBuilder.Build(suggestion.Type, suggestion.SearchTerm),
                     Price = suggestion.Price,
-                    Status = GiftStatus.Idea,
                     PersonId = Person.Id,
                     OccasionId = GiftSuggestionInput.OccasionId
                 }, userId);
