@@ -1,9 +1,10 @@
 using GiftBase.Core.Exceptions;
 using GiftBase.Core.Interfaces;
+using Microsoft.AspNetCore.Components;
 
 namespace GiftBase.Features.Users.Register;
 
-public partial class Register(IAuthService authService)
+public partial class Register(IAuthService authService, NavigationManager navigationManager)
 {
     private RegisterInput RegisterInput { get; set; } = new RegisterInput();
 
@@ -18,7 +19,8 @@ public partial class Register(IAuthService authService)
 
         try
         {
-            await authService.RegisterUserAsync(RegisterInput.Email, RegisterInput.Password);
+            await authService.RegisterUserAsync(
+                RegisterInput.Email, RegisterInput.Password, navigationManager.BaseUri.TrimEnd('/'));
 
             Success = true;
         }

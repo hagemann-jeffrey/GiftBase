@@ -14,6 +14,8 @@ namespace GiftBase.Tests.Features.Users;
 
 public class AuthServiceTests
 {
+    private const string BaseUrl = "https://giftbase.example";
+
     private readonly TestDbContextFactory _dbContextFactory;
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IEmailService _emailService;
@@ -25,8 +27,7 @@ public class AuthServiceTests
         _passwordHasher = Substitute.For<IPasswordHasher<User>>();
         _emailService = Substitute.For<IEmailService>();
         var logger = Substitute.For<ILogger<AuthService>>();
-        var navigationManager = new TestNavigationManager();
-        _authService = new AuthService(_dbContextFactory, logger, _passwordHasher, _emailService, navigationManager);
+        _authService = new AuthService(_dbContextFactory, logger, _passwordHasher, _emailService);
     }
 
     // RegisterUserAsync
@@ -35,7 +36,7 @@ public class AuthServiceTests
     public async Task RegisterUserAsync_ShouldThrowConflict_WhenEmailIsNotIU()
     {
         // Act
-        var action = () => _authService.RegisterUserAsync("test@gmail.com", "Password123!");
+        var action = () => _authService.RegisterUserAsync("test@gmail.com", "Password123!", BaseUrl);
 
         // Assert
         await Should.ThrowAsync<ConflictException>(action);
@@ -52,7 +53,7 @@ public class AuthServiceTests
         await dbContext.SaveChangesAsync();
 
         // Act
-        var action = () => _authService.RegisterUserAsync("user@iu-study.org", "Password123!");
+        var action = () => _authService.RegisterUserAsync("user@iu-study.org", "Password123!", BaseUrl);
 
         // Assert
         await Should.ThrowAsync<ConflictException>(action);
@@ -62,7 +63,7 @@ public class AuthServiceTests
     public async Task RegisterUserAsync_ShouldCreateUser_WithIuStudyEmail()
     {
         // Act
-        await _authService.RegisterUserAsync("user@iu-study.org", "Password123!");
+        await _authService.RegisterUserAsync("user@iu-study.org", "Password123!", BaseUrl);
 
         // Assert
         await using var dbContext = _dbContextFactory.CreateDbContext();
@@ -74,7 +75,7 @@ public class AuthServiceTests
     public async Task RegisterUserAsync_ShouldCreateUser_WithIuOrgEmail()
     {
         // Act
-        await _authService.RegisterUserAsync("user@iu.org", "Password123!");
+        await _authService.RegisterUserAsync("user@iu.org", "Password123!", BaseUrl);
 
         // Assert
         await using var dbContext = _dbContextFactory.CreateDbContext();
@@ -89,7 +90,7 @@ public class AuthServiceTests
         _passwordHasher.HashPassword(Arg.Any<User>(), Arg.Any<string>()).Returns("hashed_password");
 
         // Act
-        await _authService.RegisterUserAsync("user@iu-study.org", "Password123!");
+        await _authService.RegisterUserAsync("user@iu-study.org", "Password123!", BaseUrl);
 
         // Assert
         _passwordHasher.Received(1).HashPassword(Arg.Any<User>(), "Password123!");
@@ -99,13 +100,17 @@ public class AuthServiceTests
     public async Task RegisterUserAsync_ShouldSendConfirmationEmail()
     {
         // Act
-        await _authService.RegisterUserAsync("user@iu-study.org", "Password123!");
+        await _authService.RegisterUserAsync("user@iu-study.org", "Password123!", BaseUrl);
 
         // Assert
+        await using var dbContext = _dbContextFactory.CreateDbContext();
+        var user = await dbContext.Users.SingleAsync(u => u.Email == "user@iu-study.org");
+        var confirmationLink = $"{BaseUrl}/confirmemail?Token={user.VerificationToken}";
+
         await _emailService.Received(1).SendEmailAsync(
             Arg.Is("user@iu-study.org"),
             Arg.Any<string>(),
-            Arg.Any<string>());
+            Arg.Is<string>(body => body.Contains(confirmationLink)));
     }
 
     // ConfirmEmailAsync

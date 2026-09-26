@@ -4,17 +4,15 @@ using GiftBase.Core.Interfaces;
 using GiftBase.Data;
 using GiftBase.Features.Users.Register;
 using GiftBase.Shared.Common;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace GiftBase.Features.Users;
 
 public class AuthService(IDbContextFactory<GiftBaseDbContext> dbContextFactory, ILogger<AuthService> logger,
-IPasswordHasher<User> passwordHasher, IEmailService emailService,
-NavigationManager navigationManager) : IAuthService
+IPasswordHasher<User> passwordHasher, IEmailService emailService) : IAuthService
 {
-    public async Task RegisterUserAsync(string email, string password)
+    public async Task RegisterUserAsync(string email, string password, string baseUrl)
     {
         if (!RegistrationDomains.IsAllowed(email))
         {
@@ -39,7 +37,7 @@ NavigationManager navigationManager) : IAuthService
         dbContext.Users.Add(user);
         await dbContext.SaveChangesAsync();
 
-        var confirmationLink = $"{navigationManager.BaseUri}confirmemail?Token={token}";
+        var confirmationLink = $"{baseUrl}/confirmemail?Token={token}";
         var (subject, body) = RegistrationEmailBuilder.Build(confirmationLink);
 
         await emailService.SendEmailAsync(email, subject, body);
